@@ -1,0 +1,27 @@
+.idea/
+.junie/
+/public/
+/tmp/
+# Hugo build output
+/public/
+/resources/_gen/
+/hugo_stats.json
+
+/dist/
+/node_modules/
+.DS_Store
+
+Thumbs.db
+*.swp
+*.swo
+*.bak
+*.tmp
+
+/go.sum
+/go.mod
+
+/themes/*
+!.gitmodules
+
+.hugo_build.lock
+examples/**/data

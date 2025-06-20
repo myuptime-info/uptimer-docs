@@ -1,0 +1,37 @@
+baseURL = '/'
+languageCode = 'en-us'
+title = 'Uptimer'
+theme = "hugo-book"
+
+[params]
+BookSection = "*" # Only include specific sections in menu
+BookSearch = true # Enable search
+BookPortableLinks = true # Make internal links portable
+BookToC = true # Enable Table of Contents on pages
+
+[menu]
+[[menu.main]]
+name = "Home"
+url = "/"
+weight = 10
+[[menu.main]]
+name = "GitHub"
+url = "https://github.com/your_repo_link" # Replace with your GitHub repo URL
+weight = 20
+
+# Optional: Disable "posts" section if you don't need a blog-like section
+[taxonomies]
+category = "categories"
+tag = "tags"
+
+# To prevent pages from being drafts by default
+[frontmatter]
+draft = false
+
+# Explicitly disable posts section
+[params.BookSections]
+posts = false
+
+# Disable section pages for posts
+disableKinds = ["section"]
+ignoreFiles = ["content/posts"]

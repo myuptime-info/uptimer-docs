@@ -1,0 +1,23 @@
+services:
+  dev:
+    image: myuptime/uptimer
+    ports:
+      - "2517:2517"
+    volumes:
+      - ./data:/data
+    environment:
+      UPTIMER__SERVER__DB__DSN: "postgres://dbuser:dbpassword@db:5432/uptimer"
+      UPTIMER__WORKER__DB__DSN: "sqlite3:///data/worker_db.sqlite"
+    command: ["--delay", "10", "dev"]
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: uptimer
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpassword
+    volumes:
+      - uptimer-dev-db:/var/lib/postgresql/data
+
+volumes:
+  uptimer-dev-db:
