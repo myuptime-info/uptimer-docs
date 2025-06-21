@@ -1,14 +1,14 @@
 {
   "name": "{{ .Site.Title }}",
   "short_name": "{{ .Site.Title }}",
-  "start_url": "/uptimer/",
-  "scope": "/uptimer/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/uptimer/favicon.svg",
+      "src": "/favicon.svg",
       "sizes": "512x512"
     }
   ]
