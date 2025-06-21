@@ -32,7 +32,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.115.4
+      HUGO_VERSION: 0.147.7
     steps:
       - name: Install dependencies
         run: |
@@ -72,10 +72,27 @@ jobs:
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
         run: |
+          # Set explicit baseURL to ensure all paths are correct
           hugo \
             --gc \
             --minify \
-            --baseURL "${{ steps.pages.outputs.base_url }}/"
+            --baseURL "https://myuptime-info.github.io/uptimer/"
+
+      - name: Create uptimer directory structure
+        run: |
+          # Create the uptimer directory and move all content there
+          mkdir -p public/uptimer
+          mv public/* public/uptimer/ 2>/dev/null || true
+          mv public/.* public/uptimer/ 2>/dev/null || true
+          # Remove the uptimer directory from itself to avoid recursion
+          rm -rf public/uptimer/uptimer
+
+      - name: Copy root redirect files
+        run: |
+          # Copy the redirect index.html to the root
+          cp static/index.html public/index.html
+          cp static/CNAME public/CNAME
+          cp .nojekyll public/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

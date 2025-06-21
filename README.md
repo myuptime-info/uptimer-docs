@@ -9,6 +9,7 @@ To run the documentation site locally:
 ```bash
 # Install Hugo (if not already installed)
 # See https://gohugo.io/installation/ for platform-specific instructions
+# Note: The hugo-book theme requires Hugo version 0.147.7 or higher
 
 # Start the Hugo server
 hugo server -D -p 1314
@@ -37,6 +38,8 @@ This repository is configured to automatically deploy to GitHub Pages using GitH
      - Change `baseURL = 'https://GITHUB_USERNAME.github.io/REPO_NAME/'` to your actual GitHub Pages URL
      - Update the GitHub repository URL in the menu: `url = "https://github.com/GITHUB_USERNAME/REPO_NAME"`
 
+   Note: The current configuration deploys the site to the `/uptimer/` path and includes a redirect from the root URL to this path.
+
 2. **Enable GitHub Pages**:
    - Go to your repository on GitHub
    - Navigate to Settings > Pages
@@ -60,10 +63,22 @@ The deployment uses a GitHub Actions workflow defined in `.github/workflows/hugo
 
 The workflow runs automatically when changes are pushed to the main branch, or it can be triggered manually from the Actions tab.
 
+#### URL Configuration
+
+The site is configured to be deployed to the `/uptimer/` path on GitHub Pages. This is achieved by:
+
+1. Setting the baseURL in `hugo.toml` to `https://myuptime-info.github.io/uptimer/`
+2. Configuring the Hugo build command in the GitHub workflow to use this path
+3. Adding a redirect from the root URL to the `/uptimer/` path using a static HTML file with a meta refresh tag
+
+The redirect is implemented in `static/index.html` and will be placed at the root of the GitHub Pages site during deployment.
+
 ## Project Structure
 
 - `content/`: Contains all the documentation content organized in sections
 - `themes/`: Contains the Hugo themes used by the project
+- `static/`: Contains static files that will be copied directly to the output directory
+  - `static/index.html`: Redirect file that redirects from the root URL to the /uptimer/ path
 - `hugo.toml`: Main configuration file for the Hugo site
 - `public/`: Generated static site (after building)
 - `.github/workflows/`: Contains GitHub Actions workflow files

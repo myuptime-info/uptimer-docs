@@ -134,8 +134,8 @@ Schema migrations happen automatically on startup.
 ## Example: Minimalistic with persistent storages
 
 ```shell
-git clone https://github.com/myuptime-info/myuptime-self-hosted-docs.git
-cd myuptime-self-hosted-docs/examples/dev-persistent-no-config
+git clone https://github.com/myuptime-info/uptimer.git
+cd uptimer/examples/dev-persistent-no-config
 docker compose up 
 ```
 

@@ -1,4 +1,4 @@
-baseURL = 'https://GITHUB_USERNAME.github.io/REPO_NAME/' # Replace with your GitHub username and repository name
+baseURL = 'https://myuptime-info.github.io/uptimer/' # Base URL for the site
 languageCode = 'en-us'
 title = 'Uptimer'
 theme = "hugo-book"
@@ -16,17 +16,13 @@ url = "/"
 weight = 10
 [[menu.main]]
 name = "GitHub"
-url = "https://github.com/myuptime-info/myuptime-self-hosted-docs" # Replace with your GitHub repo URL
+url = "https://github.com/myuptime-info/uptimer" # GitHub repository URL
 weight = 20
 
 # Optional: Disable "posts" section if you don't need a blog-like section
 [taxonomies]
 category = "categories"
 tag = "tags"
-
-# To prevent pages from being drafts by default
-[frontmatter]
-draft = false
 
 # Explicitly disable posts section
 [params.BookSections]
