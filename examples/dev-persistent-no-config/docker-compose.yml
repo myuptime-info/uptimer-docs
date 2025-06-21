@@ -1,5 +1,5 @@
 services:
-  dev:
+  uptimer-dev:
     image: myuptime/uptimer
     ports:
       - "2517:2517"

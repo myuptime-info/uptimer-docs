@@ -1,0 +1,15 @@
+services:
+  uptimer:
+    image: myuptime/uptimer
+    volumes:
+      - ./data:/data
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./.htpasswd:/etc/nginx/.htpasswd:ro
+    depends_on:
+      - uptimer 

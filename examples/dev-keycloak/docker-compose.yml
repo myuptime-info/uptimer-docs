@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    ports:
+      - "8080:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_IMPORT: /opt/keycloak/data/import/realm-config.json
+      # override in your .env or CI:
+      CLIENT_SECRET: "1234567890"
+      REDIRECT_URI: "http://uptimer-dev:2517/ui/auth/oauth/callback"
+    volumes:
+      - ./realm-config.json:/opt/keycloak/data/import/realm-config.json:ro
+    command: ["start-dev", "--import-realm"]
+
+  uptimer-dev:
+    image: myuptime/uptimer
+    ports:
+      - "2517:2517"
+    volumes:
+      - ./data:/data
+    environment:
+      UPTIMER__SERVER__AUTH__DEV: "false"
+      UPTIMER__SERVER__DB__DSN: "postgres://dbuser:dbpassword@db:5432/uptimer"
+      UPTIMER__WORKER__DB__DSN: "sqlite3:///data/worker_db.sqlite"
+      UPTIMER__SERVER__AUTH__OIDC__CLIENT_ID: "uptimer-dev"
+      UPTIMER__SERVER__AUTH__OIDC__CLIENT_SECRET: "1234567890"
+      UPTIMER__SERVER__AUTH__OIDC__ISSUER_URL: "http://keycloak:8080/realms/uptimer-dev-keycloak-example"
+      UPTIMER__SERVER__AUTH__OIDC__REDIRECT_URL: "http://uptimer-dev:2517/ui/auth/oauth/callback"
+
+    command: ["--delay", "20", "dev"]
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: uptimer
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpassword
+    volumes:
+      - uptimer-dev-db:/var/lib/postgresql/data
+
+volumes:
+  uptimer-dev-db:
