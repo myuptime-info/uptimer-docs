@@ -1,6 +1,23 @@
-# MyUptime Self-Hosted Documentation
+# Uptimer Documentation
 
-This repository contains the documentation for MyUptime Self-Hosted, a powerful solution for monitoring websites and services. The documentation is built using Hugo with the hugo-book theme.
+Repository for the [Uptimer documentation](https://uptimer.myuptime.info)
+
+This repository contains the documentation for Uptimer - Self-Hosted, a powerful solution for monitoring websites and services.
+
+The documentation is built using Hugo with the hugo-book theme.
+
+
+## Resources
+
+* [Issues](https://github.com/myuptime-info/myuptime-self-hosted-docs/issues)
+* [Online documentation](https://uptimer.myuptime.info)
+* [Public roadmap](https://muuptime.youtrack.cloud/agiles/183-2/current)
+* [Docker image](https://hub.docker.com/r/myuptime/uptimer)
+
+
+## Notes
+
+Documentation covers only latest version 
 
 ## Local Development
 
@@ -26,34 +43,6 @@ hugo
 ```
 
 This will generate the static site in the `public/` directory.
-
-## Deployment
-
-This repository is configured to be deployed to Cloudflare Pages.
-
-### Setup Instructions
-
-1. **Update Configuration**:
-   - In `hugo.toml`, the baseURL is set to `https://uptimer.myuptime.info/`
-   - The GitHub repository URL in the menu is set to `https://github.com/myuptime-info/uptimer`
-
-2. **Deploy to Cloudflare Pages**:
-   - Connect your Cloudflare account to your GitHub repository
-   - Configure the build settings in Cloudflare Pages
-   - Set the build command to `hugo`
-   - Set the build directory to `public`
-
-3. **Verify Deployment**:
-   - Once complete, your site will be available at https://uptimer.myuptime.info
-
-## Project Structure
-
-- `content/`: Contains all the documentation content organized in sections
-- `themes/`: Contains the Hugo themes used by the project
-- `static/`: Contains static files that will be copied directly to the output directory
-- `hugo.toml`: Main configuration file for the Hugo site
-- `public/`: Generated static site (after building)
-
 
 ## Contributing
 
