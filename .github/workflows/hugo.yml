@@ -72,25 +72,40 @@ jobs:
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
         run: |
-          # Set explicit baseURL to ensure all paths are correct
+          # Build with the repository name as baseURL since GitHub Pages uses that
           hugo \
             --gc \
             --minify \
-            --baseURL "https://myuptime-info.github.io/uptimer/"
+            --baseURL "https://myuptime-info.github.io/myuptime-self-hosted-docs/"
 
-      - name: Create uptimer directory structure
+      - name: Create redirect structure
         run: |
-          # Create the uptimer directory and move all content there
+          # Create a redirect from the repository root to /uptimer
           mkdir -p public/uptimer
-          mv public/* public/uptimer/ 2>/dev/null || true
-          mv public/.* public/uptimer/ 2>/dev/null || true
+          # Copy all content to the uptimer subdirectory
+          cp -r public/* public/uptimer/ 2>/dev/null || true
+          cp -r public/.* public/uptimer/ 2>/dev/null || true
           # Remove the uptimer directory from itself to avoid recursion
           rm -rf public/uptimer/uptimer
+          
+          # Create a redirect index.html in the repository root
+          cat > public/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <meta charset="utf-8">
+              <title>Redirecting to Uptimer Documentation</title>
+              <meta http-equiv="refresh" content="0; URL=/myuptime-self-hosted-docs/uptimer/">
+              <link rel="canonical" href="/myuptime-self-hosted-docs/uptimer/">
+          </head>
+          <body>
+              <p>If you are not redirected automatically, follow this <a href="/myuptime-self-hosted-docs/uptimer/">link to the Uptimer documentation</a>.</p>
+          </body>
+          </html>
+          EOF
 
-      - name: Copy root redirect files
+      - name: Copy additional files
         run: |
-          # Copy the redirect index.html to the root
-          cp static/index.html public/index.html
           cp static/CNAME public/CNAME
           cp .nojekyll public/
 
