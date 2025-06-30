@@ -1,0 +1,44 @@
+services:
+  uptimer-ui:  # service website
+    image: uptimer-local
+    command: server
+    ports:
+      - "2517:2517"
+    volumes:
+      - ./data/server:/data
+  uptimer-grpc:  # grpc server
+    image: uptimer-local
+    command: grpc
+    environment:
+      UPTIMER__GRPC__PORT: 2518
+    ports:
+      - "2518:2518"
+    volumes:
+      - ./data/server:/data
+  uptimer-jobs:  # background jobs
+    image: uptimer-local
+    command: jobs --availabilities
+    volumes:
+      - ./data/server:/data
+
+  worker1:  # worker1
+    image: uptimer-local
+    volumes:
+      - ./data/worker1:/data
+    environment:
+      UPTIMER__WORKER__GRPC_SERVER: uptimer-grpc:2518
+      UPTIMER__WORKER__GRPC_USE_TLS: false
+    command: worker
+    depends_on:
+      - uptimer-grpc
+
+  worker2:  # worker2
+    image: uptimer-local
+    volumes:
+      - ./data/worker2:/data
+    environment:
+      UPTIMER__WORKER__GRPC_SERVER: uptimer-grpc:2518
+      UPTIMER__WORKER__GRPC_USE_TLS: false
+    command: worker
+    depends_on:
+      - uptimer-grpc

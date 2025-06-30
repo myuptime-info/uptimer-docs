@@ -4,7 +4,7 @@ services:
     ports:
       - "2517:2517"
     volumes:
-      - ./data:/data
+      - ./data/server:/data
     environment:
       UPTIMER__SERVER__DB__DSN: "postgres://dbuser:dbpassword@db:5432/uptimer"
       UPTIMER__WORKER__DB__DSN: "sqlite3:///data/worker_db.sqlite"
