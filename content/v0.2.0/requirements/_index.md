@@ -16,7 +16,7 @@ This page outlines the minimum requirements for running **Uptimer** (self-hosted
 |------------------|-----------------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | Docker Engine    | Any modern version (19.03+) | Just needs to support port mapping and volume mounts                                                                        |
 | OS               | Any with Docker support     | Linux is recommended for production deployments                                                                             |
-| Web Browser      | JavaScript + XHR required   | Should work even for outdated browsers. [Tell us if not](https://github.com/myuptime-info/uptimer/issues) |
+| Web Browser      | JavaScript + XHR required   | Should work even for outdated browsers. [Tell us if not](https://github.com/myuptime-info/uptimer-docs/issues) |
 
 ---
 
@@ -46,4 +46,4 @@ For monitoring ~1,000 checks per minute:
 
 ## ➡️ Next Steps
 
-When your system meets these requirements, proceed to [Configuration](/configuration/) to learn all ways to configure Uptimer.
+When your system meets these requirements, proceed to [Configuration](/v0.2.0/configuration/) to learn all ways to configure Uptimer.

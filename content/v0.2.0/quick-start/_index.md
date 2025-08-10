@@ -38,19 +38,19 @@ Do not expose it to the internet. It has no authentication or security features.
 
 After trying the demo, follow these steps for a production setup:
 
-1. [Check software requirements](/requirements/)
-2. [Configuration basics](/configuration/)
-3. [Persistent storage options](/configuration/storage/)
+1. [Check software requirements](/v0.2.0/requirements/)
+2. [Configuration basics](/v0.2.0/configuration/)
+3. [Persistent storage options](/v0.2.0/configuration/storage/)
    1. Data files
    2. SQLite3 for simple deployments
    2. PostgreSQL for production use
-4. [Authentication methods](/configuration/authentication/)
+4. [Authentication methods](/v0.2.0/configuration/authentication/)
    1. Basic HTTP Auth
    2. OAuth (with Auth0 example)
-5. [Remote workers for distributed monitoring](/configuration/remote-workers/)
-6. [Production configuration](/configuration/production/)
+5. [Remote workers for distributed monitoring](/v0.2.0/configuration/remote-workers/)
+6. [Production configuration](/v0.2.0/configuration/production/)
    1. Component architecture explanation
    2. Docker Swarm deployment examples
 
-For a complete guide on setting up a production environment, visit our [Configuration](/configuration/) section.
+For a complete guide on setting up a production environment, visit our [Configuration](/v0.2.0/configuration/) section.
 

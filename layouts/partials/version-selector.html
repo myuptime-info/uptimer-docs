@@ -1,0 +1,88 @@
+{{ if .Site.Params.versions }}
+<div class="version-selector">
+  <label for="version-select">Version:</label>
+  <select id="version-select" onchange="changeVersion(this.value)">
+    {{ range .Site.Params.versions.available }}
+      <option value="{{ . }}" {{ if eq . $.Site.Params.versions.default }}selected{{ end }}>
+        {{ . }}
+      </option>
+    {{ end }}
+  </select>
+</div>
+
+<script>
+function changeVersion(version) {
+  // Simply redirect to the version's index page
+  window.location.href = '/v' + version + '/';
+}
+
+// Set the correct version in the selector based on current URL
+document.addEventListener('DOMContentLoaded', function() {
+  const currentPath = window.location.pathname;
+  const versionMatch = currentPath.match(/^\/v([^\/]+)/);
+  
+  if (versionMatch) {
+    const currentVersion = versionMatch[1];
+    const versionSelect = document.getElementById('version-select');
+    if (versionSelect) {
+      versionSelect.value = currentVersion;
+    }
+  }
+});
+</script>
+
+<style>
+.version-selector-container {
+  padding: 12px 24px;
+  background-color: var(--color-background-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.version-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.version-selector label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.version-selector select {
+  padding: 6px 12px;
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  background-color: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  min-width: 120px;
+  transition: all 0.2s ease;
+}
+
+.version-selector select:hover {
+  border-color: var(--color-primary);
+}
+
+.version-selector select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .version-selector-container {
+    background-color: var(--color-background-secondary);
+  }
+}
+</style>
+{{ end }} 

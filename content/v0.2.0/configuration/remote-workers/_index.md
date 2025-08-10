@@ -28,14 +28,14 @@ Main Uptimer components:
 
 ## 🚀 Quick Setup
 
-This example shows a basic Docker Compose setup for remote workers. For production deployments, see the [Production Configuration](/configuration/production/) guide.
+This example shows a basic Docker Compose setup for remote workers. For production deployments, see the [Production Configuration](/v0.2.0/configuration/production/) guide.
 
 ### 1. Prepare Your Environment
 
 ```bash
 # Clone the documentation repository
-git clone https://github.com/myuptime-info/myuptime-self-hosted-docs.git
-cd examples/multiple-worker-local
+git clone --branch v0.2.0  https://github.com/myuptime-info/uptimer-docs.git
+cd uptimer-docs/examples/multiple-worker-local
 ```
 
 ### 2. Initialize Services
@@ -191,8 +191,8 @@ docker compose exec worker1 ping uptimer-grpc
 
 ## ➡️ Next Steps
 
-- [Production Configuration](/configuration/production/) - Learn about production deployment patterns
-- [Authentication Setup](/configuration/authentication/) - Secure your installation
-- [Storage Configuration](/configuration/storage/) - Configure persistent data storage
+- [Production Configuration](/v0.2.0/configuration/production/) - Learn about production deployment patterns
+- [Authentication Setup](/v0.2.0/configuration/authentication/) - Secure your installation
+- [Storage Configuration](/v0.2.0/configuration/storage/) - Configure persistent data storage
 
-For advanced deployment patterns, check out our [Docker Swarm examples](/configuration/production/) in the production configuration guide. 
+For advanced deployment patterns, check out our [Docker Swarm examples](/v0.2.0/configuration/production/) in the production configuration guide. 

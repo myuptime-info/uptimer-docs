@@ -9,6 +9,15 @@ BookSearch = true # Enable search
 BookPortableLinks = true # Make internal links portable
 BookToC = true # Enable Table of Contents on pages
 
+# Versioning configuration
+[params.versions]
+# The default version that will be shown when no version is specified
+default = "1.0.0"
+# Available versions in order (newest first)
+available = ["1.0.0", "0.2.0"]
+# Latest version (for redirects and canonical URLs)
+latest = "1.0.0"
+
 [menu]
 [[menu.main]]
 name = "Home"

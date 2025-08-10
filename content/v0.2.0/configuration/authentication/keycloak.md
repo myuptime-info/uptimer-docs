@@ -19,8 +19,8 @@ To run examples you need the following domain name resolving config:
 echo "127.0.0.1 keycloak uptimer-dev" | sudo tee -a /etc/hosts
 
 # 2. Start services
-git clone https://github.com/myuptime-info/myuptime-self-hosted-docs.git
-cd myuptime-self-hosted-docs/examples/dev-keycloak
+git clone --branch v0.2.0  https://github.com/myuptime-info/uptimer-docs.git
+cd uptimer-docs/examples/dev-keycloak
 docker-compose up -d
 
 # 3. Access services

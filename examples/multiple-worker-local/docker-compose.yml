@@ -1,14 +1,14 @@
 services:
   uptimer-ui:  # service website
-    image: uptimer-local
-    command: server
+    image: myuptime/uptimer
+    command: ["server", "--services", "ui"]
     ports:
       - "2517:2517"
     volumes:
       - ./data/server:/data
   uptimer-grpc:  # grpc server
-    image: uptimer-local
-    command: grpc
+    image: myuptime/uptimer
+    command: ["server", "--services", "grpc"]
     environment:
       UPTIMER__GRPC__PORT: 2518
     ports:
@@ -16,13 +16,13 @@ services:
     volumes:
       - ./data/server:/data
   uptimer-jobs:  # background jobs
-    image: uptimer-local
-    command: jobs --availabilities
+    image: myuptime/uptimer
+    command: ["server", "--services", "availabilities"]
     volumes:
       - ./data/server:/data
 
   worker1:  # worker1
-    image: uptimer-local
+    image: myuptime/uptimer
     volumes:
       - ./data/worker1:/data
     environment:
@@ -33,7 +33,7 @@ services:
       - uptimer-grpc
 
   worker2:  # worker2
-    image: uptimer-local
+    image: myuptime/uptimer
     volumes:
       - ./data/worker2:/data
     environment:

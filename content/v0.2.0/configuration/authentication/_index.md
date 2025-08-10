@@ -12,8 +12,8 @@ weight: 3
 
 ```bash
 # nginx example
-git clone https://github.com/myuptime-info/myuptime-self-hosted-docs.git
-cd myuptime-self-hosted-docs/examples/dev-http-auth
+git clone --branch v0.2.0  https://github.com/myuptime-info/uptimer-docs.git
+cd uptimer-docs/examples/dev-http-auth
 docker-compose up -d
 # Access: http://localhost (admin/password)
 ```
@@ -27,8 +27,8 @@ docker-compose up -d
 - **Requirements:** keycloak and uptimer-dev hostnames must be resolved to localhost
 
 ```bash
-git clone https://github.com/myuptime-info/myuptime-self-hosted-docs.git
-cd myuptime-self-hosted-docs/examples/dev-keycloak
+git clone --branch v0.2.0  https://github.com/myuptime-info/uptimer-docs.git
+cd uptimer-docs/examples/dev-keycloak
 docker-compose up -d
 # Access: http://localhost:2517 (test/test)
 ```
