@@ -102,3 +102,4 @@ All objects include a `kind` field for client identification:
 - [Rules](/v1.0.0/api/rules/) - Manage monitoring rules within workspaces
 - [Regions](/v1.0.0/api/regions/) - Get information about available monitoring regions
 - [Examples](/v1.0.0/api/examples/) - Practical API usage examples and best practices
+- [SDKs & Libraries](/v1.0.0/api/sdks/) - Official and community SDKs for different programming languages
