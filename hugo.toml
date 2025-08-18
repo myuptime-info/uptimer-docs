@@ -8,6 +8,7 @@ BookSection = "*" # Only include specific sections in menu
 BookSearch = true # Enable search
 BookPortableLinks = true # Make internal links portable
 BookToC = true # Enable Table of Contents on pages
+BookLogo = "https://static.myuptime.info/heg43a/icon.png" # Brand icon
 
 # Versioning configuration
 [params.versions]
