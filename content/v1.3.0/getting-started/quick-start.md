@@ -5,6 +5,13 @@ lede: "The one-command run, explained — and where to go next."
 description: "Run Uptimer in dev mode and talk to its API."
 ---
 
+Uptimer is a self-hosted uptime & synthetic monitor: it checks your HTTP(S) endpoints on a
+schedule and alerts you when they break. The **same engine** runs hosted at
+[myuptime.info](https://myuptime.info) — and you can **export** your data as YAML and import it
+into your own instance (or the other way round) at any time, so neither choice locks you in.
+
+Below is the one-command run, explained.
+
 ## Run it
 
 ```sh
