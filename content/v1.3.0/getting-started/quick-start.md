@@ -19,18 +19,18 @@ Open **http://127.0.0.1:2517**, create a rule, and point it at a URL. Uptimer st
 
 ## Talk to the API
 
-The dashboard is just a REST client. Check the version (the one endpoint that needs no auth):
+The dashboard is just a REST client. Every request carries a **Bearer token** — create one in
+the dashboard (**Settings → API Keys**) and send it in the `Authorization` header:
 
 ```sh
-curl http://127.0.0.1:2517/api/version
+curl -H "Authorization: Bearer $UPTIMER_TOKEN" http://127.0.0.1:2517/api/version
 ```
 ```json
 { "result": "1.3.0", "error": null, "meta": null }
 ```
 
 Every response is HTTP `200` with a `{result, error, meta}` envelope — check `error`, not the
-status code. For everything else, mint an API key in the dashboard and send it as
-`Authorization: Bearer …`. Full details in the [REST API reference](/v1.3.0/reference/rest-api/).
+status code. Full details in the [REST API reference](/v1.3.0/reference/rest-api/).
 
 ## Next
 

@@ -55,18 +55,40 @@ environment override — see [Configuration](/v1.3.0/operating/configuration/).
 
 ## Database
 
-The DSN scheme picks the backend. The server and worker can even share one database — their
-tables use distinct prefixes:
+The DSN scheme picks the backend — `sqlite3://` or `postgres://`. Server and worker can even
+share one database; their tables use distinct prefixes.
+
+### SQLite — dev
+
+Zero setup: a file under `/data`, created and migrated on boot.
 
 ```yaml
-server:
-  db: { dsn: sqlite3:///data/server_db.sqlite }   # or postgres://user:pass@host/uptimer_server
-worker:
-  db: { dsn: sqlite3:///data/worker_db.sqlite }
+server: { db: { dsn: sqlite3:///data/server_db.sqlite } }
+worker: { db: { dsn: sqlite3:///data/worker_db.sqlite } }
 ```
 
-SQLite is dev-only (auto-migrated); PostgreSQL is the production choice (versioned migrations) —
-see [Choosing a database](/v1.3.0/operating/configuration/#choosing-a-database).
+### PostgreSQL — production
+
+Point the DSN at Postgres. Use **two databases** — `uptimer_server` (control plane) and
+`uptimer_worker`:
+
+```yaml
+server: { db: { dsn: "postgres://uptimer:secret@db:5432/uptimer_server?sslmode=disable" } }
+worker: { db: { dsn: "postgres://uptimer:secret@db:5432/uptimer_worker?sslmode=disable" } }
+```
+
+Create both databases before first start (a Postgres init script is the easy way).
+
+### Migrations
+
+- **SQLite** is auto-migrated on boot — convenient for dev, not guaranteed safe across upgrades.
+- **PostgreSQL** uses **versioned migrations** (schema changes + data backfills). By default they
+  run at boot (`server.db.boot_migrate: true`). For production, run them once with the dedicated
+  [`uptimer migrate`](/v1.3.0/operating/production/) job and set `boot_migrate: false` on the app
+  containers — the schema is then brought to head atomically, once, instead of by each booting
+  replica.
+
+Background: [Choosing a database](/v1.3.0/operating/configuration/#choosing-a-database).
 
 ## Bootstrap identities
 

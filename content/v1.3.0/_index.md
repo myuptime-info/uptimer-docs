@@ -21,10 +21,11 @@ docker run -p 2517:2517 {{< image >}}
 ```
 
 Open **http://127.0.0.1:2517** and you're in — add a rule, point it at a URL, watch it go
-up or down. The REST API is on the same port, under `/api`:
+up or down. The REST API is on the same port under `/api`; calls take a Bearer token you create
+in the dashboard (**Settings → API Keys**):
 
 ```sh
-curl http://127.0.0.1:2517/api/version
+curl -H "Authorization: Bearer $UPTIMER_TOKEN" http://127.0.0.1:2517/api/version
 ```
 ```json
 { "result": "1.3.0", "error": null, "meta": null }

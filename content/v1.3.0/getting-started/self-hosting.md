@@ -62,7 +62,7 @@ server:
       issuer_url:    https://id.example.com/realms/main
       client_id:     uptimer
       client_secret: "…"
-      redirect_url:  https://uptimer.example.com/auth/callback
+      redirect_url:  https://uptimer.example.com/ui/auth/oauth/callback
 ```
 
 More: [Authentication](/v1.3.0/operating/authentication/).
