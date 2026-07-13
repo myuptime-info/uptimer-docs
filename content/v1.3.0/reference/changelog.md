@@ -5,12 +5,12 @@ lede: "What changed for users since 1.1."
 description: "User-facing changes from 1.1 to 1.3.0."
 ---
 
-Highlights since 1.1, grouped by theme. Full commit history is on the
-[GitHub releases](https://github.com/myuptime-info/uptimer/releases) page.
+Highlights since 1.1, grouped by theme.
 
 ## Packaging
-- **The image moved to GitHub Container Registry.** Pull `ghcr.io/myuptime-info/uptimer`
-  (`:latest` stable · `:X.Y.Z` pinned · `:edge` pre-release). The old Docker Hub image is retired.
+- **The image moved to GitHub Container Registry** —
+  [`ghcr.io/myuptime-info/uptimer`](https://github.com/myuptime-info/uptimer/pkgs/container/uptimer).
+  Pull a pinned `:X.Y.Z` tag (or `:edge` for pre-releases). The old Docker Hub image is retired.
 
 ## Deployment & database
 - **New `uptimer migrate` command** plus `server.db.boot_migrate` — run schema migrations as a
