@@ -1,12 +1,13 @@
 ---
 title: "Self-hosting"
 weight: 20
-lede: "Grow the dev container into a production deployment — one step at a time, with the settings and the why."
-description: "The dev → production journey: persistence, database, auth, split services."
+lede: "Grow the dev container into a production deployment — one step at a time, each a runnable compose."
+description: "The dev → production journey, with a reproducible docker-compose at each step."
 ---
 
-Uptimer scales from one command to a split, migrated, Postgres-backed cluster. Add only the
-steps you need — each is independent and hardens the one before.
+Uptimer scales from one command to a split, migrated, Postgres-backed cluster. Each step below is
+a **complete, runnable `docker-compose.yml`** plus the reason for it — add only the steps you
+need; each hardens the one before.
 
 ## 1 · Dev — one command
 
@@ -15,63 +16,79 @@ docker run -p 2517:2517 {{< image >}}
 ```
 
 The default `dev` command runs every service in one process, with fake auth (any visitor is an
-admin) and an in-memory database. Nothing survives a restart. Fine for a look; the steps below
-make it real.
+admin) and an in-memory database. Nothing survives a restart — fine for a look. Everything below
+makes it real.
 
 ## 2 · Persist data
 
-Mount a volume at `/data` — it holds the database (when using SQLite) and the server/worker
-identity keys, so they survive restarts:
+Data (the SQLite database and the server/worker identity keys) must outlive the container. Mount
+a volume at `/data`:
 
-```sh
-docker run -p 2517:2517 -v uptimer-data:/data {{< image >}}
+```yaml
+# docker-compose.yml
+services:
+  uptimer:
+    image: {{< image >}}
+    ports: ["2517:2517"]
+    volumes: ["uptimer-data:/data"]
+volumes:
+  uptimer-data:
 ```
 
-To change settings, mount a YAML config over the default:
-
-```sh
-docker run -p 2517:2517 -v uptimer-data:/data \
-  -v "$PWD/uptimer.yml:/app/configs/config.yml" \
-  {{< image >}} --cfg /app/configs/config.yml dev
-```
-
-More: [Persistent storage](/v1.3.0/operating/storage/).
+`docker compose up`. See [Persistent storage](/v1.3.0/operating/storage/) for what lives in
+`/data` and how to mount a custom config.
 
 ## 3 · A real database
 
-SQLite is dev-only — its schema is auto-migrated and not guaranteed safe across upgrades. For
-anything you keep, use PostgreSQL (versioned, upgrade-safe migrations):
+SQLite is dev-only — its schema is auto-migrated and not guaranteed safe across upgrades. Add
+PostgreSQL for versioned, upgrade-safe migrations:
 
 ```yaml
-server:
+# docker-compose.yml
+services:
   db:
-    dsn: postgres://uptimer:secret@db:5432/uptimer_server
+    image: postgres:17
+    environment:
+      POSTGRES_USER: uptimer
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: uptimer_server
+    volumes: ["pg:/var/lib/postgresql/data"]
+  uptimer:
+    image: {{< image >}}
+    ports: ["2517:2517"]
+    environment:
+      UPTIMER__SERVER__DB__DSN: "postgres://uptimer:secret@db:5432/uptimer_server?sslmode=disable"
+    depends_on: [db]
+volumes:
+  pg:
 ```
 
-Or set `UPTIMER__SERVER__DB__DSN`. Background: [Choosing a database](/v1.3.0/operating/configuration/#choosing-a-database).
+Still one process and still dev auth — but your data is now on a real database.
+Background: [Choosing a database](/v1.3.0/operating/configuration/#choosing-a-database).
 
 ## 4 · Real authentication
 
-Dev auth logs everyone in as an admin. Turn it off and wire OIDC (Keycloak, Auth0, Google, …):
+Dev auth logs everyone in as an admin. Turn it off and add OIDC to the `uptimer` service from
+step 3:
 
 ```yaml
-server:
-  auth:
-    dev: false
-    oidc:
-      issuer_url:    https://id.example.com/realms/main
-      client_id:     uptimer
-      client_secret: "…"
-      redirect_url:  https://uptimer.example.com/ui/auth/oauth/callback
+    environment:
+      UPTIMER__SERVER__DB__DSN: "postgres://uptimer:secret@db:5432/uptimer_server?sslmode=disable"
+      UPTIMER__SERVER__AUTH__DEV: "false"
+      UPTIMER__SERVER__AUTH__OIDC__ISSUER_URL: "https://id.example.com/realms/main"
+      UPTIMER__SERVER__AUTH__OIDC__CLIENT_ID: "uptimer"
+      UPTIMER__SERVER__AUTH__OIDC__CLIENT_SECRET: "…"
+      UPTIMER__SERVER__AUTH__OIDC__REDIRECT_URL: "https://uptimer.example.com/ui/auth/oauth/callback"
 ```
 
-More: [Authentication](/v1.3.0/operating/authentication/).
+A complete, runnable Keycloak + Uptimer stack is in
+[Authentication → Keycloak](/v1.3.0/operating/authentication/#example-keycloak).
 
 ## 5 · Split into services
 
 In production the server runs as separate processes — `api,ui`, `grpc`, `availabilities`, plus
-`worker`s — so you can scale and restart each independently, and a one-shot `migrate` job owns
-schema changes. The full topology with a ready-to-adapt `docker-compose.yml` is on the
+`worker`s — so each scales and restarts independently, and a one-shot `migrate` job owns schema
+changes. The full topology, as one `docker-compose.yml`, is on the
 [Production deployment](/v1.3.0/operating/production/) page.
 
 > Stop at whichever step fits — a single persistent container with PostgreSQL and OIDC is a

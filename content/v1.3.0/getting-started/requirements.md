@@ -11,7 +11,14 @@ description: "Software, hardware and network requirements."
 - **A database** — SQLite needs nothing extra; PostgreSQL is recommended for production.
   See [Choosing a database](/v1.3.0/operating/configuration/#choosing-a-database).
 
-You don't need Go installed — the container ships a static binary.
+Uptimer is a single **static Go binary** — no runtime, no build step, and you don't need Go
+installed. Prefer not to run Docker? Copy the binary straight out of the image and run it:
+
+```sh
+docker create --name tmp {{< image >}}
+docker cp tmp:/app/uptimer ./uptimer && docker rm tmp
+./uptimer dev
+```
 
 ## Hardware
 
