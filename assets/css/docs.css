@@ -44,8 +44,9 @@ body { font-size: 15px; }
   max-width: 1240px; margin: 0 auto;
 }
 nav.side {
+  display: block; /* override Pico's nav{display:flex} so links stack vertically */
   border-right: 1px solid var(--u-line); padding: 24px 16px;
-  height: calc(100vh - 56px); position: sticky; top: 56px; overflow: auto;
+  height: calc(100vh - 56px); position: sticky; top: 56px; overflow-y: auto; overflow-x: hidden;
 }
 .side .grp { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--u-faint); margin: 18px 8px 7px; font-weight: 600; }
 .side .grp:first-child { margin-top: 0; }
