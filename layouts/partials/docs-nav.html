@@ -1,0 +1,11 @@
+{{/* Left section nav — groups = the version's sub-sections, in weight order. */}}
+{{ $cur := . }}
+{{ $version := .FirstSection }}
+<nav class="side">
+  {{ range $version.Sections.ByWeight }}
+  <div class="grp"><a href="{{ .RelPermalink }}">{{ .Title }}</a></div>
+  {{ range .RegularPages.ByWeight }}
+  <a href="{{ .RelPermalink }}"{{ if eq .RelPermalink $cur.RelPermalink }} class="on"{{ end }}>{{ .Title }}</a>
+  {{ end }}
+  {{ end }}
+</nav>

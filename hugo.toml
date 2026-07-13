@@ -1,43 +1,34 @@
-baseURL = 'https://uptimer.myuptime.info/' # Global URL for the site
-languageCode = 'en-us'
+baseURL = 'https://uptimer.myuptime.info/'
+defaultContentLanguage = 'en'
 title = 'Uptimer'
-theme = "hugo-book"
+
+# No external theme — the B2 docs design lives in ./layouts + ./assets
+# (ADR-0001 direction, ADR-0002 Pico.css classless + shared tokens.css).
+
+# Taxonomy/term pages are unused on the docs site.
+disableKinds = ['taxonomy', 'term']
 
 [params]
-BookSection = "*" # Only include specific sections in menu
-BookSearch = true # Enable search
-BookPortableLinks = true # Make internal links portable
-BookToC = true # Enable Table of Contents on pages
-BookLogo = "https://static.myuptime.info/heg43a/icon.png" # Brand icon
+# Brand icon fallback (also see /favicon.svg + /manifest.json).
+BookLogo = "https://static.myuptime.info/heg43a/icon.png"
 
-# Versioning configuration
+# Versioned docs. Newest first. `latest` drives the version pill, the outdated
+# banner and the /latest/ redirects (#24/#25).
 [params.versions]
-# The default version that will be shown when no version is specified
-default = "1.0.0"
-# Available versions in order (newest first)
-available = ["1.0.0", "0.2.0"]
-# Latest version (for redirects and canonical URLs)
-latest = "1.0.0"
+default = "1.3.0"
+available = ["1.3.0", "1.0.0"]
+latest = "1.3.0"
 
-[menu]
-[[menu.main]]
-name = "Home"
-url = "/"
-weight = 10
-[[menu.main]]
-name = "GitHub"
-url = "https://github.com/myuptime-info/uptimer" # GitHub repository URL
-weight = 20
-
-# Optional: Disable "posts" section if you don't need a blog-like section
-[taxonomies]
-category = "categories"
-tag = "tags"
-
-# Explicitly disable posts section
-[params.BookSections]
-posts = false
-
-# Disable section pages for posts
-disableKinds = ["section"]
-ignoreFiles = ["content/posts"]
+[markup]
+[markup.goldmark.renderer]
+# Allow the occasional inline HTML block (status pills, cards) in content.
+unsafe = true
+[markup.tableOfContents]
+startLevel = 2
+endLevel = 3
+ordered = false
+[markup.highlight]
+style = "github-dark"
+noClasses = true
+tabWidth = 2
+lineNos = false

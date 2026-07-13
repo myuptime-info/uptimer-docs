@@ -1,0 +1,8 @@
+{{/* Breadcrumbs: group › page (home + version root are omitted). */}}
+{{ $version := .FirstSection }}
+<div class="crumbs">
+  {{ range .Ancestors.Reverse }}
+  {{ if and (ne .Kind "home") (ne .RelPermalink $version.RelPermalink) }}<a href="{{ .RelPermalink }}">{{ .Title }}</a> › {{ end }}
+  {{ end }}
+  {{ .Title }}
+</div>

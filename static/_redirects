@@ -1,0 +1,5 @@
+# /latest/ → the current latest version (#24). Universal links that survive version
+# bumps: on a new release, change the target here AND hugo.toml [params.versions].
+# Splat syntax is read by Cloudflare Pages / Netlify. See VERSIONING.md.
+/latest/*  /v1.3.0/:splat  301
+/latest    /v1.3.0/        301

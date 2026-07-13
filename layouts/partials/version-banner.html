@@ -1,0 +1,15 @@
+{{/* Outdated-version banner (#25). Shown when the page's version != latest.
+     No hard-coded version strings — everything derives from params + the URL. */}}
+{{ with site.Params.versions }}
+{{ $seg := index (split (strings.TrimPrefix "/" $.RelPermalink) "/") 0 }}
+{{ $cur := strings.TrimPrefix "v" $seg }}
+{{ if and (in .available $cur) (ne $cur .latest) }}
+{{ $rest := strings.TrimPrefix (printf "/v%s" $cur) $.RelPermalink }}
+<div class="verbanner" role="note" id="verbanner">
+  <span>You're viewing <strong>v{{ $cur }}</strong> — an older version.</span>
+  <a href="/v{{ .latest }}{{ $rest }}">Go to the latest (v{{ .latest }}) →</a>
+  <button type="button" aria-label="Dismiss" onclick="this.closest('.verbanner').remove();try{sessionStorage.setItem('u-verbanner-hidden','1')}catch(e){}">×</button>
+</div>
+<script>try{if(sessionStorage.getItem('u-verbanner-hidden')){var b=document.getElementById('verbanner');if(b)b.remove()}}catch(e){}</script>
+{{ end }}
+{{ end }}

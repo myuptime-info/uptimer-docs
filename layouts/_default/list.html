@@ -1,0 +1,22 @@
+{{ define "main" }}
+<div class="shell">
+  {{ partial "docs-nav.html" . }}
+  <main class="content">
+    {{ partial "breadcrumbs.html" . }}
+    <h1>{{ .Title }}</h1>
+    {{ with .Params.lede }}<p class="lede">{{ . | markdownify }}</p>{{ end }}
+    {{ .Content }}
+    {{ $children := .Sections.ByWeight }}
+    {{ if not $children }}{{ $children = .RegularPages.ByWeight }}{{ end }}
+    {{ with $children }}
+    <div class="cards">
+      {{ range . }}
+      <a href="{{ .RelPermalink }}"><b>{{ .Title }}</b>{{ with or .Description .Params.lede }}<span>{{ . }}</span>{{ end }}</a>
+      {{ end }}
+    </div>
+    {{ end }}
+    {{ partial "pager.html" . }}
+  </main>
+  {{ partial "toc.html" . }}
+</div>
+{{ end }}

@@ -1,0 +1,86 @@
+/*
+ * tokens.css — the shared design tokens (ADR-0001 "B2" · ADR-0002).
+ *
+ * Single source of truth for the fleet's brand: brand tokens must be identical
+ * across surfaces (docs / app / marketing); per-surface density may differ.
+ * This file maps the B2 palette + geometry onto Pico v2's --pico-* variables so
+ * the classless base renders in our language, and exposes --u-* tokens for the
+ * thin per-surface layer (docs.css) to build the components Pico has no
+ * vocabulary for.
+ */
+
+:root {
+  /* --- Brand tokens (do not diverge across surfaces) --- */
+  --u-ink: #161a21;
+  --u-muted: #5c6470;
+  --u-faint: #8b93a1;
+  --u-bg: #ffffff;
+  --u-soft: #f7f8fa;
+  --u-line: #e9ebf0;
+
+  --u-brand: #4f46e5;
+  --u-brand-soft: #eef0fe;
+  --u-brand-ink: #3730a3;
+
+  /* Semantic status palette — the second system; green == "up" is load-bearing */
+  --u-up: #0f9d58;
+  --u-degraded: #d99a08;
+  --u-down: #e03a3a;
+
+  --u-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --u-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --u-radius: 10px;
+  --u-radius-sm: 6px;
+
+  /* Dark code surface (used by the docs code blocks) */
+  --u-code-bg: #0f1117;
+  --u-code-fg: #e7e9ee;
+
+  /* --- Map onto Pico v2 so the classless base speaks B2 --- */
+  --pico-font-family: var(--u-sans);
+  --pico-font-family-sans-serif: var(--u-sans);
+  --pico-font-family-monospace: var(--u-mono);
+  --pico-font-size: 100%;
+  --pico-line-height: 1.65;
+  --pico-font-weight: 400;
+
+  --pico-border-radius: var(--u-radius);
+  --pico-spacing: 1rem;
+
+  --pico-primary: var(--u-brand);
+  --pico-primary-hover: var(--u-brand-ink);
+  --pico-primary-focus: var(--u-brand-soft);
+  --pico-primary-inverse: #fff;
+}
+
+/* Force the light-first theme (ADR-0001 §5) and finish the Pico color mapping. */
+:root,
+[data-theme="light"] {
+  --pico-color: var(--u-ink);
+  --pico-background-color: var(--u-bg);
+  --pico-h1-color: var(--u-ink);
+  --pico-h2-color: var(--u-ink);
+  --pico-h3-color: var(--u-ink);
+  --pico-h4-color: var(--u-ink);
+  --pico-h5-color: var(--u-ink);
+  --pico-h6-color: var(--u-ink);
+  --pico-muted-color: var(--u-muted);
+  --pico-muted-border-color: var(--u-line);
+  --pico-border-color: var(--u-line);
+
+  --pico-primary: var(--u-brand);
+  --pico-primary-background: var(--u-brand);
+  --pico-primary-hover: var(--u-brand-ink);
+  --pico-primary-hover-background: var(--u-brand-ink);
+  --pico-primary-border: var(--u-brand);
+  --pico-primary-underline: transparent;
+
+  --pico-text-selection-color: var(--u-brand-soft);
+  --pico-code-background-color: var(--u-soft);
+  --pico-code-color: var(--u-ink);
+  --pico-card-background-color: var(--u-bg);
+  --pico-card-border-color: var(--u-line);
+  --pico-table-border-color: var(--u-line);
+  --pico-blockquote-border-color: var(--u-brand);
+}

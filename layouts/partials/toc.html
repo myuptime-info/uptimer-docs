@@ -1,0 +1,7 @@
+{{/* Right on-page ToC. */}}
+<aside class="toc">
+  {{ if .Fragments.Headings }}
+  <div class="h">On this page</div>
+  {{ .TableOfContents }}
+  {{ end }}
+</aside>

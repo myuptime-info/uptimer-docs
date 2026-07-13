@@ -1,0 +1,23 @@
+{{/* Top header — B2 nav: heartbeat-"U" mark, search, version pill, section links. */}}
+{{ $segs := split (strings.TrimPrefix "/" .RelPermalink) "/" }}
+{{ $ver := strings.TrimPrefix "v" (index $segs 0) }}
+{{ if not (in (site.Params.versions.available) $ver) }}{{ $ver = site.Params.versions.latest }}{{ end }}
+{{ $base := printf "/v%s" $ver }}
+<header class="site-header">
+  <nav class="site-nav">
+    <a class="logo" href="{{ $base }}/" aria-label="Uptimer docs home">
+      <svg width="22" height="20" viewBox="0 0 50 44" fill="none" aria-hidden="true">
+        <path d="M8 6 V22 a17 17 0 0 0 34 0 V6" stroke="#161a21" stroke-width="8" stroke-linecap="round"/>
+        <path d="M2 26 h8 l4 -13 l6 24 l5 -17 h18" stroke="#0f9d58" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Uptimer <span class="docs">/ docs</span>
+    </a>
+    <input class="site-search" value="Search  ⌘K" aria-label="Search (coming soon)" disabled>
+    {{ partial "version-selector.html" . }}
+    <span class="spacer"></span>
+    <a class="navlink" href="{{ $base }}/getting-started/introduction/">Guides</a>
+    <a class="navlink" href="{{ $base }}/reference/rest-api/">API Reference</a>
+    <a class="navlink" href="{{ $base }}/reference/python-sdk/">SDK</a>
+    <a class="navlink" href="https://github.com/myuptime-info/uptimer" rel="noopener">GitHub</a>
+  </nav>
+</header>

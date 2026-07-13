@@ -1,0 +1,153 @@
+/*
+ * docs.css — the thin per-surface layer for the docs site (ADR-0002 Decision 4).
+ *
+ * Pico (classless) styles the bare semantic prose; this layer adds the B2 docs
+ * chrome the framework has no vocabulary for: the 3-pane shell, section nav,
+ * on-page ToC, callouts, numbered steps, the dark code surface and the pager.
+ * Loaded after Pico so it wins. Consumes tokens.css only.
+ */
+
+/* Reset Pico's document centering — we own the layout below the header. */
+body > header,
+body > .shell { max-width: none; margin: 0; padding: 0; }
+body { font-size: 15px; }
+
+/* ---- Header ---- */
+.site-header {
+  border-bottom: 1px solid var(--u-line);
+  position: sticky; top: 0; background: #fff; z-index: 5;
+}
+.site-nav {
+  display: flex; align-items: center; gap: 22px;
+  height: 56px; padding: 0 24px; margin: 0; max-width: 1240px; margin-inline: auto;
+}
+.logo { display: flex; align-items: center; gap: 8px; font-weight: 750; letter-spacing: -.02em; color: var(--u-ink); }
+.logo:hover { color: var(--u-ink); }
+.logo .docs { color: var(--u-faint); font-weight: 500; }
+.site-search {
+  margin-left: 4px; flex: 1; max-width: 280px;
+  border: 1px solid var(--u-line); border-radius: 9px; padding: 7px 12px;
+  color: var(--u-faint); font-size: 12.5px; font-family: var(--u-mono); background: #fff;
+}
+.site-nav .spacer { flex: 1; }
+.site-nav .navlink { color: var(--u-muted); font-size: 14px; }
+.site-nav .navlink:hover { color: var(--u-ink); }
+.verpill {
+  font-family: var(--u-mono); font-size: 11px; border: 1px solid var(--u-line);
+  border-radius: 6px; padding: 3px 8px; color: var(--u-muted); background: #fff; cursor: pointer;
+}
+.verpill:focus-visible { outline: 2px solid var(--u-brand-soft); }
+
+/* ---- 3-pane shell ---- */
+.shell {
+  display: grid; grid-template-columns: 236px minmax(0, 1fr) 196px;
+  max-width: 1240px; margin: 0 auto;
+}
+nav.side {
+  border-right: 1px solid var(--u-line); padding: 24px 16px;
+  height: calc(100vh - 56px); position: sticky; top: 56px; overflow: auto;
+}
+.side .grp { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--u-faint); margin: 18px 8px 7px; font-weight: 600; }
+.side .grp:first-child { margin-top: 0; }
+.side .grp a { color: var(--u-faint); }
+.side .grp a:hover { color: var(--u-muted); }
+.side a { display: block; color: var(--u-muted); padding: 5px 10px; border-radius: 7px; font-size: 13.5px; text-decoration: none; }
+.side a:hover { background: var(--u-soft); }
+.side a.on { background: var(--u-brand-soft); color: var(--u-brand-ink); font-weight: 600; }
+
+/* ---- Main content ---- */
+main.content { padding: 38px 46px; min-width: 0; }
+main.content > *:first-child { margin-top: 0; }
+.crumbs { font-size: 12.5px; color: var(--u-faint); margin-bottom: 12px; }
+.crumbs a { color: var(--u-faint); }
+.crumbs a:hover { color: var(--u-muted); }
+main.content h1 { font-size: 32px; letter-spacing: -.02em; margin: 0 0 8px; font-weight: 720; line-height: 1.2; }
+.lede { font-size: 17px; color: var(--u-muted); margin: 0 0 24px; }
+main.content h2 { font-size: 20px; margin: 34px 0 10px; letter-spacing: -.01em; font-weight: 680; scroll-margin-top: 70px; }
+main.content h3 { font-size: 16px; margin: 22px 0 8px; font-weight: 650; scroll-margin-top: 70px; }
+main.content p { margin: 0 0 12px; }
+main.content ul, main.content ol { margin: 0 0 14px; padding-left: 22px; }
+main.content li { margin: 3px 0; }
+main.content a { color: var(--u-brand); }
+main.content a:hover { text-decoration: underline; }
+
+/* Callout (blockquote in markdown → callout) */
+main.content blockquote,
+.callout {
+  border: 1px solid var(--u-line); border-left: 3px solid var(--u-brand);
+  border-radius: 10px; background: var(--u-soft);
+  padding: 13px 15px; font-size: 14px; color: var(--u-muted); margin: 16px 0;
+}
+main.content blockquote p:last-child { margin-bottom: 0; }
+
+/* Numbered steps (ordered list marked .steps via a shortcode/class) */
+.steps { counter-reset: s; margin: 16px 0; padding: 0; list-style: none; }
+.steps > li { position: relative; padding: 0 0 4px 34px; margin-bottom: 14px; }
+.steps > li::before {
+  counter-increment: s; content: counter(s);
+  position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--u-brand-soft); color: var(--u-brand-ink);
+  font-size: 12px; font-weight: 700; display: grid; place-items: center;
+}
+
+/* Code — dark surface for blocks, soft inline chips */
+main.content pre,
+main.content .highlight pre {
+  background: var(--u-code-bg); color: var(--u-code-fg);
+  border-radius: 12px; padding: 15px 17px; overflow: auto;
+  font-family: var(--u-mono); font-size: 12.5px; line-height: 1.7; margin: 14px 0;
+}
+main.content .highlight { margin: 14px 0; }
+main.content :not(pre) > code {
+  font-family: var(--u-mono); font-size: .9em; background: var(--u-soft);
+  border: 1px solid var(--u-line); border-radius: 5px; padding: 1px 5px; color: var(--u-ink);
+}
+
+/* Tables */
+main.content table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+main.content th, main.content td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--u-line); }
+main.content th { color: var(--u-faint); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+main.content td code { background: none; border: none; padding: 0; color: var(--u-brand); }
+
+/* Status pills (up / degraded / down / paused) */
+.pill { font-family: var(--u-mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; border-radius: 6px; padding: 2px 8px; }
+.pill.up { background: #e6f6ee; color: var(--u-up); }
+.pill.degraded { background: #fbf1da; color: var(--u-degraded); }
+.pill.down { background: #fdeaea; color: var(--u-down); }
+.pill.paused { background: var(--u-soft); color: var(--u-muted); }
+
+/* Section-overview cards (used on section _index pages) */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 18px 0; }
+.cards a { display: block; border: 1px solid var(--u-line); border-radius: 10px; padding: 14px 16px; color: var(--u-ink); text-decoration: none; }
+.cards a:hover { border-color: var(--u-brand); background: var(--u-soft); }
+.cards a b { display: block; font-weight: 650; margin-bottom: 3px; }
+.cards a span { color: var(--u-muted); font-size: 13px; }
+
+/* Pager */
+.pager { display: flex; justify-content: space-between; gap: 12px; margin-top: 40px; border-top: 1px solid var(--u-line); padding-top: 18px; }
+.pager a { border: 1px solid var(--u-line); border-radius: 10px; padding: 11px 15px; color: var(--u-ink); font-size: 13.5px; text-decoration: none; }
+.pager a:hover { border-color: var(--u-brand); }
+.pager a.next { margin-left: auto; text-align: right; }
+.pager .sm { display: block; color: var(--u-faint); font-size: 11.5px; }
+
+/* ---- On-page ToC ---- */
+aside.toc { padding: 38px 18px; font-size: 12.5px; position: sticky; top: 56px; height: calc(100vh - 56px); overflow: auto; }
+aside.toc .h { color: var(--u-faint); text-transform: uppercase; letter-spacing: .06em; font-size: 10.5px; font-weight: 600; margin-bottom: 9px; }
+aside.toc a { display: block; color: var(--u-muted); padding: 4px 0; text-decoration: none; }
+aside.toc a:hover { color: var(--u-ink); }
+aside.toc a.on { color: var(--u-brand); font-weight: 600; }
+aside.toc ul { list-style: none; margin: 0; padding: 0; }
+aside.toc ul ul { padding-left: 10px; }
+
+/* Outdated-version banner (Phase C · #25) */
+.verbanner { background: #fbf1da; border-bottom: 1px solid var(--u-line); color: #7a5c07; font-size: 13px; padding: 9px 24px; display: flex; gap: 10px; align-items: center; justify-content: center; }
+.verbanner a { color: var(--u-brand-ink); font-weight: 600; }
+.verbanner button { margin-left: 8px; background: none; border: 0; color: var(--u-muted); cursor: pointer; font-size: 15px; line-height: 1; padding: 0; width: auto; }
+
+/* ---- Responsive ---- */
+@media (max-width: 960px) {
+  .shell { grid-template-columns: 1fr; }
+  nav.side, aside.toc { display: none; }
+  main.content { padding: 26px 20px; }
+  .site-search { display: none; }
+}

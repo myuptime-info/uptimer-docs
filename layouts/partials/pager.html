@@ -1,0 +1,14 @@
+{{/* Prev/next across the whole version, flowing group→group in weight order. */}}
+{{ $version := .FirstSection }}
+{{ $ordered := slice }}
+{{ range $version.Sections.ByWeight }}
+  {{ range .RegularPages.ByWeight }}{{ $ordered = $ordered | append . }}{{ end }}
+{{ end }}
+{{ $idx := -1 }}
+{{ range $i, $p := $ordered }}{{ if eq $p.RelPermalink $.RelPermalink }}{{ $idx = $i }}{{ end }}{{ end }}
+{{ if ge $idx 0 }}
+<div class="pager">
+  {{ if gt $idx 0 }}{{ $prev := index $ordered (sub $idx 1) }}<a href="{{ $prev.RelPermalink }}"><span class="sm">Previous</span>← {{ $prev.Title }}</a>{{ end }}
+  {{ if lt $idx (sub (len $ordered) 1) }}{{ $next := index $ordered (add $idx 1) }}<a class="next" href="{{ $next.RelPermalink }}"><span class="sm">Next</span>{{ $next.Title }} →</a>{{ end }}
+</div>
+{{ end }}
