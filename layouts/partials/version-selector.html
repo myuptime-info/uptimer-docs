@@ -3,11 +3,11 @@
 {{ $segs := split (strings.TrimPrefix "/" $.RelPermalink) "/" }}
 {{ $cur := strings.TrimPrefix "v" (index $segs 0) }}
 {{ if not (in .available $cur) }}{{ $cur = .latest }}{{ end }}
-<details class="verpill-wrap" style="position:relative;display:inline-block">
-  <summary class="verpill" role="button" aria-haspopup="listbox">v{{ $cur }} ▾</summary>
-  <ul role="listbox" style="position:absolute;top:120%;left:0;margin:0;padding:6px;list-style:none;background:#fff;border:1px solid var(--u-line);border-radius:8px;box-shadow:0 6px 24px rgba(22,26,33,.08);z-index:10;min-width:120px">
+<details class="verpill-wrap">
+  <summary class="verpill">v{{ $cur }} ▾</summary>
+  <ul class="verpill-menu">
     {{ range .available }}
-    <li><a href="/v{{ . }}/" style="display:block;padding:5px 10px;border-radius:6px;font-family:var(--u-mono);font-size:12px;color:{{ if eq . $cur }}var(--u-brand-ink){{ else }}var(--u-muted){{ end }}">v{{ . }}{{ if eq . $.Site.Params.versions.latest }} · latest{{ end }}</a></li>
+    <li><a href="/v{{ . }}/"{{ if eq . $cur }} class="on"{{ end }}>v{{ . }}{{ if eq . $.Site.Params.versions.latest }} · latest{{ end }}</a></li>
     {{ end }}
   </ul>
 </details>

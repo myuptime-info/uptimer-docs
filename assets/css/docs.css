@@ -32,11 +32,31 @@ body { font-size: 15px; }
 .site-nav .spacer { flex: 1; }
 .site-nav .navlink { color: var(--u-muted); font-size: 14px; }
 .site-nav .navlink:hover { color: var(--u-ink); }
+/* Version pill dropdown — reset Pico's <details>/<summary>/<ul> styling. */
+.verpill-wrap { position: relative; display: inline-block; border: 0; padding: 0; margin: 0; }
 .verpill {
+  display: inline-block; list-style: none; cursor: pointer;
   font-family: var(--u-mono); font-size: 11px; border: 1px solid var(--u-line);
-  border-radius: 6px; padding: 3px 8px; color: var(--u-muted); background: #fff; cursor: pointer;
+  border-radius: 6px; padding: 3px 8px; color: var(--u-muted); background: #fff;
 }
+.verpill::-webkit-details-marker { display: none; }
+.verpill::marker { content: ""; }
+.verpill::after { content: none !important; display: none !important; } /* kill Pico's summary chevron */
 .verpill:focus-visible { outline: 2px solid var(--u-brand-soft); }
+.verpill-menu {
+  display: block; /* override Pico's nav ul{display:flex} (pill lives in the header nav) */
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 20;
+  margin: 0; padding: 6px; list-style: none;
+  background: #fff; border: 1px solid var(--u-line); border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(22, 26, 33, .1); min-width: 132px;
+}
+.verpill-menu li { display: block; margin: 0; padding: 0; list-style: none; }
+.verpill-menu a {
+  display: block; white-space: nowrap; padding: 5px 10px; border-radius: 6px;
+  font-family: var(--u-mono); font-size: 12px; color: var(--u-muted); text-decoration: none;
+}
+.verpill-menu a:hover { background: var(--u-soft); }
+.verpill-menu a.on { color: var(--u-brand-ink); font-weight: 600; }
 
 /* ---- 3-pane shell ---- */
 .shell {
