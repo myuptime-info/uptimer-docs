@@ -24,12 +24,14 @@ body { font-size: 15px; }
 .logo { display: flex; align-items: center; gap: 8px; font-weight: 750; letter-spacing: -.02em; color: var(--u-ink); }
 .logo:hover { color: var(--u-ink); }
 .logo .docs { color: var(--u-faint); font-weight: 500; }
-.site-search {
-  margin: 0 0 0 4px; flex: 1; max-width: 280px; align-self: center;
-  /* neutralize native input metrics (Safari centers replaced inputs differently)
-     and Pico's input margin/height, so the box centers in the flex header row */
-  -webkit-appearance: none; appearance: none; box-sizing: border-box; height: 34px; line-height: 1.2;
-  border: 1px solid var(--u-line); border-radius: 9px; padding: 0 12px;
+/* Beat Pico's `input:not(...)` form rules (specificity 0,1,1) with 0,2,1, and force the
+   layout props Pico owns (height/margin/padding) so the box is 34px and centers, not 52px
+   top-stuck. */
+.site-nav input.site-search {
+  flex: 1; max-width: 280px; align-self: center;
+  -webkit-appearance: none; appearance: none; box-sizing: border-box;
+  height: 34px !important; margin: 0 0 0 4px !important; padding: 0 12px !important; line-height: 32px;
+  border: 1px solid var(--u-line); border-radius: 9px;
   color: var(--u-faint); font-size: 12.5px; font-family: var(--u-mono); background: #fff;
 }
 .site-nav .spacer { flex: 1; }
