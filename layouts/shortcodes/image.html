@@ -1,0 +1,2 @@
+{{- $seg := index (split (strings.TrimPrefix "/" .Page.RelPermalink) "/") 0 -}}
+{{- printf "ghcr.io/myuptime-info/uptimer:%s" (strings.TrimPrefix "v" $seg) -}}

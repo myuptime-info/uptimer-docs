@@ -1,35 +1,25 @@
 ---
 title: "Quick start"
-weight: 30
-lede: "Run Uptimer from its container and open the dashboard in under a minute."
-description: "Run Uptimer from the GHCR image and open the dashboard."
+weight: 10
+lede: "The one-command run, explained — and where to go next."
+description: "Run Uptimer in dev mode and talk to its API."
 ---
 
-## 1 · Run the container
-
-The image lives on GitHub Container Registry:
+## Run it
 
 ```sh
-docker run -p 2517:2517 ghcr.io/myuptime-info/uptimer:latest
+docker run -p 2517:2517 {{< image >}}
 ```
 
-Tags: `:latest` (newest stable release), `:X.Y.Z` (pinned, e.g. `:1.3.0`),
-`:edge` (latest pre-release).
+- `2517` serves the **web UI and the REST API** (the API lives under `/api`).
+- The default command is `dev`: every service in one process, an **in-memory database** that
+  resets on restart, and **fake auth — any visitor is an admin**.
 
-## 2 · Open the dashboard
+Open **http://127.0.0.1:2517**, create a rule, and point it at a URL. Uptimer starts checking it.
 
-Visit **http://127.0.0.1:2517**. Create a rule, point it at a URL, and Uptimer
-starts checking it.
+## Talk to the API
 
-> **This is dev mode.** The default command is `dev`, which runs every service in one
-> process with **fake auth — any visitor is an admin** — and an ephemeral database.
-> It's perfect for a first look, wrong for production. When you're ready, see
-> [Production deployment](/v1.3.0/operating/production/).
-
-## 3 · Try the API
-
-The dashboard is just a client of the REST API, served on the same port under `/api`.
-Check the version without auth:
+The dashboard is just a REST client. Check the version (the one endpoint that needs no auth):
 
 ```sh
 curl http://127.0.0.1:2517/api/version
@@ -38,12 +28,13 @@ curl http://127.0.0.1:2517/api/version
 { "result": "1.3.0", "error": null, "meta": null }
 ```
 
-Every response is HTTP 200 with a `{result, error, meta}` envelope — check `error`, not the
-status code. Everything except `/version` needs an API key; see the
-[REST API reference](/v1.3.0/reference/rest-api/).
+Every response is HTTP `200` with a `{result, error, meta}` envelope — check `error`, not the
+status code. For everything else, mint an API key in the dashboard and send it as
+`Authorization: Bearer …`. Full details in the [REST API reference](/v1.3.0/reference/rest-api/).
 
-## Next steps
+## Next
 
-- [Requirements](/v1.3.0/getting-started/requirements/) — sizing and networking.
-- [Rules & checks](/v1.3.0/core-concepts/rules-and-checks/) — what you can monitor.
-- [Configuration](/v1.3.0/operating/configuration/) — move off dev mode.
+Dev mode is for trying, not for running. When you're ready:
+
+- [Core concepts](/v1.3.0/core-concepts/rules-and-checks/) — what you're actually configuring.
+- [Self-hosting](/v1.3.0/getting-started/self-hosting/) — grow this into a real deployment.

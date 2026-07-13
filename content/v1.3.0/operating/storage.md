@@ -12,7 +12,7 @@ it survives restarts.
 ```sh
 docker run -p 2517:2517 \
   -v uptimer-data:/data \
-  ghcr.io/myuptime-info/uptimer:latest
+  {{< image >}}
 ```
 
 ## What lives in /data
@@ -34,5 +34,5 @@ Mount your own config and point `--cfg` at it:
 ```sh
 docker run -p 2517:2517 \
   -v "$PWD/uptimer.yml:/app/uptimer.yml" \
-  ghcr.io/myuptime-info/uptimer:latest --cfg /app/uptimer.yml server
+  {{< image >}} --cfg /app/uptimer.yml server
 ```

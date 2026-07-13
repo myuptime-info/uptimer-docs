@@ -1,6 +1,6 @@
 ---
 title: "Requirements"
-weight: 20
+weight: 30
 lede: "What you need to run Uptimer."
 description: "Software, hardware and network requirements."
 ---

@@ -49,6 +49,18 @@ The version pill (`layouts/partials/version-selector.html`) and the outdated-ver
 (`layouts/partials/version-banner.html`) update automatically from `[params.versions]` — no
 hard-coded version strings in templates.
 
+## The container image tag
+
+Docs never reference `:latest` — every `docker` example pins the exact version via the
+`{{</* image */>}}` shortcode (`layouts/shortcodes/image.html`), which emits
+`ghcr.io/myuptime-info/uptimer:X.Y.Z` where `X.Y.Z` is **derived from the content tree the page
+lives in**. So copying `content/v1.3.0` → `content/v1.4.0` updates every image reference with no
+edits. Author image commands as:
+
+```
+docker run -p 2517:2517 {{</* image */>}}
+```
+
 ## Build
 
 ```sh

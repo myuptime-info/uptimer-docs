@@ -51,8 +51,8 @@ address — see [Remote workers](/v1.3.0/core-concepts/remote-workers/).
 
 ## Image
 
-Pin a version rather than `:latest`:
+Pin the version explicitly:
 
 ```sh
-docker pull ghcr.io/myuptime-info/uptimer:1.3.0
+docker pull {{< image >}}
 ```
