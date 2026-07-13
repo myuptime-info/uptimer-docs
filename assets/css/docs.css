@@ -25,8 +25,8 @@ body { font-size: 15px; }
 .logo:hover { color: var(--u-ink); }
 .logo .docs { color: var(--u-faint); font-weight: 500; }
 .site-search {
-  margin-left: 4px; flex: 1; max-width: 280px;
-  border: 1px solid var(--u-line); border-radius: 9px; padding: 7px 12px;
+  margin: 0 0 0 4px; flex: 1; max-width: 280px;   /* margin:0 — Pico adds a bottom margin to inputs */
+  border: 1px solid var(--u-line); border-radius: 9px; padding: 7px 12px; height: auto;
   color: var(--u-faint); font-size: 12.5px; font-family: var(--u-mono); background: #fff;
 }
 .site-nav .spacer { flex: 1; }

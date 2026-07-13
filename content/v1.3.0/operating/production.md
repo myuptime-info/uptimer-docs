@@ -35,7 +35,8 @@ Why: the schema is applied once, atomically, instead of racing across booting re
 
 ## docker-compose
 
-A minimal stack ([full reference](https://github.com/myuptime-info/uptimer/tree/main/deploy/docker-compose)):
+A minimal stack (a runnable split-services variant is in
+[`examples/1.3.0/remote-workers`](https://github.com/myuptime-info/uptimer-docs/tree/main/examples/1.3.0/remote-workers)):
 
 ```yaml
 x-server-env: &server-env
