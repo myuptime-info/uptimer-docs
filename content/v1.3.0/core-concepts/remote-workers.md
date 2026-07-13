@@ -46,8 +46,9 @@ worker:
 ```
 
 The worker signs every gRPC call with its private key; the server validates it against the
-registered public key. A complete server + workers `docker-compose` is on the
-[Production deployment](/v1.3.0/operating/production/) page.
+registered public key. A complete, runnable server + workers stack is in
+[`examples/1.3.0/remote-workers`](https://github.com/myuptime-info/uptimer-docs/tree/main/examples/1.3.0/remote-workers);
+the production topology is on the [Production deployment](/v1.3.0/operating/production/) page.
 
 ## TLS
 

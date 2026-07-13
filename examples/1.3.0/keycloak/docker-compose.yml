@@ -1,0 +1,30 @@
+# Uptimer 1.3.0 with OIDC login via a self-contained Keycloak.
+# Map these hostnames to localhost first:  echo "127.0.0.1 keycloak uptimer-dev" | sudo tee -a /etc/hosts
+# Then `docker compose up` and sign in at http://uptimer-dev:2517 with test / test.
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    command: ["start-dev", "--import-realm"]
+    ports:
+      - "8080:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    volumes:
+      - ./realm-config.json:/opt/keycloak/data/import/realm-config.json:ro
+
+  uptimer-dev:
+    image: ghcr.io/myuptime-info/uptimer:1.3.0
+    command: ["--delay", "20", "dev"]   # wait for Keycloak to import the realm
+    ports:
+      - "2517:2517"
+    volumes:
+      - ./data:/data
+    environment:
+      UPTIMER__SERVER__AUTH__DEV: "false"
+      UPTIMER__SERVER__AUTH__OIDC__CLIENT_ID: "uptimer-dev"
+      UPTIMER__SERVER__AUTH__OIDC__CLIENT_SECRET: "1234567890"
+      UPTIMER__SERVER__AUTH__OIDC__ISSUER_URL: "http://keycloak:8080/realms/uptimer-dev-keycloak-example"
+      UPTIMER__SERVER__AUTH__OIDC__REDIRECT_URL: "http://uptimer-dev:2517/ui/auth/oauth/callback"
+    depends_on:
+      - keycloak

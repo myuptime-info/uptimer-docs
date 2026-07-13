@@ -1,0 +1,47 @@
+# Uptimer 1.3.0 — server split into services + two local workers.
+# The server (ui/grpc/availabilities) shares one identity via ./data/server.
+# See README.md for the one-time worker init + registration.
+services:
+  uptimer-ui:
+    image: ghcr.io/myuptime-info/uptimer:1.3.0
+    command: ["server", "--services", "api,ui"]
+    ports:
+      - "2517:2517"
+    volumes:
+      - ./data/server:/data
+
+  uptimer-grpc:
+    image: ghcr.io/myuptime-info/uptimer:1.3.0
+    command: ["server", "--services", "grpc"]
+    environment:
+      UPTIMER__GRPC__PORT: "50051"
+    volumes:
+      - ./data/server:/data
+
+  uptimer-availabilities:
+    image: ghcr.io/myuptime-info/uptimer:1.3.0
+    command: ["server", "--services", "availabilities"]
+    volumes:
+      - ./data/server:/data
+
+  worker1:
+    image: ghcr.io/myuptime-info/uptimer:1.3.0
+    command: ["worker"]
+    environment:
+      UPTIMER__WORKER__GRPC_SERVER: "uptimer-grpc:50051"
+      UPTIMER__WORKER__GRPC_USE_TLS: "false"
+    volumes:
+      - ./data/worker1:/data
+    depends_on:
+      - uptimer-grpc
+
+  worker2:
+    image: ghcr.io/myuptime-info/uptimer:1.3.0
+    command: ["worker"]
+    environment:
+      UPTIMER__WORKER__GRPC_SERVER: "uptimer-grpc:50051"
+      UPTIMER__WORKER__GRPC_USE_TLS: "false"
+    volumes:
+      - ./data/worker2:/data
+    depends_on:
+      - uptimer-grpc

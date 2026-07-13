@@ -63,7 +63,8 @@ volumes:
   pg:
 ```
 
-Still one process and still dev auth — but your data is now on a real database.
+Still one process and still dev auth — but your data is now on a real database. Runnable:
+[`examples/1.3.0/persistent`](https://github.com/myuptime-info/uptimer-docs/tree/main/examples/1.3.0/persistent).
 Background: [Choosing a database](/v1.3.0/operating/configuration/#choosing-a-database).
 
 ## 4 · Real authentication
