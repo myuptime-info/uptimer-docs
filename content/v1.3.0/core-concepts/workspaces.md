@@ -39,11 +39,3 @@ name from the file. So importing a `Default` export gives you a second workspace
 
 The region *assignments* travel by name, but the regions and workers themselves don't — set
 those up on the target instance first for a clean import.
-
-## Deep-linking caveat
-
-Reach dashboard pages by navigating the app, not by pasting links. A link **into a workspace you
-don't have access to** (or one that no longer exists) returns **not found** — access is reported
-as not-found on purpose. A link opened while **signed out** sends you to login. And some
-dashboard URLs are HTMX *fragments* that render as a bare, unstyled partial on a direct full-page
-load. None of these are meant for direct navigation — open the workspace from the dashboard.
