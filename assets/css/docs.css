@@ -27,13 +27,29 @@ body { font-size: 15px; }
 /* Beat Pico's `input:not(...)` form rules (specificity 0,1,1) with 0,2,1, and force the
    layout props Pico owns (height/margin/padding) so the box is 34px and centers, not 52px
    top-stuck. */
+.site-nav .site-search-wrap { position: relative; flex: 1; max-width: 280px; align-self: center; margin-left: 4px; }
 .site-nav input.site-search {
-  flex: 1; max-width: 280px; align-self: center;
-  -webkit-appearance: none; appearance: none; box-sizing: border-box;
-  height: 34px !important; margin: 0 0 0 4px !important; padding: 0 12px !important; line-height: 32px;
+  width: 100%; box-sizing: border-box;
+  -webkit-appearance: none; appearance: none;
+  height: 34px !important; margin: 0 !important; padding: 0 12px !important; line-height: 32px;
   border: 1px solid var(--u-line); border-radius: 9px;
-  color: var(--u-faint); font-size: 12.5px; font-family: var(--u-mono); background: #fff;
+  color: var(--u-ink); font-size: 12.5px; font-family: var(--u-mono); background: #fff;
 }
+.site-nav input.site-search::placeholder { color: var(--u-faint); }
+.site-nav input.site-search:focus { outline: none; border-color: var(--u-brand); box-shadow: 0 0 0 3px var(--u-brand-soft); }
+/* Search results dropdown */
+.site-search-results {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 20;
+  background: #fff; border: 1px solid var(--u-line); border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(22, 26, 33, .12); padding: 6px; max-height: 72vh; overflow-y: auto;
+}
+.site-search-results a { display: block; padding: 8px 10px; border-radius: 7px; text-decoration: none; }
+.site-search-results a:hover, .site-search-results a.sel { background: var(--u-brand-soft); }
+.site-search-results .r-title { font-size: 13.5px; font-weight: 600; color: var(--u-ink); }
+.site-search-results .r-sec { font-size: 11px; color: var(--u-faint); font-family: var(--u-mono); margin-top: 1px; }
+.site-search-results .r-snip { font-size: 12px; color: var(--u-muted); margin-top: 3px; line-height: 1.45; }
+.site-search-results .r-snip mark { background: var(--u-brand-soft); color: var(--u-brand-ink); padding: 0 1px; border-radius: 2px; }
+.site-search-results .r-empty { padding: 12px 10px; font-size: 13px; color: var(--u-faint); }
 .site-nav .spacer { flex: 1; }
 .site-nav .navlink { color: var(--u-muted); font-size: 14px; }
 .site-nav .navlink:hover { color: var(--u-ink); }
@@ -175,5 +191,5 @@ aside.toc ul ul { padding-left: 10px; }
   .shell { grid-template-columns: 1fr; }
   nav.side, aside.toc { display: none; }
   main.content { padding: 26px 20px; }
-  .site-search { display: none; }
+  .site-search-wrap { display: none; }
 }

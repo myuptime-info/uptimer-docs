@@ -1,0 +1,15 @@
+{{- /* Client-side search index. One entry per content page, carrying its version
+       segment so search.js can scope results to the version being read. */ -}}
+{{- $list := slice -}}
+{{- range where site.RegularPages "Kind" "page" -}}
+  {{- $seg := index (split (strings.TrimPrefix "/" .RelPermalink) "/") 0 -}}
+  {{- $list = $list | append (dict
+      "title"   .Title
+      "url"     .RelPermalink
+      "version" (strings.TrimPrefix "v" $seg)
+      "section" .CurrentSection.Title
+      "lede"    (.Params.lede | default "")
+      "text"    (.Plain | truncate 4000 "")
+  ) -}}
+{{- end -}}
+{{- $list | jsonify -}}

@@ -66,7 +66,7 @@ The imported realm defines the `uptimer-dev` client and a `test/test` user, and 
 ## API keys (REST API)
 
 The REST API authenticates with a **Bearer token** you mint in the dashboard
-(**Settings → API Keys**). Send it as `Authorization: Bearer <token>`; see the
+(**User → API Keys**). Send it as `Authorization: Bearer <token>`; see the
 [REST API reference](/v1.3.0/reference/rest-api/).
 
 ## Reverse-proxy auth

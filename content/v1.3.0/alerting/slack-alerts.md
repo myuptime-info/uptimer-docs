@@ -21,4 +21,6 @@ red when it goes down — with a link back to the rule's history.
 > one when it recovers — not one per interval.
 
 The webhook is configured in the dashboard (not the REST API), and there is **one URL per
-workspace**. To send somewhere other than Slack, see [Webhooks](/v1.3.0/alerting/webhooks/).
+workspace**. It covers **every rule** in that workspace — there is no per-rule switch: set the
+URL and all rules alert. To send somewhere other than Slack, see
+[Webhooks](/v1.3.0/alerting/webhooks/).

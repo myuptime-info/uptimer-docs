@@ -24,5 +24,7 @@
   {{ partial "version-banner.html" . }}
   {{ partial "header.html" . }}
   {{ block "main" . }}{{ end }}
+  {{ $search := resources.Get "js/search.js" | minify | fingerprint }}
+  <script src="{{ $search.RelPermalink }}" defer></script>
 </body>
 </html>

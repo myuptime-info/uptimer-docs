@@ -17,8 +17,8 @@ Base URL: **`http://<host>:2517/api`** — the API is served under `/api` on the
 
 ## Auth
 
-Every endpoint except `/version` needs a Bearer **API key** — a long-lived token minted in the
-dashboard (**Settings → API Keys**):
+Every endpoint needs a Bearer **API key** — a long-lived token minted in the
+dashboard (**User → API Keys**):
 
 ```sh
 curl -H "Authorization: Bearer $UPTIMER_API_KEY" \
@@ -29,7 +29,7 @@ curl -H "Authorization: Bearer $UPTIMER_API_KEY" \
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/version` | Server version (string). Public. |
+| GET | `/version` | Server version (string). |
 | GET | `/v1/workspaces` | Your workspaces, each with your role. |
 | GET | `/v1/rules?workspace_id=` | List rules in a workspace. |
 | POST | `/v1/rules` | Create a rule. |
@@ -52,7 +52,9 @@ curl -H "Authorization: Bearer $UPTIMER_API_KEY" \
 
 - `method` is one of `GET`, `POST`, `PATCH`, `OPTIONS`.
 - `interval` is seconds, in whole minutes (≥ 60).
-- Region assignment via the API isn't available yet — see [Regions](/v1.3.0/core-concepts/regions/).
+- Region assignment via the API isn't available yet: a rule created here has **no region and
+  stays "No Data"** (never checked) until you assign one in the dashboard — see
+  [Regions](/v1.3.0/core-concepts/regions/).
 
 `DELETE` returns `{ "message": "Rule deleted successfully", "rule_id": "<uid>" }`.
 

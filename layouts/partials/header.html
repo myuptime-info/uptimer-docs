@@ -12,7 +12,12 @@
       </svg>
       Uptimer <span class="docs">/ docs</span>
     </a>
-    <input class="site-search" value="Search  ⌘K" aria-label="Search (coming soon)" disabled>
+    <div class="site-search-wrap">
+      <input class="site-search" type="search" placeholder="Search  ⌘K" aria-label="Search docs"
+             autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false"
+             aria-controls="site-search-results" data-version="{{ $ver }}">
+      <div class="site-search-results" id="site-search-results" role="listbox" hidden></div>
+    </div>
     {{ partial "version-selector.html" . }}
     <span class="spacer"></span>
     <a class="navlink" href="{{ $base }}/getting-started/quick-start/">Guides</a>

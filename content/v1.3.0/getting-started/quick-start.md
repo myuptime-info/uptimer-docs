@@ -27,7 +27,7 @@ Open **http://127.0.0.1:2517**, create a rule, and point it at a URL. Uptimer st
 ## Talk to the API
 
 The dashboard is just a REST client. Every request carries a **Bearer token** — create one in
-the dashboard (**Settings → API Keys**) and send it in the `Authorization` header:
+the dashboard (**User → API Keys**) and send it in the `Authorization` header:
 
 ```sh
 curl -H "Authorization: Bearer $UPTIMER_TOKEN" http://127.0.0.1:2517/api/version

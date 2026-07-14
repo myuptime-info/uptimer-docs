@@ -53,6 +53,10 @@ docker run -p 2517:2517 \
 `--cfg` is optional (defaults to `configs/default.yml`). Every key also has a `UPTIMER__…`
 environment override — see [Configuration](/v1.3.0/operating/configuration/).
 
+Unlike `dev`, the `server` command needs a server identity on the `/data` volume first — if it
+exits with a missing `server.uuid`, run [`server init`](#bootstrap-identities) once against the
+same volume before starting it.
+
 ## Database
 
 The DSN scheme picks the backend — `sqlite3://` or `postgres://`. Server and worker can even

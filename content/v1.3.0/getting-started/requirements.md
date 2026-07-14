@@ -20,6 +20,9 @@ docker cp tmp:/app/uptimer ./uptimer && docker rm tmp
 ./uptimer dev
 ```
 
+The image ships a **Linux** binary (`amd64`/`arm64`), so copy it out only on a Linux host — on
+macOS or Windows it's an `exec format error`; run it inside the container there instead.
+
 ## Hardware
 
 Uptimer is light. Sizing depends on which role you run:
