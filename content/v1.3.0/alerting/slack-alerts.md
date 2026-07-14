@@ -42,3 +42,8 @@ An alert is sent on a status **transition**, so Uptimer must already have a stat
 The webhook is called **from the Uptimer server** (or its container), so the URL must be
 reachable from there — a `localhost` receiver on your laptop is **not** reachable from inside the
 container. If nothing arrives, check the server logs for the outgoing webhook POST.
+
+> **Delivery is best-effort.** Uptimer sends the webhook once, in the background — there is no
+> delivery-status indicator, retry, or "send test" button yet, and a failed POST is recorded only
+> in the **server logs**, not the dashboard. If alerts don't arrive and the URL is reachable, the
+> logs are the place to look.
