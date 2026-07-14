@@ -18,3 +18,18 @@ resolution**.
 
 You create rules in the dashboard or over the API — the dashboard is just an API client. For the
 exact request/response fields, see the [REST API reference](/v1.3.0/reference/rest-api/).
+
+## Rule status
+
+Every rule shows one of three statuses:
+
+| Status | Meaning |
+|---|---|
+| **Up** | The last check passed. |
+| **Down** | The last check failed — wrong status code, missing body substring, or a connection/TLS error. |
+| **No Data** | The rule isn't being checked. Almost always because **no [region](/v1.3.0/core-concepts/regions/) is assigned** (a rule needs at least one), or after several consecutive checks returned nothing. It can persist in the history until a region is assigned. |
+
+Alerts fire only on a change *between* Up and Down — see
+[When an alert actually fires](/v1.3.0/alerting/slack-alerts/#when-an-alert-actually-fires).
+
+> Dashboard timestamps use **`YY/MM/DD`** order (e.g. `26/07/14` is 2026-07-14).

@@ -33,9 +33,14 @@ form:
 
 | From the init output | Dashboard field |
 |---|---|
-| `Worker UUID: …` | **UID** |
+| `Worker UUID: …` | **UID** (the form labels it UID — paste the whole `Worker UUID` value) |
 | the whole `Public Key` PEM block | **Public Key** |
 | *(your choice)* | **Name** |
+| *(pick an existing one, or create one inline)* | **Region** — the region this worker serves |
+
+The **Region** selector lists regions by name; if you have none yet, create one from the same
+form. (Its underlying value is the region's short id, not the worker UUID — pick by name and you
+won't hit the "please select a valid region" error.)
 
 **3. Run the worker**, pointed at the server's gRPC address:
 

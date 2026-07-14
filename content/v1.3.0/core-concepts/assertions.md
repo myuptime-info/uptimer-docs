@@ -17,3 +17,7 @@ a fixed 10 seconds.
 
 You set the allowed statuses and the optional body match on the rule; the field names are in the
 [REST API reference](/v1.3.0/reference/rest-api/).
+
+> The body match is a **literal substring** — it doesn't parse or normalize anything. Matching
+> JSON is therefore fragile: `{"ok":true}` won't match `{ "ok": true }` because of the spaces.
+> Match a short, stable fragment you know appears verbatim rather than a whole structured payload.

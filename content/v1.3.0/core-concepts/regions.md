@@ -11,3 +11,8 @@ more workers.
 
 Manage regions in the dashboard. Assigning a rule to specific regions is a dashboard action
 today — the region-management UI is being reworked, so expect it to change.
+
+> **A rule with no region is never checked — it stays at "No Data" forever.** Assign at least one
+> region to every rule you want monitored. This applies to rules created in the UI, over the
+> [REST API](/v1.3.0/reference/rest-api/) (which can't set regions yet), and via
+> [import](/v1.3.0/core-concepts/workspaces/#export--import).
