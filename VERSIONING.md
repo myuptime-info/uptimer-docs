@@ -40,7 +40,8 @@ read `_redirects`, configure the same rule there.
 1. **Copy the current tree:** `cp -r content/v1.3.0 content/v1.4.0`
 2. **Update `hugo.toml`** `[params.versions]` — set `default` + `latest` to the new version and
    prepend it to `available` (newest first).
-3. **Update `static/_redirects`** — point `/latest/*` at the new version.
+3. **Update `static/_redirects`** — point `/latest/*` **and** the `/v1.3.0/examples*` +
+   `/latest/examples*` rules at the new version.
 4. **Update `content/_index.md`** — set the root redirect `url` to the new version.
 5. **Rewrite the in-tree links** in the new folder to the new version prefix
    (`/v1.3.0/` → `/v1.4.0/`) and update the content for what changed.

@@ -1,3 +1,12 @@
+# Examples aren't rendered on-site — they live in the repo's examples/ dir. Redirect
+# shareable on-site example URLs to GitHub instead of letting them fall through to the
+# home page. These MUST stay above the /latest/* catch-all below, and the version is
+# bumped alongside /latest/* on a release (see VERSIONING.md).
+/v1.3.0/examples/*  https://github.com/myuptime-info/uptimer-docs/tree/main/examples/1.3.0/:splat  302
+/v1.3.0/examples    https://github.com/myuptime-info/uptimer-docs/tree/main/examples/1.3.0/         302
+/latest/examples/*  https://github.com/myuptime-info/uptimer-docs/tree/main/examples/1.3.0/:splat  302
+/latest/examples    https://github.com/myuptime-info/uptimer-docs/tree/main/examples/1.3.0/         302
+
 # /latest/ → the current latest version (#24). Universal links that survive version
 # bumps: on a new release, change the target here AND hugo.toml [params.versions].
 # Splat syntax is read by Cloudflare Pages / Netlify. See VERSIONING.md.
