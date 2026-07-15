@@ -26,6 +26,9 @@ Highlights since 1.1, grouped by theme.
 
 ## Monitoring
 - **Worker-regions management** in the dashboard (still being refined).
+- **Assign regions when creating or updating a rule over the API** — the rule payload takes a
+  `regions` field (region names), so a headless/[SDK](/v1.3.0/reference/python-sdk/) workflow can
+  create a rule that actually runs instead of sitting at "No Data".
 - New **`grpc_request_duration_seconds`** metric on [`/metrics`](/v1.3.0/reference/metrics/).
 
 ## Extensibility

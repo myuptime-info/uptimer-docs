@@ -46,15 +46,17 @@ curl -H "Authorization: Bearer $UPTIMER_API_KEY" \
   "interval": 60,
   "workspace_id": "<uid>",
   "request":  { "url": "https://example.com", "method": "GET", "content_type": "application/json", "data": "" },
-  "response": { "statuses": [200], "body": { "content": "" } }
+  "response": { "statuses": [200], "body": { "content": "" } },
+  "regions":  ["local"]
 }
 ```
 
 - `method` is one of `GET`, `POST`, `PATCH`, `OPTIONS`.
 - `interval` is seconds, in whole minutes (≥ 60).
-- Region assignment via the API isn't available yet: a rule created here has **no region and
-  stays "No Data"** (never checked) until you assign one in the dashboard — see
-  [Regions](/v1.3.0/core-concepts/regions/).
+- `regions` is a list of region **names** (matched by name, as listed by `GET /v1/regions`). An
+  unknown name is a validation error. Omit or leave it empty for **no region** — the rule then
+  **stays "No Data"** (never checked), see [Regions](/v1.3.0/core-concepts/regions/). On update the
+  list **replaces** the rule's regions, so include the ones you want to keep.
 
 `DELETE` returns `{ "message": "Rule deleted successfully", "rule_id": "<uid>" }`.
 
