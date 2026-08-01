@@ -8,10 +8,6 @@ title = 'Uptimer'
 # Taxonomy/term pages are unused on the docs site.
 disableKinds = ['taxonomy', 'term']
 
-[params]
-# Brand icon fallback (also see /favicon.svg + /manifest.json).
-BookLogo = "https://static.myuptime.info/heg43a/icon.png"
-
 # Versioned docs. Newest first. `latest` drives the version pill, the outdated
 # banner and the /latest/ redirects (#24/#25).
 [params.versions]

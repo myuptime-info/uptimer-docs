@@ -9,7 +9,7 @@ Highlights since 1.1, grouped by theme.
 
 ## Packaging
 - **The image moved to GitHub Container Registry** —
-  [`ghcr.io/myuptime-info/uptimer`](https://github.com/myuptime-info/uptimer/pkgs/container/uptimer).
+  [`ghcr.io/myuptime-info/uptimer`](https://github.com/users/myuptime-info/packages/container/package/uptimer).
   Pull a pinned `:X.Y.Z` tag (or `:edge` for pre-releases). The old Docker Hub image is retired.
 
 ## Deployment & database

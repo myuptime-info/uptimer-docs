@@ -1,6 +1,6 @@
 services:
   uptimer-dev:
-    image: myuptime/uptimer
+    image: ghcr.io/myuptime-info/uptimer:1.3.0
     ports:
       - "2517:2517"
     volumes:
