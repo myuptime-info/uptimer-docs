@@ -20,6 +20,8 @@ export any time and move between self-hosted and cloud — no vendor lock-in.
 docker run -p 2517:2517 {{< image >}}
 ```
 
+{{< imagenote >}}
+
 Open **http://127.0.0.1:2517** and you're in — add a rule, point it at a URL, watch it go
 up or down. The REST API is on the same port under `/api`; calls take a Bearer token you create
 in the dashboard (**User → API Keys**):

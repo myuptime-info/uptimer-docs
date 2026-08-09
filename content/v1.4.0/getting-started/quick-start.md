@@ -18,6 +18,8 @@ Below is the one-command run, explained.
 docker run -p 2517:2517 {{< image >}}
 ```
 
+{{< imagenote >}}
+
 - `2517` serves the **web UI and the REST API** (the API lives under `/api`).
 - The default command is `dev`: every service in one process, an **in-memory database** that
   resets on restart, and **fake auth — any visitor is an admin**.

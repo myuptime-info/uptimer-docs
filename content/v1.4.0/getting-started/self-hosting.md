@@ -15,6 +15,8 @@ need; each hardens the one before.
 docker run -p 2517:2517 {{< image >}}
 ```
 
+{{< imagenote >}}
+
 The default `dev` command runs every service in one process, with fake auth (any visitor is an
 admin) and an in-memory database. Nothing survives a restart — fine for a look. Everything below
 makes it real.

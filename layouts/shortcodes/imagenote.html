@@ -1,0 +1,14 @@
+{{- /* Explains the image tag the commands on this page use. Renders only on a preview
+       tree, where {{< image >}} emits :edge instead of a pinned version — a tag the
+       reader has otherwise never met. Renders nothing once the version is released,
+       so the calls can be left in place and removed at leisure. */ -}}
+{{- $seg := index (split (strings.TrimPrefix "/" .Page.RelPermalink) "/") 0 -}}
+{{- $ver := strings.TrimPrefix "v" $seg -}}
+{{- with site.Params.versions -}}
+{{- if and .preview (eq $ver .preview) -}}
+<p><strong><code>:edge</code> is the preview build</strong> — the newest pre-release of the next
+version, rebuilt on every release candidate. It is how you try v{{ $ver }} before it ships. It is a
+moving tag, so it is right for a look and wrong for anything you keep: pin
+<code>:{{ .latest }}</code> (or the exact <code>:{{ $ver }}</code> once it is out) for that.</p>
+{{- end -}}
+{{- end -}}

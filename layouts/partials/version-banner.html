@@ -9,7 +9,7 @@
 {{ $rest := strings.TrimPrefix (printf "/v%s" $cur) $.RelPermalink }}
 {{ if and .preview (eq $cur .preview) }}
 <div class="verbanner" role="note" id="verbanner">
-  <span>You're reading the docs for <strong>v{{ $cur }}</strong>, which isn't released yet. Examples pull the preview image.</span>
+  <span>You're reading the docs for <strong>v{{ $cur }}</strong>, which isn't released yet. Commands here pull <code>:edge</code>, the newest pre-release build.</span>
   <a href="/v{{ .latest }}{{ $rest }}">Go to the current release (v{{ .latest }}) →</a>
   <button type="button" aria-label="Dismiss" onclick="this.closest('.verbanner').remove();try{sessionStorage.setItem('u-verbanner-hidden','1')}catch(e){}">×</button>
 </div>
