@@ -36,7 +36,7 @@ An alert is sent on a status **transition**, so Uptimer must already have a stat
   will then alert on the next real outage.
 - Give it at least **two check intervals** (≥ 2 minutes at the default one-minute cadence) to
   produce the first transition.
-- A rule stuck at **No Data** (no [region](/v1.4.0/core-concepts/regions/) assigned) never alerts
+- A monitor stuck at **No Data** (no [location](/v1.4.0/core-concepts/locations/) assigned) never alerts
   — it isn't being checked at all.
 
 The webhook is called **from the Uptimer server** (or its container), so the URL must be

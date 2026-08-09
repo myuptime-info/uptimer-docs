@@ -4,7 +4,7 @@ lede: "Self-hosted uptime & synthetic monitoring in a single Go binary — up an
 description: "Uptimer — self-hosted uptime monitoring you can run in one command."
 ---
 
-Uptimer watches your HTTP(S) endpoints on a schedule, from one or many regions, and alerts you
+Uptimer watches your HTTP(S) endpoints on a schedule, from one or many locations, and alerts you
 the moment they break. One Go binary under 100 MB, with a REST API the dashboard itself is built
 on — anything you can click, you can script.
 

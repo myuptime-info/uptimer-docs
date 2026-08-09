@@ -8,23 +8,23 @@ description: "User-facing changes from 1.1 to 1.4.0."
 ## 1.4.0
 
 ### Incident-based monitoring
-- **A rule's status is now decided across all of its regions**, not by the newest check to
-  arrive. The rule form gains **Regions Required to Fail** — *Majority of regions* (default) or
-  *At least one region*. A region that never reports counts as unknown and stays inside the
-  decision, so a half-silent rule reads **No Data** instead of trusting whichever region
-  answered. See [Rules & checks](/v1.4.0/core-concepts/rules-and-checks/#how-many-regions-must-fail).
+- **A monitor's status is now decided across all of its locations**, not by the newest check to
+  arrive. The form gains **Locations Required to Fail** — *Majority of locations* (default) or
+  *At least one location*. A location that never reports counts as unknown and stays inside the
+  decision, so a half-silent monitor reads **No Data** instead of trusting whichever location
+  answered. See [Monitors & incidents](/v1.4.0/core-concepts/monitors-and-incidents/#how-many-locations-must-fail).
 - **A problem must last 2 minutes before it is confirmed and alerted**, and a recovery must last
   2 minutes before the incident closes. Short blips no longer page you, though they do show up in
   the history.
-- **Status history is now a timeline** — pending, problem, no data, recovering, closed — with the
-  failing and silent locations on each event and the error they reported, replacing the old list
-  of individual check results.
+- **History is now a timeline of incidents** — pending, problem, no data, recovering, closed —
+  with the failing and silent locations on each event and the error they reported, replacing the
+  old list of individual check results.
 - Existing Slack alerts keep working unchanged.
 
 ### Checks identify themselves
 - HTTP(S) checks now send `Uptimer/1.4.0 (+https://uptimer.myuptime.info)` instead of
   `Go-http-client/1.1`, so you can recognise and filter monitoring traffic in logs and analytics.
-  The value carries no workspace, worker or region, and is not configurable.
+  The value carries no workspace, worker or location, and is not configurable.
 
 ### Logging out ends the provider session
 - Signing out now also ends the session at your OIDC provider, so the next login no longer signs

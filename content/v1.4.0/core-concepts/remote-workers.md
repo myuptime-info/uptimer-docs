@@ -6,7 +6,7 @@ description: "Add a remote worker: init, register, connect over gRPC."
 ---
 
 A **worker** is a prober: it pulls rules from the server, runs the checks, and reports results
-back over gRPC. Running one elsewhere adds a [region](/v1.4.0/core-concepts/regions/) you
+back over gRPC. Running one elsewhere adds a [location](/v1.4.0/core-concepts/locations/) you
 control — inside a private network, or a second geography. Each worker has its own identity and
 must be **registered once** in the dashboard before it can connect.
 
@@ -36,11 +36,11 @@ form:
 | `Worker UUID: …` | **UID** (the form labels it UID — paste the whole `Worker UUID` value) |
 | the whole `Public Key` PEM block | **Public Key** |
 | *(your choice)* | **Name** |
-| *(pick an existing one, or create one inline)* | **Region** — the region this worker serves |
+| *(pick an existing one, or create one inline)* | **Location** — the location this worker serves |
 
-The **Region** selector lists regions by name; if you have none yet, create one from the same
-form. (Its underlying value is the region's short id, not the worker UUID — pick by name and you
-won't hit the "please select a valid region" error.)
+The **Location** selector lists locations by name; if you have none yet, create one from the same
+form. (Its underlying value is the location's short id, not the worker UUID — pick by name and
+you won't hit the "please select a valid location" error.)
 
 **3. Run the worker**, pointed at the server's gRPC address:
 

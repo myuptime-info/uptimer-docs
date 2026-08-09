@@ -35,7 +35,7 @@ For the hosted service use `UptimerCloudClient(api_key=...)` — it targets
 - `client.v1.regions.all()`
 - `client.v1.rules.all(workspace_id)` · `.create(...)` · `.update(id, ...)` · `.delete(id)`
 
-Assign [regions](/v1.4.0/core-concepts/regions/) on a rule with its `regions` field (region names,
+Assign [regions](/v1.4.0/core-concepts/locations/) on a rule with its `regions` field (region names,
 matched by name). A rule with no region stays at "No Data", so assign at least one:
 
 ```python

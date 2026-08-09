@@ -45,5 +45,5 @@ status code. Full details in the [REST API reference](/v1.4.0/reference/rest-api
 
 Dev mode is for trying, not for running. When you're ready:
 
-- [Core concepts](/v1.4.0/core-concepts/rules-and-checks/) — what you're actually configuring.
+- [Core concepts](/v1.4.0/core-concepts/monitors-and-incidents/) — what you're actually configuring.
 - [Self-hosting](/v1.4.0/getting-started/self-hosting/) — grow this into a real deployment.

@@ -55,7 +55,7 @@ curl -H "Authorization: Bearer $UPTIMER_API_KEY" \
 - `interval` is seconds, in whole minutes (≥ 60).
 - `regions` is a list of region **names** (matched by name, as listed by `GET /v1/regions`). An
   unknown name is a validation error. Omit or leave it empty for **no region** — the rule then
-  **stays "No Data"** (never checked), see [Regions](/v1.4.0/core-concepts/regions/). On update the
+  **stays "No Data"** (never checked), see [Regions](/v1.4.0/core-concepts/locations/). On update the
   list **replaces** the rule's regions, so include the ones you want to keep.
 
 `DELETE` returns `{ "message": "Rule deleted successfully", "rule_id": "<uid>" }`.
