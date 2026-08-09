@@ -1,0 +1,19 @@
+# Uptimer 1.4.0 behind nginx HTTP Basic Auth.
+# 1.4.0 is not released yet: these pull :edge (the current pre-release build).
+# Swap :edge for :1.4.0 once the release ships.
+# `docker compose up`, then open http://localhost  (admin / password).
+services:
+  uptimer:
+    image: ghcr.io/myuptime-info/uptimer:edge
+    volumes:
+      - ./data:/data
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./.htpasswd:/etc/nginx/.htpasswd:ro
+    depends_on:
+      - uptimer

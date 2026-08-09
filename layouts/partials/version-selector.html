@@ -7,7 +7,7 @@
   <summary class="verpill">v{{ $cur }} ▾</summary>
   <ul class="verpill-menu">
     {{ range .available }}
-    <li><a href="/v{{ . }}/"{{ if eq . $cur }} class="on"{{ end }}>v{{ . }}{{ if eq . $.Site.Params.versions.latest }} · latest{{ end }}</a></li>
+    <li><a href="/v{{ . }}/"{{ if eq . $cur }} class="on"{{ end }}>v{{ . }}{{ if eq . $.Site.Params.versions.latest }} · latest{{ else if eq . $.Site.Params.versions.preview }} · preview{{ end }}</a></li>
     {{ end }}
   </ul>
 </details>

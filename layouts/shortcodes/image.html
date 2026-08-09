@@ -1,2 +1,11 @@
+{{- /* The image tag for the version tree this page lives in. A preview version has no
+       released image yet — CI publishes pre-releases as :edge — so pointing at :1.4.0
+       would hand the reader a tag that does not exist. */ -}}
 {{- $seg := index (split (strings.TrimPrefix "/" .Page.RelPermalink) "/") 0 -}}
-{{- printf "ghcr.io/myuptime-info/uptimer:%s" (strings.TrimPrefix "v" $seg) -}}
+{{- $ver := strings.TrimPrefix "v" $seg -}}
+{{- with site.Params.versions -}}
+{{- if and .preview (eq $ver .preview) -}}
+{{- $ver = "edge" -}}
+{{- end -}}
+{{- end -}}
+{{- printf "ghcr.io/myuptime-info/uptimer:%s" $ver -}}
