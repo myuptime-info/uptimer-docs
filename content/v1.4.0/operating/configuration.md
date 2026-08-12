@@ -30,7 +30,7 @@ UPTIMER__SERVER__UI__PORT=8080 uptimer server
 | `grpc.port` | `UPTIMER__GRPC__PORT` | — | Worker gRPC channel (reference deploys use `50051`). |
 | `worker.grpc_server` | `UPTIMER__WORKER__GRPC_SERVER` | — | Where a worker dials the server. |
 | `general.data_dir` | `UPTIMER__GENERAL__DATA_DIR` | `/data/` | Keys, IDs and SQLite live here — [persist it](/v1.4.0/operating/storage/). |
-| `general.site_url` | `UPTIMER__GENERAL__SITE_URL` | — | Base URL used in alert links. |
+| `general.site_url` | `UPTIMER__GENERAL__SITE_URL` | — | Base URL used in alert links. **Required for alerting** — without it no alert is sent, see [Slack alerts](/v1.4.0/alerting/slack-alerts/). |
 | `general.logging.level` | `UPTIMER__GENERAL__LOGGING__LEVEL` | `DEV` | `DEV` or `PROD`. |
 | `general.metrics_port` | `UPTIMER__GENERAL__METRICS_PORT` | — | Prometheus port when `--metrics` is set — see [Metrics](/v1.4.0/reference/metrics/). |
 

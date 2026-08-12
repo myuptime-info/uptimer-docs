@@ -11,11 +11,17 @@ channel whenever a rule flips **up → down** (or recovers).
 
 ## Set it up
 
-1. In Slack, create an **Incoming Webhook** and copy its URL.
-2. In Uptimer, open **Workspace → Settings → Webhook URL**, paste it, and save.
+1. Set [`general.site_url`](/v1.4.0/operating/configuration/) to your instance's public base URL,
+   for example `UPTIMER__GENERAL__SITE_URL: "https://uptimer.example.com"`.
+2. In Slack, create an **Incoming Webhook** and copy its URL.
+3. In Uptimer, open **Workspace → Settings → Webhook URL**, paste it, and save.
 
 On the next status change, Uptimer POSTs a Slack-formatted message — green when a rule recovers,
 red when it goes down — with a link back to the rule's history.
+
+> **`site_url` is required.** Every alert carries a link back to the rule, and building it needs
+> an absolute base URL — there is no default. With `site_url` unset, **no alert is sent at all**
+> and the server log says so. Set it before you rely on alerting.
 
 > Alerts fire on **state transitions**, not on every check: one message when a rule goes down,
 > one when it recovers — not one per interval.
