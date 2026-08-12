@@ -16,12 +16,38 @@ channel whenever a rule flips **up → down** (or recovers).
 2. In Slack, create an **Incoming Webhook** and copy its URL.
 3. In Uptimer, open **Workspace → Settings → Webhook URL**, paste it, and save.
 
-On the next status change, Uptimer POSTs a Slack-formatted message — green when a rule recovers,
-red when it goes down — with a link back to the rule's history.
+On the next status change, Uptimer POSTs a Slack-formatted message with a link back to the rule's
+history.
 
 > **`site_url` is required.** Every alert carries a link back to the rule, and building it needs
 > an absolute base URL — there is no default. With `site_url` unset, **no alert is sent at all**
 > and the server log says so. Set it before you rely on alerting.
+
+## What an alert says
+
+There are three, and the colour tells them apart at a glance: red for a confirmed problem, amber
+for no data, green for a recovery.
+
+```text
+Checkout API is down
+Failing from 2 of 3 locations — de, fr
+`Get "https://checkout.example/health": dial tcp 104.20.23.154:9: i/o timeout`
+Down for 2m before we alerted.
+View timeline
+```
+
+- **The location count is the useful part.** "2 of 3" separates a real outage from one bad
+  vantage point — the reason a monitor is checked from several
+  [locations](/v1.4.0/core-concepts/locations/) at all. A monitor with a single location omits
+  the line: there is nothing to compare against.
+- **The error is the sender's own**, quoted and truncated, never reworded. `i/o timeout` versus
+  `connection refused` versus a TLS error is the first thing worth acting on.
+- **"Down for 2m before we alerted"** is the confirmation hold, not slowness — Uptimer waits to
+  be sure before it pages anyone.
+
+A **no data** alert says `No reports from 2 of 3 locations` and, plainly, that Uptimer cannot
+tell whether the site is up — which is not the same claim as "your site is down". A **recovery**
+says how long the outage lasted and when it ended.
 
 > Alerts fire on **state transitions**, not on every check: one message when a rule goes down,
 > one when it recovers — not one per interval.
