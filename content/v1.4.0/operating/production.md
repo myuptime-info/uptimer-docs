@@ -44,6 +44,10 @@ x-server-env: &server-env
   UPTIMER__SERVER__AUTH__DEV: "false"
   UPTIMER__SERVER__SQIDS_SALT: "change-me"
   UPTIMER__GRPC__PORT: "50051"
+  # Shared, not web-only: alerts are sent by `availabilities` and each one links back to the
+  # rule, so the alerting process needs the base URL too. Set it on `web` alone and no alert
+  # is sent at all — see Slack alerts.
+  UPTIMER__GENERAL__SITE_URL: "https://uptimer.example.com"
   UPTIMER__GENERAL__LOGGING__LEVEL: "PROD"
 
 services:
@@ -63,7 +67,6 @@ services:
     environment:
       <<: *server-env
       UPTIMER__SERVER__UI__PORT: "2517"
-      UPTIMER__GENERAL__SITE_URL: "https://uptimer.example.com"
     ports: ["127.0.0.1:2517:2517"]      # publish on loopback; put TLS + real auth in front
     volumes: ["server:/data"]
     depends_on: [migrator]

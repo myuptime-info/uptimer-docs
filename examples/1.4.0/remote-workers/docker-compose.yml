@@ -23,6 +23,11 @@ services:
   uptimer-availabilities:
     image: ghcr.io/myuptime-info/uptimer:edge
     command: ["server", "--services", "availabilities"]
+    environment:
+      # This is the service that sends alerts, and every alert links back to the rule.
+      # Without a base URL to build that link from, no alert is sent — so set it here, on
+      # the alerting process, not only on the one serving the UI.
+      UPTIMER__GENERAL__SITE_URL: "http://localhost:2517"
     volumes:
       - ./data/server:/data
 
