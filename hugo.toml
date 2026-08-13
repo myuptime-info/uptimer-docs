@@ -11,12 +11,13 @@ disableKinds = ['taxonomy', 'term']
 # Versioned docs. Newest first. `latest` drives the version pill, the outdated
 # banner and the /latest/ redirects (#24/#25).
 [params.versions]
-default = "1.3.0"
+default = "1.4.0"
 available = ["1.4.0", "1.3.0", "1.0.0"]
-latest = "1.3.0"
+latest = "1.4.0"
 # preview: documented but not released yet. It is reachable from the version pill and
 # excluded from /latest/; its pages carry a preview banner and use the :edge image.
-preview = "1.4.0"
+# Unset between releases — 1.4.0 is released, and nothing newer is documented yet.
+preview = ""
 
 # Home also emits index.json — the client-side search index (see layouts/index.json).
 [outputs]
