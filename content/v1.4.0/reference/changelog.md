@@ -19,10 +19,14 @@ description: "User-facing changes from 1.1 to 1.4.0."
 - **History is now a timeline of incidents** — pending, problem, no data, recovering, closed —
   with the failing and silent locations on each event and the error they reported, replacing the
   old list of individual check results.
-- Existing Slack alerts keep working unchanged.
+- **The monitor list gains two badges** — **Pending** and **Recovering** — shown while a monitor is
+  inside one of the 2-minute holds.
+- **Slack alerts were rewritten.** Each one now says how many locations are failing and which,
+  quotes the error the check returned, and says how long the problem ran before the alert or how
+  long the outage lasted. The monitor's URL left the title, and the no-data alert is amber.
 
 ### Checks identify themselves
-- HTTP(S) checks now send `Uptimer/1.4.0 (+https://uptimer.myuptime.info)` instead of
+- HTTP(S) checks now send `Uptimer/<version> (+https://uptimer.myuptime.info)` instead of
   `Go-http-client/1.1`, so you can recognise and filter monitoring traffic in logs and analytics.
   The value carries no workspace, worker or location, and is not configurable.
 

@@ -29,15 +29,22 @@ the exact request/response fields, see the [REST API reference](/v1.4.0/referenc
 
 ## Monitor status
 
-Every monitor shows one of three statuses:
+A monitor settles into one of three outcomes:
 
 | Status | Meaning |
 |---|---|
 | **Up** | Enough locations report the check passing. |
 | **Down** | Enough locations report it failing — wrong status code, missing body substring, or a connection/TLS error. |
-| **No Data** | Not enough locations have reported to decide. Almost always because **no [location](/v1.4.0/core-concepts/locations/) is assigned** (a monitor needs at least one), or because the workers serving them have gone quiet. |
+| **No Data** | Not enough locations have reported to decide. Usually because **no [location](/v1.4.0/core-concepts/locations/) is assigned**, or because the workers serving them have gone quiet. |
 
-Alerts fire only on a change *between* Up and Down — see
+While a monitor is inside one of the 2-minute holds, the list shows the hold instead:
+
+| Badge | Meaning |
+|---|---|
+| **Pending** | Failing, but not for 2 minutes yet — no alert has been sent. |
+| **Recovering** | Passing again, but not for 2 minutes yet — the incident is still open. |
+
+So the list can show five badges in total. See
 [When an alert actually fires](/v1.4.0/alerting/slack-alerts/#when-an-alert-actually-fires).
 
 ### How many locations must fail
@@ -56,6 +63,10 @@ half-silent monitor reads **No Data** rather than quietly falling back to whiche
 answer.
 
 With a single location assigned, both settings behave identically.
+
+The control is on the monitor form only — the [REST API](/v1.4.0/reference/rest-api/) cannot set
+it, so a monitor created through the API uses **Majority of locations** until you change it in the
+dashboard.
 
 ### Confirming and closing
 
@@ -93,6 +104,9 @@ the last known evidence is carried forward and marked as such.
 ```
 Uptimer/1.4.0 (+https://uptimer.myuptime.info)
 ```
+
+The version is the build's own, so a pre-release image sends what it actually is — for example
+`Uptimer/1.4.0-rc17 (+https://uptimer.myuptime.info)` on an `:edge` build.
 
 Before this, monitoring traffic arrived as `Go-http-client/1.1` — indistinguishable from any
 other Go program, and it inflated bot metrics in analytics and error trackers.

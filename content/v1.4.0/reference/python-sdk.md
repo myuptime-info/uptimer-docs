@@ -19,7 +19,7 @@ client = UptimerClient(
     base_url="http://localhost:2517/api",
 )
 
-print(client.version())                  # "1.4.0"
+print(client.version())                  # the running build, e.g. "1.4.0" or "1.4.0-rc17"
 ws = client.v1.workspaces.all()[0]
 print(client.v1.rules.all(ws.id))
 ```

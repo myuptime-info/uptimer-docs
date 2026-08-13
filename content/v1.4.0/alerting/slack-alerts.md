@@ -6,8 +6,8 @@ description: "Send alerts to Slack via the workspace webhook."
 ---
 
 Uptimer sends alerts through **one webhook per workspace**. Point it at a Slack
-[incoming webhook](https://api.slack.com/messaging/webhooks) and you get a message in your
-channel whenever a rule flips **up → down** (or recovers).
+[incoming webhook](https://api.slack.com/messaging/webhooks) and you get a message when a monitor
+has a **confirmed problem**, when it has **confirmed no data**, and when it **recovers**.
 
 ## Set it up
 
@@ -61,17 +61,19 @@ URL and all rules alert. To send somewhere other than Slack, see
 
 ## When an alert actually fires
 
-An alert is sent on a status **transition**, so Uptimer must already have a status to change
-*from*. That has a few consequences worth knowing when you're testing:
+An alert is sent when a problem is **confirmed** — that is, when it has held for 2 minutes. There
+is no need for a healthy period first, which is what makes it worth testing:
 
-- A brand-new rule's **first** check only records its starting status — no alert is sent for it.
-- So a rule that is **down from the moment you create it never alerts** — it has no healthy
-  baseline to fall from. Point a new rule at a **healthy** URL first, let it go **Up**, and it
-  will then alert on the next real outage.
-- Give it at least **two check intervals** (≥ 2 minutes at the default one-minute cadence) to
-  produce the first transition.
-- A monitor stuck at **No Data** (no [location](/v1.4.0/core-concepts/locations/) assigned) never alerts
-  — it isn't being checked at all.
+- **A monitor that is failing from the moment you create it does alert.** It opens an incident on
+  its first bad check and alerts about 2 minutes later. No prior Up state is required.
+- During those 2 minutes the list shows **Pending**. That is the confirmation hold, not a delay in
+  delivery.
+- **No Data confirms and alerts too.** A monitor with no
+  [location](/v1.4.0/core-concepts/locations/) assigned cannot be decided, so it settles on No
+  Data and sends the "no data" alert — it does not stay quiet.
+- **Recovery alerts only follow an alert.** If a problem clears inside the 2-minute hold, nothing
+  was announced, so no recovery is announced either.
+- Alerts are one per incident, not one per check: one when it is confirmed, one when it closes.
 
 The webhook is called **from the Uptimer server** (or its container), so the URL must be
 reachable from there — a `localhost` receiver on your laptop is **not** reachable from inside the
