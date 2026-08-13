@@ -19,9 +19,11 @@ channel whenever a rule flips **up → down** (or recovers).
 On the next status change, Uptimer POSTs a Slack-formatted message with a link back to the rule's
 history.
 
-> **`site_url` is required.** Every alert carries a link back to the rule, and building it needs
-> an absolute base URL — there is no default. With `site_url` unset, **no alert is sent at all**
-> and the server log says so. Set it before you rely on alerting.
+> **Set `site_url` on every server process, not just the web one.** Alerts are sent by
+> `server --services availabilities`, and that is the process that builds the link — putting the
+> setting on the UI container alone leaves the alerting one without it. Without `site_url` the
+> alert is still sent; its link just reads `SITE_URL_NOT_CONFIGURED/ui/…` instead of a working
+> address, and the server logs a warning at startup.
 
 ## What an alert says
 
