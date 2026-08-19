@@ -21,8 +21,13 @@ docker run -p 2517:2517 myuptime/uptimer
 
 Then open [http://127.0.0.1:2517](http://127.0.0.1:2517) in your browser:
 
-1. Add a website check (URL + interval)
-2. Set up a Slack webhook for notifications
+1. On **Monitoring**, choose **Add website monitoring** (URL + interval + locations)
+2. Set up a Slack webhook for notifications so incidents reach you
+
+Saving website monitoring creates a **monitoring subject** with a built-in HTTP
+**signal** and a **Reachability rule**. Open the subject from Monitoring to see
+its timeline, the observations each location reported, and why the rule decided
+what it did.
 
 ## 🧪 Demo limitations
 
