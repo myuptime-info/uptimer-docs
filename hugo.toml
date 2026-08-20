@@ -12,12 +12,14 @@ disableKinds = ['taxonomy', 'term']
 # banner and the /latest/ redirects (#24/#25).
 [params.versions]
 default = "1.4.0"
-available = ["1.4.0", "1.3.0", "1.0.0"]
+available = ["1.5.0", "1.4.0", "1.3.0", "1.0.0"]
 latest = "1.4.0"
 # preview: documented but not released yet. It is reachable from the version pill and
 # excluded from /latest/; its pages carry a preview banner and use the :edge image.
-# Unset between releases — 1.4.0 is released, and nothing newer is documented yet.
-preview = ""
+# 1.5.0 is in release-candidate: documented, reachable from the pill, carrying the
+# preview banner and the :edge image, but not /latest/ until it ships. Move it to
+# default+latest and clear this when 1.5.0 is released.
+preview = "1.5.0"
 
 # Home also emits index.json — the client-side search index (see layouts/index.json).
 [outputs]
