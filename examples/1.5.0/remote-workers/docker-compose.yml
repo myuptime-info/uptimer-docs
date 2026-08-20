@@ -1,9 +1,11 @@
-# Uptimer 1.4.0 — server split into services + two local workers.
+# Uptimer 1.5.0 — server split into services + two local workers.
+# 1.5.0 is not released yet: these pull :edge (the current pre-release build).
+# Swap :edge for :1.5.0 once the release ships.
 # The server (ui/grpc/availabilities) shares one identity via ./data/server.
 # See README.md for the one-time worker init + registration.
 services:
   uptimer-ui:
-    image: ghcr.io/myuptime-info/uptimer:1.4.0
+    image: ghcr.io/myuptime-info/uptimer:edge
     command: ["server", "--services", "api,ui"]
     ports:
       - "2517:2517"
@@ -11,7 +13,7 @@ services:
       - ./data/server:/data
 
   uptimer-grpc:
-    image: ghcr.io/myuptime-info/uptimer:1.4.0
+    image: ghcr.io/myuptime-info/uptimer:edge
     command: ["server", "--services", "grpc"]
     environment:
       UPTIMER__GRPC__PORT: "50051"
@@ -19,7 +21,7 @@ services:
       - ./data/server:/data
 
   uptimer-availabilities:
-    image: ghcr.io/myuptime-info/uptimer:1.4.0
+    image: ghcr.io/myuptime-info/uptimer:edge
     command: ["server", "--services", "availabilities"]
     environment:
       # This is the service that sends alerts, and every alert links back to the rule.
@@ -30,7 +32,7 @@ services:
       - ./data/server:/data
 
   worker1:
-    image: ghcr.io/myuptime-info/uptimer:1.4.0
+    image: ghcr.io/myuptime-info/uptimer:edge
     command: ["worker"]
     environment:
       UPTIMER__WORKER__GRPC_SERVER: "uptimer-grpc:50051"
@@ -41,7 +43,7 @@ services:
       - uptimer-grpc
 
   worker2:
-    image: ghcr.io/myuptime-info/uptimer:1.4.0
+    image: ghcr.io/myuptime-info/uptimer:edge
     command: ["worker"]
     environment:
       UPTIMER__WORKER__GRPC_SERVER: "uptimer-grpc:50051"

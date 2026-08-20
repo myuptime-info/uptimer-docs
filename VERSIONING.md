@@ -45,6 +45,13 @@ read `_redirects`, configure the same rule there.
 4. **Update `content/_index.md`** — set the root redirect `url` to the new version.
 5. **Rewrite the in-tree links** in the new folder to the new version prefix
    (`/v1.3.0/` → `/v1.4.0/`) and update the content for what changed.
+6. **Copy `examples/1.3.0` → `examples/1.4.0`**, bump the header comment and the
+   `/v1.3.0/` links in each README, and repoint the content tree's `examples/1.3.0`
+   GitHub links at the new folder.
+7. **Pin the example images.** While the version is unreleased they pull `:edge` with a
+   note saying so; **on release, swap `:edge` → `:X.Y.Z` and delete the note.** This is
+   easy to forget — 1.4.0 shipped as `latest` with its examples still on `:edge`, so the
+   docs pages said `:1.4.0` and the copy-pasteable compose files said `:edge`.
 
 The version pill (`layouts/partials/version-selector.html`) and the outdated-version banner
 (`layouts/partials/version-banner.html`) update automatically from `[params.versions]` — no

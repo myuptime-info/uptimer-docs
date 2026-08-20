@@ -32,7 +32,7 @@ or the matching `UPTIMER__SERVER__AUTH__OIDC__*` env vars. With OIDC configured,
 ### Example: Keycloak
 
 A self-contained Keycloak + Uptimer stack (full realm import in
-[`examples/1.4.0/keycloak`](https://github.com/myuptime-info/uptimer-docs/tree/main/examples/1.4.0/keycloak)):
+[`examples/1.5.0/keycloak`](https://github.com/myuptime-info/uptimer-docs/tree/main/examples/1.5.0/keycloak)):
 
 ```yaml
 services:
@@ -118,4 +118,4 @@ The REST API authenticates with a **Bearer token** you mint in the dashboard
 ## Reverse-proxy auth
 
 For a quick lock on an internal instance, add HTTP basic auth in nginx in front of the UI — see
-[`examples/1.4.0/http-auth`](https://github.com/myuptime-info/uptimer-docs/tree/main/examples/1.4.0/http-auth).
+[`examples/1.5.0/http-auth`](https://github.com/myuptime-info/uptimer-docs/tree/main/examples/1.5.0/http-auth).
