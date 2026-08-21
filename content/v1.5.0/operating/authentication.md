@@ -115,6 +115,19 @@ The REST API authenticates with a **Bearer token** you mint in the dashboard
 (**User → API Keys**). Send it as `Authorization: Bearer <token>`; see the
 [REST API reference](/v1.5.0/reference/rest-api/).
 
+**New in 1.5.0.** The token is displayed **once**, on the screen that creates it. Copy it then:
+it cannot be shown again and there is no regenerate. Lose it and you delete the key and create
+another. Give each key a **description** so you can tell them apart afterwards.
+
+Tokens are valid for **180 days**, and the list shows the expiry date of each one — a key past
+it is badged **Expired**. Keys created before 1.5.0 show no date, because the page this replaced
+issued a fresh 180-day token on every visit and the expiry of the one you are holding was never
+recorded.
+
+To rotate without downtime, **create the new key first**, switch your client over, then delete
+the old one. Keys are independent of each other, and deleting one stops its token working
+immediately — which is also how you revoke a leaked token.
+
 ## Reverse-proxy auth
 
 For a quick lock on an internal instance, add HTTP basic auth in nginx in front of the UI — see

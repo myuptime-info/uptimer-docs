@@ -40,6 +40,18 @@ description: "User-facing changes from 1.1 to 1.5.0."
 - **[Python SDK 1.5.0](/v1.5.0/reference/python-sdk/)** targets v2 only. Its version now tracks
   the server it talks to. Staying on v1? Pin `uptimer-python-sdk<1`.
 
+### API keys
+- **A token is shown once, when you create it**, and can be copied from that screen. It cannot be
+  viewed again afterwards and there is no regenerate — if you lose it, delete the key and create
+  another. Previously the key's page re-issued and displayed a working token on every visit.
+- **Keys take an optional description**, so you can tell them apart once the value is hidden.
+- **The list shows when each token expires**, and badges a key **Expired** once it is past.
+  Keys created before 1.5.0 show no expiry: the page this replaces issued a fresh 180-day token
+  every time it was opened, so the expiry of the token you hold is not recoverable.
+- **Rotating without downtime is unchanged and still the way to do it:** create the new key,
+  switch your client over, then delete the old one. Keys are independent, and deleting one stops
+  its token immediately.
+
 ### Fixed
 - Success and error notifications could disappear before they could be read.
 - **Security:** a workspace member could read another workspace's monitor configuration, or
