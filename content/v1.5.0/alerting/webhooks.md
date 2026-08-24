@@ -20,7 +20,7 @@ When an incident is confirmed or closes, Uptimer POSTs:
       "author_name": "Uptimer",
       "title": "Checkout API is down",
       "color": "#d50201",
-      "text": "Failing from 2 of 3 locations — de, fr\n`dial tcp 104.20.23.154:9: i/o timeout`\nDown for 2m before we alerted.\n<https://uptimer.example.com/ui/workspace/…/rule/…/history|View timeline>",
+      "text": "Failing from 2 of 3 locations — de, fr\n`dial tcp 104.20.23.154:9: i/o timeout`\nDown for 2m before we alerted.\n<https://uptimer.example.com/ui/workspace/{workspace}/monitoring/subject/{subject}|View timeline>",
       "footer": "Uptimer",
       "timestamp": 1786642711
     }
@@ -38,6 +38,13 @@ The title is the monitor name plus its state, and the colour follows it:
 
 The `text` is plain text with Slack's `<url|label>` link syntax, so a non-Slack consumer should
 expect that markup rather than HTML or Markdown.
+
+**Changed in 1.5.0:** the link points at the **subject timeline**
+(`/ui/workspace/{workspace}/monitoring/subject/{subject}`), not at a rule's history page. The
+subject id is an opaque id, not a database number. A monitor that somehow has no subject yet
+keeps the old `/rule/{uid}/history` link so an alert never links nowhere. Its host comes from
+[`general.site_url`](/v1.5.0/operating/configuration/); when that is unset the URL reads
+`SITE_URL_NOT_CONFIGURED/ui/…` and the alert is still sent.
 
 > This release has **one Slack-compatible webhook per workspace** — no per-rule routing, no
 > custom templates or headers, no retries, and no other channels (email/SMS). If you need

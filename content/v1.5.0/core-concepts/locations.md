@@ -12,9 +12,11 @@ more workers, and every result a worker reports is labelled with the location it
 Manage locations in the dashboard. Assign a monitor to specific locations from the dashboard, or
 over the [REST API](/v1.5.0/reference/rest-api/) and [Python SDK](/v1.5.0/reference/python-sdk/).
 
-> **Called `regions` in the API.** The REST API, the Python SDK and workspace import/export still
-> use the field name `regions`, and it is not changing — renaming it would break every existing
-> client. The dashboard says *locations*; the wire format says `regions`. They mean the same thing.
+> **What each surface calls it.** The dashboard, [API v2](/v1.5.0/reference/rest-api/) and the
+> Python SDK all say **locations** — the v2 field is `locations` and it takes location *names*.
+> **API v1 still says `regions`**, and is unchanged and supported, so existing clients keep
+> working. Workspace [export/import](/v1.5.0/core-concepts/workspaces/#export--import) also keeps
+> the file key `regions`. All three mean the same thing.
 
 > **A monitor with no location is never checked — it stays at "No Data" forever.** Assign at
 > least one location to every monitor you want watched. This applies to monitors created in the

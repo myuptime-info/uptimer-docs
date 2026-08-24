@@ -11,11 +11,11 @@ A check passes when three things hold:
 2. the response **status code** is one you allow (default: `200`), and
 3. optionally, the response **body contains** a substring you specify.
 
-Anything else marks the rule **down**. There's no assertion language, no latency threshold and
+Anything else marks the monitor **down**. There's no assertion language, no latency threshold and
 no header checks — just status codes and an optional body match. Connection and TLS timeouts are
 a fixed 10 seconds.
 
-You set the allowed statuses and the optional body match on the rule; the field names are in the
+You set the allowed statuses and the optional body match on the monitor; the field names are in the
 [REST API reference](/v1.5.0/reference/rest-api/).
 
 > The body match is a **literal substring** — it doesn't parse or normalize anything. Matching

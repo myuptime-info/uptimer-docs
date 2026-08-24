@@ -1,17 +1,18 @@
 ---
 title: "Workspaces"
 weight: 50
-lede: "A workspace owns rules, members and the alert webhook."
+lede: "A workspace owns what you monitor, its members and the alert webhook."
 description: "Workspaces and roles."
 ---
 
-A **workspace** groups rules, the people who can access them, and the
-[alert webhook](/v1.5.0/alerting/slack-alerts/). Every rule belongs to one workspace.
+A **workspace** groups everything you monitor, the people who can access it, and the
+[alert webhook](/v1.5.0/alerting/slack-alerts/). Every monitor belongs to one workspace, and
+**Monitoring** is that workspace's home page.
 
 Members have a role:
 
-- **owner** — manage the workspace and its rules
-- **editor** — manage rules
+- **owner** — manage the workspace and its monitors
+- **editor** — manage monitors
 - **viewer** — read-only
 
 A separate account-level **admin** role manages server-wide things: workers, locations and
@@ -21,8 +22,8 @@ settings.
 
 Export a workspace to a YAML file from **Workspace → Settings → Export**. It contains every
 monitor (target, interval, expected response) and, for each one, the **names** of the locations
-it runs in — under the key `regions`, which is the file format's name for them and is not
-changing. Import it from **Workspace → Import**.
+it runs in — under the key `regions`, which is the file format's name for them and is unchanged
+in 1.5.0 (the dashboard and [API v2](/v1.5.0/reference/rest-api/) say *locations*). Import it from **Workspace → Import**.
 
 Import always creates a **new** workspace — it never merges into an existing one — keeping the
 name from the file. So importing a `Default` export gives you a second workspace also called

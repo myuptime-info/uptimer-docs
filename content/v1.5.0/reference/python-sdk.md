@@ -14,7 +14,9 @@ later; patch numbers move independently. So install the SDK whose major.minor ma
 your server — no compatibility table to look up.
 
 Still on API v1? Pin `uptimer-python-sdk<1`. The server's v1 is unchanged and
-supported, so 0.4.x keeps working — it just cannot use anything below.
+supported, so 0.4.x keeps working against a 1.5.0 server — it just cannot use anything
+new. There is no v1 surface left in 1.5.x: `client.v1`, its models and its kinds are
+gone.
 
 ## Quick start
 
@@ -25,7 +27,7 @@ client = UptimerClient(api_key="…", base_url="http://localhost:2517/api")
 
 # Optional, but it fails with a message that names the fix rather than a 404
 # on your first real call.
-print(client.check_compatibility())
+print(client.check_compatibility())   # or client.ensure_compatible(), which checks once
 
 ws = client.workspaces.all()[0]
 print(client.monitoring.websites.all(ws.id))
@@ -46,6 +48,18 @@ The client mirrors [API v2](/v1.5.0/reference/rest-api/):
 
 Website monitoring sits under `client.monitoring` because it is a built-in template,
 not the general monitor model.
+
+Every model carries the API's `kind`, and the SDK strips `kind` out of anything it
+sends: it is the server telling you what an object is, not a field you set.
+
+## Checking the server first
+
+`check_compatibility()` reads `/version` — the one unversioned endpoint, so it works
+against a server too old for the rest of the SDK — and raises `IncompatibleServerError`
+if that server predates API v2. The bar is the SDK's own major.minor: **1.5.x needs
+uptimer 1.5.0+ (or myuptime.info 15.1.0+)**. A server reporting something that is not a
+release number, such as a `dev` build from source, is treated as usable rather than
+locked out.
 
 ## Create website monitoring
 
@@ -89,10 +103,16 @@ yet**.
 
 ## Errors
 
-- `DefaultUptimerApiError` — the API returned an `error` envelope.
-- `IncompatibleServerError` — the server does not provide API v2. Upgrade it, or use
-  `uptimer-python-sdk<1`.
-- `UptimerInvalidHttpCodeError` — a genuine non-200 transport error.
+All of these subclass `UptimerError`, in `uptimer.errors`:
+
+- `DefaultUptimerApiError` — the API returned an `error` envelope. Carries `.code`,
+  `.error_type`, `.message` and `.details`; branch on `.code`, which is finer-grained
+  than `.error_type` (see [Errors](/v1.5.0/reference/rest-api/#errors)).
+- `IncompatibleServerError` — the server does not provide API v2. Carries
+  `.server_version`. Upgrade the server, or use `uptimer-python-sdk<1`.
+- `UptimerInvalidHttpCodeError` — a genuine non-200 transport error. Carries `.url` and
+  `.status_code`.
+- `UptimerInvalidResponseError` — the body was not the expected envelope.
 
 ## Migrating from 0.4.x
 
@@ -105,6 +125,15 @@ yet**.
 | `Rule` / `CreateRuleRequest` | `WebsiteMonitor` / `CreateWebsiteMonitorRequest` |
 | `regions=[...]` | `locations=[...]` |
 | — | `agreement=...`, `client.incidents` |
+| — | `client.check_compatibility()` |
+
+`client.version()` is unchanged — `/version` is a shared global endpoint, not a
+versioned one. `UptimerClient(api_key=…, base_url=…)` and `UptimerCloudClient(api_key=…)`
+are constructed exactly as before.
+
+The rename is not only the namespace: `regions=[...]` becomes `locations=[...]`, and
+what 0.4.x called a rule is a **website monitor**. What the server stores is the same
+object, so a monitor created with 0.4.x is the one 1.5.x reads back.
 
 Source and releases on [PyPI](https://pypi.org/project/uptimer-python-sdk/) and
 [GitHub](https://github.com/myuptime-info/uptimer-python-sdk).

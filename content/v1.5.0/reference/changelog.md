@@ -18,7 +18,11 @@ description: "User-facing changes from 1.1 to 1.5.0."
 ### Adding a website
 - The form is now **Website monitoring**. Saving it creates a **monitoring subject** with one
   built-in HTTP **signal** and one **Reachability rule** — you no longer create those separately.
-- **Location agreement gains "All locations"**, alongside Any and Majority.
+- **Locations Required to Fail gains "All locations"**, alongside *Majority of locations* and
+  *At least one location*. Each location you select becomes one input on the rule. See
+  [How many locations must fail](/v1.5.0/core-concepts/monitors-and-incidents/#how-many-locations-must-fail).
+- **Creating signals and rules by hand, and custom ingest, are not in this release.** The
+  **Add signal** and **Add rule** actions are visible but marked coming soon.
 
 ### Seeing why
 - **Timeline** — what happened to a subject, newest first, with how long a closed incident lasted.
@@ -35,10 +39,16 @@ description: "User-facing changes from 1.1 to 1.5.0."
 
 ### API and SDK
 - **[API v2](/v1.5.0/reference/rest-api/)** speaks the product's language — *locations*,
-  *website monitoring*, *incidents* — and is self-contained. `GET /v2/incidents` answers "what is
-  wrong right now". **API v1 is unchanged and supported.**
-- **[Python SDK 1.5.0](/v1.5.0/reference/python-sdk/)** targets v2 only. Its version now tracks
-  the server it talks to. Staying on v1? Pin `uptimer-python-sdk<1`.
+  *website monitoring*, *incidents* — and is self-contained: a v2 client never needs a v1 route.
+  `GET /v2/incidents` answers "what is wrong right now". **API v1 is unchanged and supported** —
+  every v1 route, field and `kind` still behaves exactly as it did.
+- **A website monitor can now set its location agreement over the API** — the `agreement` field
+  (`any`, `majority`, `all`). API v1 has no such field and keeps using `majority`.
+- **[Python SDK 1.5.0](/v1.5.0/reference/python-sdk/)** targets v2 only: `client.workspaces`,
+  `client.locations`, `client.incidents` and `client.monitoring.websites` replace `client.v1`.
+  Its version now tracks the server it talks to, and `client.check_compatibility()` refuses a
+  server that predates v2 with a message naming the fix. Staying on v1? Pin
+  `uptimer-python-sdk<1` — 0.4.x keeps working against a 1.5.0 server.
 
 ### API keys
 - **A token is shown once, when you create it**, and can be copied from that screen. It cannot be
@@ -52,8 +62,17 @@ description: "User-facing changes from 1.1 to 1.5.0."
   switch your client over, then delete the old one. Keys are independent, and deleting one stops
   its token immediately.
 
+### Identifiers
+- **The new Monitoring URLs use opaque ids**, and so does the `id` on an API incident — a
+  database number is never exposed. Identifiers on existing pages are unchanged. The ids are
+  derived from [`server.sqids_salt`](/v1.5.0/operating/configuration/), so changing that value
+  invalidates existing Monitoring links.
+
 ### Fixed
 - Success and error notifications could disappear before they could be read.
+- Workspace notification help no longer implies a per-rule notification setting that does not
+  exist: notifications are configured per workspace, and once a webhook is set everything in that
+  workspace alerts.
 - **Security:** a workspace member could read another workspace's monitor configuration, or
   delete it, by using its identifier directly. Deleting it also removed its subject, signal, rule
   and history. All identifier-addressed routes are now scoped to the workspace in the URL.

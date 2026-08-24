@@ -35,7 +35,8 @@ rule decided what it did.
 ## Talk to the API
 
 The dashboard is just a REST client. Every request carries a **Bearer token** — create one in
-the dashboard (**User → API Keys**) and send it in the `Authorization` header:
+the dashboard (**User → API Keys**), copy it from the screen that creates it (it is shown once),
+and send it in the `Authorization` header:
 
 ```sh
 curl -H "Authorization: Bearer $UPTIMER_TOKEN" http://127.0.0.1:2517/api/version

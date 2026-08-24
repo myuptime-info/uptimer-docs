@@ -1,5 +1,5 @@
 ---
-title: "Uptimer v1.4.0"
+title: "Uptimer v1.5.0"
 lede: "Self-hosted uptime & synthetic monitoring in a single Go binary — up and running in one command."
 description: "Uptimer — self-hosted uptime monitoring you can run in one command."
 ---
@@ -22,15 +22,15 @@ docker run -p 2517:2517 {{< image >}}
 
 {{< imagenote >}}
 
-Open **http://127.0.0.1:2517** and you're in — add a rule, point it at a URL, watch it go
-up or down. The REST API is on the same port under `/api`; calls take a Bearer token you create
-in the dashboard (**User → API Keys**):
+Open **http://127.0.0.1:2517** and you land on **Monitoring** — add website monitoring, point it
+at a URL, watch it go up or down. The REST API is on the same port under `/api`; calls take a
+Bearer token you create in the dashboard (**User → API Keys**), shown once when you create it:
 
 ```sh
 curl -H "Authorization: Bearer $UPTIMER_TOKEN" http://127.0.0.1:2517/api/version
 ```
 ```json
-{ "result": "1.4.0", "error": null, "meta": null }
+{ "result": "1.5.0", "error": null, "meta": null }
 ```
 
 That's **dev mode**: one process, fake auth, throwaway data — great for a look.

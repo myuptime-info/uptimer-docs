@@ -1,7 +1,7 @@
 ---
 title: "Slack alerts"
 weight: 10
-lede: "Post a message to Slack when a rule changes state."
+lede: "Post a message to Slack when a monitor changes state."
 description: "Send alerts to Slack via the workspace webhook."
 ---
 
@@ -16,8 +16,14 @@ has a **confirmed problem**, when it has **confirmed no data**, and when it **re
 2. In Slack, create an **Incoming Webhook** and copy its URL.
 3. In Uptimer, open **Workspace → Settings → Webhook URL**, paste it, and save.
 
-On the next status change, Uptimer POSTs a Slack-formatted message with a link back to the rule's
-history.
+On the next status change, Uptimer POSTs a Slack-formatted message with a link back to the
+**subject timeline** — the page that carries the check, its signal, its rule and its history, so
+the alert answers "what happened" without a second click. (Before 1.5.0 the link went to a single
+rule's history page, which no longer exists.)
+
+> **No webhook, no notifications.** Monitoring shows a warning while the workspace has none:
+> incidents are still detected and recorded on the timeline, but nobody is told until you add a
+> webhook URL here.
 
 > **Set `site_url` on every server process, not just the web one.** Alerts are sent by
 > `server --services availabilities`, and that is the process that builds the link — putting the
@@ -51,12 +57,12 @@ A **no data** alert says `No reports from 2 of 3 locations` and, plainly, that U
 tell whether the site is up — which is not the same claim as "your site is down". A **recovery**
 says how long the outage lasted and when it ended.
 
-> Alerts fire on **state transitions**, not on every check: one message when a rule goes down,
+> Alerts fire on **state transitions**, not on every check: one message when a monitor goes down,
 > one when it recovers — not one per interval.
 
 The webhook is configured in the dashboard (not the REST API), and there is **one URL per
-workspace**. It covers **every rule** in that workspace — there is no per-rule switch: set the
-URL and all rules alert. To send somewhere other than Slack, see
+workspace**. It covers **everything** in that workspace — there is no per-monitor or per-rule
+switch: set the URL and all of them alert. To send somewhere other than Slack, see
 [Webhooks](/v1.5.0/alerting/webhooks/).
 
 ## When an alert actually fires

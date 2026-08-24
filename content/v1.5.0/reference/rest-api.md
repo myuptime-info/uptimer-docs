@@ -28,22 +28,29 @@ New integrations should use v2.
 
 ## Auth
 
-Every endpoint needs a Bearer **API key** — a long-lived token minted in the
-dashboard (**User → API Keys**):
+**Every endpoint needs a Bearer API key** — a token minted in the dashboard
+(**User → API Keys**). That includes `GET /version`: a request with no
+`Authorization` header answers `Missing Authorization header` (code `1001`), never a
+version.
 
 ```sh
 curl -H "Authorization: Bearer $UPTIMER_API_KEY" \
   "http://localhost:2517/api/v2/monitoring/websites?workspace_id=<uid>"
 ```
 
+The token is shown **once**, on the screen that creates it, and is valid for **180
+days** — see [API keys](/v1.5.0/operating/authentication/#api-keys-rest-api) for
+rotation. A key can only reach the workspaces its owner is a member of; anything
+else answers `Access denied`.
+
 ## Endpoints (v2)
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/version` | Server version (string). Not versioned — shared by v1 and v2. |
+| GET | `/version` | Server version (string). Needs a token like everything else, but is **not versioned** — shared by v1 and v2, so a client can read it before it knows which API versions the server has. |
 | GET | `/v2/workspaces` | Your workspaces, each with your role. |
 | GET | `/v2/locations` | Locations + active worker counts. |
-| GET | `/v2/incidents?workspace_id=` | **Open** incidents. Add `&monitor_id=` for one monitor. |
+| GET | `/v2/incidents?workspace_id=` | **Open** incidents, newest trouble first. Add `&monitor_id=` for one monitor. |
 | GET | `/v2/monitoring/websites?workspace_id=` | List website monitors. |
 | POST | `/v2/monitoring/websites` | Create a website monitor. |
 | GET | `/v2/monitoring/websites/{id}` | Get one. |
@@ -89,12 +96,24 @@ general model.
   monitor's locations, so include the ones you want to keep.
 - `agreement` is how many locations must report a problem before the monitor does:
   `any`, `majority` or `all`. Omit it to keep the stored value — on create that is
-  `majority`.
+  `majority`. Any other value is refused with `invalid agreement` **before anything is
+  written**.
+- `name`, `interval`, `request.url`, `request.method` and `response.statuses` are
+  required. `workspace_id` is required on create and ignored on update: a monitor
+  cannot change workspace.
+- `body.content` is an optional literal substring the response must contain; empty
+  means "don't check the body".
+
+The response is the stored monitor: the same fields plus `id`, and a `kind` on every
+object (`website_monitor`, `website_monitor_request`, `website_monitor_response`,
+`website_monitor_response_body`). `kind` is the server telling you what an object is —
+you never send it back, and it is ignored if you do. `locations` always comes back as a
+list, never `null`.
 
 Saving a website monitor also creates its **monitoring subject**, its built-in HTTP
-**signal** and its **Reachability rule**. You do not create those separately.
-
-`DELETE` returns `{ "message": "Website monitor deleted successfully", "monitor_id": "<uid>" }`.
+**signal** and its **Reachability rule**. You do not create those separately. `DELETE`
+removes all of them and returns
+`{ "message": "Website monitor deleted successfully", "monitor_id": "<uid>" }`.
 
 ## Incident payload (v2)
 
@@ -111,7 +130,18 @@ Saving a website monitor also creates its **monitoring subject**, its built-in H
 }
 ```
 
-`GET /v2/incidents` returns **open** incidents only — it answers "what is wrong now".
+`GET /v2/incidents` returns **open** incidents only, newest `trouble_since` first — it
+answers "what is wrong now". Closed incidents are history and live on the subject
+timeline in the dashboard; there is no incident-history endpoint in this release. A
+monitor that has never been evaluated has nothing open and simply does not appear.
+
+- `id` is an **opaque id**, not a database number. It is derived from
+  [`server.sqids_salt`](/v1.5.0/operating/configuration/) — change that value and
+  previously-returned ids no longer resolve.
+- `confirmed_at` is `null` while the incident is `pending`: the confirm hold gates the
+  notification, not the incident.
+- `well_since` is `null` unless the incident is `recovering`.
+- Every incident object also carries `"kind": "incident"`.
 
 `status` uses the same words the dashboard shows, so the API and the screen cannot
 disagree:
@@ -154,7 +184,26 @@ Same rules as v2's payload, with `regions` in place of `locations`. v1 has no
   "meta": null }
 ```
 
+**Branch on `code`, not on `error_type`.** `code` is stable and specific:
+
+| code | Meaning |
+|---|---|
+| `1001`–`1007` | Auth: missing, malformed, invalid or expired token. |
+| `2001` | Validation error. |
+| `2002` | Not found. |
+| `2003` | Forbidden. |
+| `2004` | Invalid request — a required query parameter is missing. |
+| `2005` | Access denied — the key's owner is not a member of that workspace. |
+| `2006` | Malformed JSON. |
+| `500` | Internal error. |
+
 `error_type` is one of `access_denied`, `validation_error`, `not_found`, `forbidden`,
-`internal_error`.
+`internal_error`, but it is **coarser than the code**: only `2001`, `2002`, `2003` and
+the `1xxx` auth codes map to their own type — `2004`, `2005`, `2006` and `500` all
+report `internal_error`. That is a v1 quirk, and v2 inherits it deliberately rather
+than making the two versions disagree about the envelope.
+
+v2 speaks v2's words in errors too: an unknown location name answers
+`invalid locations` / `Unknown location: "…"`, never "region".
 
 Prefer a typed client? See the [Python SDK](/v1.5.0/reference/python-sdk/).

@@ -22,7 +22,7 @@ UPTIMER__SERVER__UI__PORT=8080 uptimer server
 | `server.ui.port` | `UPTIMER__SERVER__UI__PORT` | `2517` | Web UI **and** REST API (served under `/api`). |
 | `server.db.dsn` | `UPTIMER__SERVER__DB__DSN` | `sqlite3:///data/server_db.sqlite` | Control-plane database (see below). |
 | `server.db.boot_migrate` | `UPTIMER__SERVER__DB__BOOT_MIGRATE` | `true` | Migrate at boot; set `false` when a dedicated `migrate` job runs migrations. |
-| `server.sqids_salt` | `UPTIMER__SERVER__SQIDS_SALT` | *(change me)* | Salt for public IDs — **set a unique value in production**. |
+| `server.sqids_salt` | `UPTIMER__SERVER__SQIDS_SALT` | *(change me)* | Salt for public IDs — **set a unique value in production, once**. Changing it later invalidates existing Monitoring URLs and API incident ids. |
 | `server.auth.dev` | `UPTIMER__SERVER__AUTH__DEV` | `false` | Fake auth — any visitor is admin. Dev only. |
 | `server.auth.oidc.*` | `UPTIMER__SERVER__AUTH__OIDC__*` | — | Real login via OIDC — see [Authentication](/v1.5.0/operating/authentication/). |
 | `server.auth.oidc.end_session_endpoint` | `UPTIMER__SERVER__AUTH__OIDC__END_SESSION_ENDPOINT` | *(from discovery)* | Provider logout URL. Set it only when discovery advertises none — [details](/v1.5.0/operating/authentication/#logging-out-of-the-provider). |
