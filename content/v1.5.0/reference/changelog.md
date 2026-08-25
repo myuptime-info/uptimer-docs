@@ -46,7 +46,8 @@ description: "User-facing changes from 1.1 to 1.5.0."
   (`any`, `majority`, `all`). API v1 has no such field and keeps using `majority`.
 - **[Python SDK 1.5.0](/v1.5.0/reference/python-sdk/)** targets v2 only: `client.v2.workspaces`,
   `client.v2.locations`, `client.v2.incidents` and `client.v2.monitoring.websites` replace the
-  `client.v1` namespace — the version stays visible, as it did in 0.4.x.
+  `client.v1` namespace — the version stays visible, as it did in 0.4.x. Its types are
+  versioned with it: `from uptimer.models.v2 import …`, not the flat `uptimer.models`.
   Its version now tracks the server it talks to, and `client.check_compatibility()` refuses a
   server that predates v2 with a message naming the fix. Staying on v1? Pin
   `uptimer-python-sdk<1` — 0.4.x keeps working against a 1.5.0 server.

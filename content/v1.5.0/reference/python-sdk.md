@@ -31,7 +31,7 @@ import os
 
 from uptimer.client import UptimerClient
 from uptimer.errors import DefaultUptimerApiError, IncompatibleServerError
-from uptimer.models import (
+from uptimer.models.v2 import (
     AGREEMENT_MAJORITY,
     STATUS_PENDING,
     CreateWebsiteMonitorRequest,
@@ -157,12 +157,26 @@ version visible rather than hiding it: everything v2 offers is reached through
 - `client.v2.monitoring.websites.all(workspace_id)` · `.get(id)` · `.create(...)` ·
   `.update(id, ...)` · `.delete(id)`
 
-Two things stay on the client itself, because
+The types those calls take and return are versioned the same way — import them from
+**`uptimer.models.v2`**:
+
+```python
+from uptimer.models.v2 import CreateWebsiteMonitorRequest, Incident, Location
+```
+
+They are not exported from `uptimer.models`, and there are no flat aliases, so a stale
+import fails loudly rather than binding to something else.
+
+Two things stay off the version namespaces, because
 [`GET /version`](/v1.5.0/reference/rest-api/#get-the-server-version) is shared by both
 API versions rather than belonging to either:
 
 - `client.version()` — the server version
 - `client.check_compatibility()` / `client.ensure_compatible()`
+
+The deserialization exceptions (`ModelError`, `TypeMismatchError`, …) stay on
+`uptimer.models` for the same reason: the same error is raised whichever API version
+produced the payload.
 
 Website monitoring sits under `client.v2.monitoring` because it is a built-in template,
 not the general monitor model.
@@ -186,7 +200,7 @@ location **names**, as listed by `client.v2.locations.all()` — not ids. A moni
 none is never checked and stays at no data.
 
 `agreement` is how many of those locations must report a problem before the monitor
-does: `AGREEMENT_ANY`, `AGREEMENT_MAJORITY` or `AGREEMENT_ALL` from `uptimer.models`
+does: `AGREEMENT_ANY`, `AGREEMENT_MAJORITY` or `AGREEMENT_ALL` from `uptimer.models.v2`
 (the wire values are `"any"`, `"majority"` and `"all"`).
 
 Two things behave differently between `CreateWebsiteMonitorRequest` and
@@ -238,10 +252,12 @@ All of these subclass `UptimerError`, in `uptimer.errors`:
 | `regions=[...]` | `locations=[...]` |
 | — | `agreement=...`, `client.v2.incidents` |
 | — | `client.check_compatibility()` |
+| `from uptimer.models import …` | `from uptimer.models.v2 import …` |
 
 **The version namespace is the shape you already know.** 0.4.x reached API v1 through
 `client.v1`; 1.5.x reaches API v2 through `client.v2`. What moves is the version, not
-the pattern.
+the pattern — and the types moved with it: `uptimer.models` becomes
+`uptimer.models.v2`.
 
 `client.version()` is unchanged and still sits on the client, not under `client.v2` —
 `/version` is a shared global endpoint, not a versioned one.
