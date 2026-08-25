@@ -1,5 +1,5 @@
 ---
 title: "Uptimer Documentation"
 layout: "redirect"
-url: "/v1.4.0/"
+url: "/v1.5.0/"
 ---

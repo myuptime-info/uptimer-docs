@@ -1,10 +1,8 @@
 # Uptimer 1.5.0 — persistent single-container dev, backed by PostgreSQL.
-# 1.5.0 is not released yet: these pull :edge (the current pre-release build).
-# Swap :edge for :1.5.0 once the release ships.
 # `docker compose up`, then open http://localhost:2517  (dev mode: fake auth).
 services:
   uptimer:
-    image: ghcr.io/myuptime-info/uptimer:edge
+    image: ghcr.io/myuptime-info/uptimer:1.5.0
     ports:
       - "2517:2517"
     volumes:

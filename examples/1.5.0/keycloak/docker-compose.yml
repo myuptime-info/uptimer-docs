@@ -1,6 +1,4 @@
 # Uptimer 1.5.0 with OIDC login via a self-contained Keycloak.
-# 1.5.0 is not released yet: these pull :edge (the current pre-release build).
-# Swap :edge for :1.5.0 once the release ships.
 # Map these hostnames to localhost first:  echo "127.0.0.1 keycloak uptimer-dev" | sudo tee -a /etc/hosts
 # Then `docker compose up` and sign in at http://uptimer-dev:2517 with test / test.
 services:
@@ -16,7 +14,7 @@ services:
       - ./realm-config.json:/opt/keycloak/data/import/realm-config.json:ro
 
   uptimer-dev:
-    image: ghcr.io/myuptime-info/uptimer:edge
+    image: ghcr.io/myuptime-info/uptimer:1.5.0
     command: ["--delay", "20", "dev"]   # wait for Keycloak to import the realm
     ports:
       - "2517:2517"

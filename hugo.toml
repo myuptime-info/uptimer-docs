@@ -11,16 +11,11 @@ disableKinds = ['taxonomy', 'term']
 # Versioned docs. Newest first. `latest` drives the version pill, the outdated
 # banner and the /latest/ redirects (#24/#25).
 [params.versions]
-default = "1.4.0"
+default = "1.5.0"
 available = ["1.5.0", "1.4.0", "1.3.0", "1.0.0"]
-latest = "1.4.0"
-# preview: documented but not released yet. It is reachable from the version pill and
-# excluded from /latest/; its pages carry a preview banner and use the :edge image.
-# 1.5.0 is in release-candidate: documented, reachable from the pill, carrying the
-# preview banner and the :edge image, but not /latest/ until it ships. On release:
-# set default+latest to 1.5.0, clear `preview`, and repoint static/_redirects and
-# content/_index.md, which both still point at 1.4.0.
-preview = "1.5.0"
+latest = "1.5.0"
+# preview: set when a newer tree is documented but not released yet. Cleared on
+# release (1.5.0 shipped). Pages then use the pinned :X.Y.Z image, not :edge.
 
 # Home also emits index.json — the client-side search index (see layouts/index.json).
 [outputs]
@@ -38,4 +33,3 @@ ordered = false
 style = "github-dark"
 noClasses = true
 tabWidth = 2
-lineNos = false
