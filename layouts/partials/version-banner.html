@@ -7,17 +7,21 @@
 {{ $seg := index (split (strings.TrimPrefix "/" $.RelPermalink) "/") 0 }}
 {{ $cur := strings.TrimPrefix "v" $seg }}
 {{ $rest := strings.TrimPrefix (printf "/v%s" $cur) $.RelPermalink }}
+{{/* The same page may not exist in the other version (a page added in a preview tree, say).
+     Fall back to that version's home rather than linking at a 404. */}}
+{{ $to := printf "/v%s%s" .latest $rest }}
+{{ if not (site.GetPage (strings.TrimSuffix "/" $to)) }}{{ $to = printf "/v%s/" .latest }}{{ end }}
 {{ if and .preview (eq $cur .preview) }}
 <div class="verbanner" role="note" id="verbanner">
   <span>You're reading the docs for <strong>v{{ $cur }}</strong>, which isn't released yet. Commands here pull <code>:edge</code>, the newest pre-release build.</span>
-  <a href="/v{{ .latest }}{{ $rest }}">Go to the current release (v{{ .latest }}) →</a>
+  <a href="{{ $to }}">Go to the current release (v{{ .latest }}) →</a>
   <button type="button" aria-label="Dismiss" onclick="this.closest('.verbanner').remove();try{sessionStorage.setItem('u-verbanner-hidden','1')}catch(e){}">×</button>
 </div>
 <script>try{if(sessionStorage.getItem('u-verbanner-hidden')){var b=document.getElementById('verbanner');if(b)b.remove()}}catch(e){}</script>
 {{ else if and (in .available $cur) (ne $cur .latest) }}
 <div class="verbanner" role="note" id="verbanner">
   <span>You're viewing <strong>v{{ $cur }}</strong> — an older version.</span>
-  <a href="/v{{ .latest }}{{ $rest }}">Go to the latest (v{{ .latest }}) →</a>
+  <a href="{{ $to }}">Go to the latest (v{{ .latest }}) →</a>
   <button type="button" aria-label="Dismiss" onclick="this.closest('.verbanner').remove();try{sessionStorage.setItem('u-verbanner-hidden','1')}catch(e){}">×</button>
 </div>
 <script>try{if(sessionStorage.getItem('u-verbanner-hidden')){var b=document.getElementById('verbanner');if(b)b.remove()}}catch(e){}</script>

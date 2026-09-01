@@ -12,10 +12,13 @@ disableKinds = ['taxonomy', 'term']
 # banner and the /latest/ redirects (#24/#25).
 [params.versions]
 default = "1.5.0"
-available = ["1.5.0", "1.4.0", "1.3.0", "1.0.0"]
+available = ["1.6.0", "1.5.0", "1.4.0", "1.3.0", "1.0.0"]
 latest = "1.5.0"
-# preview: set when a newer tree is documented but not released yet. Cleared on
-# release (1.5.0 shipped). Pages then use the pinned :X.Y.Z image, not :edge.
+# preview: a newer tree is documented but not released yet, so `default` and
+# `latest` still point at 1.5.0 and /latest/ is unchanged. The operator promotes
+# 1.6.0 at final ship (VERSIONING.md): set default+latest, repoint /latest/* and
+# the root redirect, and swap the examples' :edge images for :1.6.0.
+preview = "1.6.0"
 
 # Home also emits index.json — the client-side search index (see layouts/index.json).
 [outputs]
