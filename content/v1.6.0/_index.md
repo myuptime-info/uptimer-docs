@@ -41,8 +41,8 @@ That's **dev mode**: one process, fake auth, throwaway data — great for a look
 
 **Custom checks.** Add a subject of your own, give it heartbeat or event **signals**, report
 observations to them over the API, and write **rules** over those signals — label selection,
-status or numeric thresholds, quorum and timing. `GET /v2/subjects` lists everything a workspace
-watches, website checks included. See
+status or numeric thresholds, quorum and timing. The whole of it is scriptable: `/v2/subjects`
+and the signal, rule and observation routes nested under it do what the Custom screens do. See
 [Signals & rules](/v1.6.0/core-concepts/signals-and-rules/) and the
 [changelog](/v1.6.0/reference/changelog/).
 

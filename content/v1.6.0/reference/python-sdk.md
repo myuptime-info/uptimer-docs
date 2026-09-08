@@ -208,15 +208,16 @@ a bare 404.
 ## Subjects
 
 **New in 1.6.0.** A [subject](/v1.6.0/core-concepts/signals-and-rules/) is one thing a
-workspace watches. `client.v2.subjects` lists them all — website checks included — and
-creates the **Custom** ones.
+workspace watches. `client.v2.subjects` is the **Custom** half of the API: website
+monitoring stays on `client.v2.monitoring.websites`, and the two never serve each
+other's subjects.
 
 ```python
-from uptimer.models.v2 import SUBJECT_KIND_CUSTOM, CreateSubjectRequest
+from uptimer.models.v2 import CreateSubjectRequest
 
 subjects = client.v2.subjects
 
-# Everything this workspace watches, of both kinds.
+# The workspace's Custom subjects. Website checks are not here.
 for subject in subjects.all(workspace.id):
     print(subject.id, subject.subject_kind, subject.signal_count, subject.rule_count)
 
@@ -232,16 +233,21 @@ fetched = subjects.get(created.id, workspace_id=workspace.id)
 ```
 
 `subject.id` is the **slug**, which is what the API addresses a subject by and the first
-half of the observation route. `subject_kind` is `SUBJECT_KIND_WEBSITE` or
-`SUBJECT_KIND_CUSTOM`, and `is_website` / `is_custom` read it; that is separate from
-`kind`, which is always `"subject"`.
+half of the observation route. `subject_kind` reads `SUBJECT_KIND_CUSTOM` on everything
+these calls return — `is_custom` is the typed way to read it, and `SUBJECT_KIND_WEBSITE`
+stays in the model for a payload from an older server. That is separate from `kind`,
+which is always `"subject"`.
 
 Website monitoring is **not** created here — `client.v2.monitoring.websites.create(...)`
 is, and asking for `subject_kind="website"` raises a `DefaultUptimerApiError` saying so.
-There is no update and no delete: a website subject changes through its monitor, and
-deleting either kind takes its whole history with it.
+Passing a website subject's slug to any `subjects` call raises the same error. There is
+no update and no delete: deleting a subject takes its whole history with it.
 
-Signals are added in the dashboard; the SDK reports to one that already exists.
+**Authoring signals and rules is not in the SDK yet.** The server serves
+[`/v2/subjects/{subject}/signals`](/v1.6.0/reference/rest-api/#custom-signals) and
+[`/v2/subjects/{subject}/rules`](/v1.6.0/reference/rest-api/#custom-rules) — add them
+from the dashboard, or call those routes directly — and the SDK reports observations to
+a signal that already exists.
 
 ## Reporting observations
 

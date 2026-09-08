@@ -24,8 +24,9 @@ Everything a workspace watches appears in one list, and each row says which kind
 | Starts with | One platform HTTP signal and one Reachability rule | Nothing at all |
 | Signals | Owned by the website form | **Add signal** — heartbeat or event, as many as you like |
 | Rules | Reachability only, and the check form owns its policy | **Add rule** — over that subject's own signals and rules |
-| Changed by | **Edit**, the same website monitoring form | Its Signals and Rules pages |
+| Changed by | **Edit**, the same website monitoring form | Its Signals and Rules pages, or the API |
 | Data comes from | Uptimer's workers | You, over [the API](/v1.6.0/reference/rest-api/#report-an-observation) |
+| Its API | [`/v1/rules`](/v1.6.0/reference/rest-api/#list-rules) and the [`/v2/monitoring/websites`](/v1.6.0/reference/rest-api/#list-website-monitors) alias | [`/v2/subjects`](/v1.6.0/reference/rest-api/#list-custom-subjects) and everything nested under it |
 
 The split is deliberate. Website monitoring is a **template**: a URL, an interval and a set of
 locations produce a probe, a signal and a rule, and the form keeps rewriting them on every save —
@@ -34,6 +35,11 @@ A Custom subject has no form behind it, which is exactly why it is yours to comp
 
 So a Website subject has **no Add signal and no Add rule**, and its Reachability policy is edited
 by changing the check. Custom signals and custom rules live on Custom subjects.
+
+**The API is split the same way**, and neither half serves the other's subjects: website
+monitoring is `/v1/rules` and its `/v2/monitoring/websites` alias, custom monitoring is
+`/v2/subjects` and everything nested under it. Anything you can do on the Signals and Rules
+screens you can do there too — see the [REST API](/v1.6.0/reference/rest-api/#custom-signals).
 
 ## Signals
 
@@ -61,6 +67,9 @@ signal later does not move it.
 
 A Website subject has no Add signal: its stream is the probe, and the check form owns it. If you
 want your own signal beside a website check, add a Custom subject for it.
+
+The same thing over the API is
+[`POST /v2/subjects/{subject}/signals`](/v1.6.0/reference/rest-api/#create-a-signal).
 
 **Meta** is optional: any JSON object, stored and returned untouched. Uptimer never reads a key
 out of it — it is there for your own automation.
@@ -106,8 +115,9 @@ retry that replaces a row does not add one. Current allowances and prices are on
 ## Rules
 
 A rule takes some inputs, decides how many of them must look like a problem, and holds that
-answer before it becomes an incident. **Monitoring → a Custom subject → Rules → Add rule.** A
-subject needs a signal before it can have a rule, so add the signal first.
+answer before it becomes an incident. **Monitoring → a Custom subject → Rules → Add rule**, or
+[`POST /v2/subjects/{subject}/rules`](/v1.6.0/reference/rest-api/#author-a-rule). A subject
+needs a signal before it can have a rule, so add the signal first.
 
 ### Inputs
 

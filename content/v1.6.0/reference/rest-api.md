@@ -58,25 +58,49 @@ Every row links to that method's own section.
 | GET | [`/v2/monitoring/websites/{id}`](#get-a-website-monitor) | Get one. |
 | POST | [`/v2/monitoring/websites/{id}`](#update-a-website-monitor) | Update one (there is no `PUT`). |
 | DELETE | [`/v2/monitoring/websites/{id}`](#delete-a-website-monitor) | Delete one. |
-| GET | [`/v2/subjects`](#list-subjects) | Everything a workspace watches, both kinds. |
-| POST | [`/v2/subjects`](#create-a-custom-subject) | Create one empty **Custom** subject. |
-| GET | [`/v2/subjects/{subject}`](#get-a-subject) | Get one by its slug. |
+| GET | [`/v2/subjects`](#list-custom-subjects) | The workspace's **Custom** subjects. |
+| POST | [`/v2/subjects`](#create-a-custom-subject) | Create one empty Custom subject. |
+| GET | [`/v2/subjects/{subject}`](#get-a-custom-subject) | Get one by its slug. |
+| GET | [`/v2/subjects/{subject}/signals`](#list-signals) | The subject's signals. |
+| POST | [`/v2/subjects/{subject}/signals`](#create-a-signal) | Add one custom signal. |
+| GET | [`/v2/subjects/{subject}/signals/{signal}`](#get-a-signal) | Get one. |
+| POST | [`/v2/subjects/{subject}/signals/{signal}`](#update-a-signal) | Rename it and replace its meta. |
+| DELETE | [`/v2/subjects/{subject}/signals/{signal}`](#delete-a-signal) | Delete it and its observations. |
+| GET | [`/v2/subjects/{subject}/rules`](#list-subject-rules) | The subject's incident rules. |
+| POST | [`/v2/subjects/{subject}/rules`](#author-a-rule) | Author one rule. |
+| GET | [`/v2/subjects/{subject}/rules/{rule}`](#get-a-subject-rule) | Get one. |
+| POST | [`/v2/subjects/{subject}/rules/{rule}`](#update-a-subject-rule) | Replace its name and policy. |
+| DELETE | [`/v2/subjects/{subject}/rules/{rule}`](#delete-a-subject-rule) | Delete it. |
 | POST | [`/v2/subjects/{subject}/signals/{signal}/observations`](#report-an-observation) | Report one observation to a custom signal. |
 
-Website monitoring is a built-in **template**, which is why its resource sits under
-`/v2/monitoring/` rather than at `/v2/monitors`. That name is reserved for the
-general model.
+### The API is split by subject kind
 
-A **subject** is the thing being watched, and `/v2/subjects` is where both kinds of it
-appear. Creating one here creates a **Custom** subject; website monitoring keeps its own
-route, because its request needs a URL, an interval and locations. There is no update and
-no `DELETE` for a subject: a website subject changes through
-[its monitor](#update-a-website-monitor), and deleting either kind takes its whole history
-with it, so it is a dashboard action rather than a script's.
+There are two kinds of [subject](/v1.6.0/core-concepts/signals-and-rules/), and each has one
+API of its own.
 
-Signals and rules have no collection of their own in this release. `signal_count` and
-`rule_count` on a subject are how you see what is under one, and signals are authored in
-the dashboard.
+- **Website monitoring** is served by [`/v1/rules`](#list-rules) and by
+  [`/v2/monitoring/websites`](#list-website-monitors), which is the same resource under a v2
+  path — the same services, the same validation, plus the `agreement` field. Website
+  monitoring is a built-in **template**, which is why it sits under `/v2/monitoring/` rather
+  than at `/v2/monitors`; that name is reserved for the general model.
+- **Custom monitoring** is served by `/v2/subjects` and everything nested under it: the
+  subject, its signals, its rules and its observation intake. This is the API half of the
+  Custom screens in the dashboard, and it offers what they offer.
+
+**Neither one serves the other's subjects.** `GET /v2/subjects` lists Custom subjects only,
+and a website subject answers `Website subjects are managed elsewhere` (code `2004`) on every
+`/v2/subjects` route — read, signal, rule and observation alike. In the other direction, a
+subject that is being maintained by hand is no longer the website API's to serve: it drops out
+of the website listing, and reading, updating or deleting its monitor answers
+`Custom subjects are managed elsewhere` (code `2004`), naming the `/v2/subjects` path to use
+instead. Ordinary website monitors are unaffected.
+
+A subject becomes Custom the moment it is given its first custom signal or authored rule, and
+never goes back. Subjects created before 1.6.0 are classified once, on upgrade: one that
+already carried a hand-made signal or rule is Custom, and everything else is Website.
+
+There is no `PUT`, no update and no `DELETE` for a subject itself: deleting one takes its whole
+history with it, so it is a dashboard action rather than a script's.
 
 ## Endpoints (v1, frozen)
 
@@ -170,7 +194,7 @@ missing one.
 
 ### Subject object (v2)
 
-One thing a workspace watches, returned by the [subject](#list-subjects) methods.
+One thing a workspace watches, returned by the [subject](#list-custom-subjects) methods.
 
 ```json
 {
@@ -193,12 +217,91 @@ One thing a workspace watches, returned by the [subject](#list-subjects) methods
 
 `kind` and `subject_kind` are separate on purpose: `kind` says **what** the object is, so a
 client switching on it keeps working when a third subject kind arrives; `subject_kind` says how
-this particular one is configured.
+this particular one is configured. On these routes it is always `custom` — a website subject is
+[served by the website API](#the-api-is-split-by-subject-kind) and refused here.
 
-A **website** subject is created by [website monitoring](#create-a-website-monitor) and its
-signal, its Reachability rule and its probe belong to that form. A **custom** subject is yours:
-you add [signals](/v1.6.0/core-concepts/signals-and-rules/) to it in the dashboard and report
-their observations here.
+### Signal object (v2)
+
+One signal of a Custom subject, returned by the [signal](#list-signals) methods.
+
+```json
+{
+  "id": "worker-pulse",
+  "name": "Worker pulse",
+  "signal_kind": "custom_heartbeat",
+  "subject_id": "payments-worker",
+  "workspace_id": "<uid>",
+  "meta": {},
+  "kind": "signal"
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `id` | The signal's **slug** — the address a sender posts to, and what a rule input cites. A rename never moves it. |
+| `signal_kind` | `custom_heartbeat` or `custom_event`. Fixed at creation. |
+| `meta` | Any JSON object, stored and returned untouched. Uptimer never reads a key out of it. |
+
+### Rule object (v2)
+
+One operator-authored incident rule of a Custom subject, returned by the
+[rule](#list-subject-rules) methods. It is deliberately **not** the
+[v1 rule object](#rule-object-v1-frozen), which describes a website probe.
+
+```json
+{
+  "id": "export-health",
+  "name": "Export health",
+  "subject_id": "payments-worker",
+  "workspace_id": "<uid>",
+  "policy_version": 1,
+  "document": {
+    "inputs": [
+      { "signal": "worker-pulse", "mode": "status", "no_data_after": "5m0s" },
+      { "signal": "queue-depth", "mode": "latest_value", "compare": ">", "threshold": 1000 },
+      { "from": "queue-health" }
+    ],
+    "decision": { "state": "down", "need": "any" },
+    "wait": { "confirm_after": "2m0s", "close_after": "2m0s" }
+  },
+  "kind": "subject_rule"
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `id` | The rule's **slug** — what another rule cites with `from`, and what the nested routes address. A rename never moves it. |
+| `policy_version` | Incremented on every saved policy. The stored document is kept per version, so a past verdict can be read back against the policy that produced it. |
+| `document` | The policy itself, below. |
+
+**`document.inputs`** enumerates what the rule reads. Each input sets **exactly one** of:
+
+- `signal` — the slug of one of the subject's own signals.
+- `from` — the slug of another rule of the same subject. Its verdict is the input: problem is
+  true, ok is false, no data is unknown.
+
+Cross-subject inputs are not possible — a subject is the boundary — and a signal or rule an
+input cites cannot be deleted while it does.
+
+A **signal** input takes:
+
+| Field | Meaning |
+|---|---|
+| `mode` | `status` (the latest selected observation reports `problem`) or `latest_value` (its numeric `value` is compared). Required. |
+| `compare`, `threshold` | `<` or `>` and one number. `latest_value` only. An observation with no number is unknown rather than false. |
+| `match` | AND-ed equality on the observation's labels. `"*"` means the key must be present with any value; no entries selects the whole signal. |
+| `no_data_after` | A duration string (`"5m"`, `"2m0s"`) — how long this input may stay silent before it counts as unknown. Omit or `0s` to derive it from the interval. Meaningless on an event signal and on a `from` input. |
+
+**`document.decision`** is `{"state": "down", "need": …}` — `state` is always `down` in this
+release, and `need` is `any`, `majority`, `all` or `at_least` with `at_least: N`.
+
+**`document.wait`** is `confirm_after` (how long a problem must last before the incident is
+confirmed and anyone is alerted — the incident opens on the first bad tick regardless) and
+`close_after` (how much continuous recovery closes it). Both are duration strings and both
+default to `"2m0s"`.
+
+Durations are **strings**, not numbers of seconds, so a stored policy reads the way an operator
+would write it.
 
 ### Observation object (v2)
 
@@ -399,7 +502,7 @@ This removes the monitor **and everything under it** — its monitoring subject,
 signal, its rule and their history. Deleting an id that is already gone answers
 `Website monitor not found` (code `2002`).
 
-### List subjects
+### List custom subjects
 
 **`GET /v2/subjects?workspace_id=<uid>`**
 
@@ -407,13 +510,9 @@ signal, its rule and their history. Deleting an id that is already gone answers
 |---|---|---|
 | `workspace_id` | yes | The workspace to read. Missing → `Missing workspace ID` (code `2004`). |
 
-Returns every [subject object](#subject-object-v2) in that workspace, **both kinds** — the
-website subjects the check form created and the custom ones you added. Read `subject_kind` to
-tell them apart. A non-member gets `Access denied` (code `2005`).
-
-This is the list that answers "what does this workspace watch?".
-[`GET /v2/monitoring/websites`](#list-website-monitors) is the narrower question — the website
-monitors and their configuration — and never returns a custom subject.
+Returns the workspace's **Custom** [subject objects](#subject-object-v2), each with its
+`signal_count` and `rule_count`. Website subjects are not here — they are
+[the website API's](#list-website-monitors). A non-member gets `Access denied` (code `2005`).
 
 ### Create a custom subject
 
@@ -430,21 +529,25 @@ monitors and their configuration — and never returns a custom subject.
 | `subject_kind` | no | May only say `"custom"`. It exists so a client that sends the field is answered rather than surprised. |
 
 Returns the stored [subject object](#subject-object-v2). The subject arrives **empty** —
-`signal_count` and `rule_count` are `0`, and it has no HTTP probe. Add a signal to it in the
-dashboard (**Monitoring → the subject → Signals → Add signal**), then report to that signal with
-[report an observation](#report-an-observation).
+`signal_count` and `rule_count` are `0`, and it has no HTTP probe. Give it a
+[signal](#create-a-signal), then a [rule](#author-a-rule) that reads it, then
+[report observations](#report-an-observation).
+
+A colliding name is not refused: two subjects may legitimately be called the same thing, so the
+slug is disambiguated (`payments-worker-2`). The address is not the name, and a later rename
+never moves it.
 
 Unknown fields are refused rather than dropped, so a body carrying `url` or `interval` answers
 `Invalid JSON` (code `2006`) instead of quietly creating something that probes nothing.
 
 **Website monitoring is not created here.** `subject_kind: "website"` answers
 `Website subjects are created elsewhere` (code `2004`), pointing at
-[`POST /v2/monitoring/websites`](#create-a-website-monitor) — a website needs a URL, an interval
-and locations, and its form owns the signal and rule it creates.
+[`POST /v1/rules`](#create-a-rule) and its
+[`/v2/monitoring/websites`](#create-a-website-monitor) alias.
 
 Creating requires the workspace **editor** role; a viewer gets `Access denied` (code `2005`).
 
-### Get a subject
+### Get a custom subject
 
 **`GET /v2/subjects/{subject_slug}`**
 
@@ -459,15 +562,153 @@ searches the workspaces you belong to. Nothing found answers `Subject not found`
 the same answer a subject you cannot see gives. The same slug in two of your workspaces answers
 `Ambiguous subject` (code `2004`), naming them, so you can add the parameter.
 
-Reading a subject needs only the **viewer** role: it is what you can already see in the
-dashboard.
+A website subject answers `Website subjects are managed elsewhere` (code `2004`). Reading a
+custom one needs only the **viewer** role: it is what you can already see in the dashboard.
+
+## Custom signals
+
+Every route below is nested under a **Custom** subject, and every one of them refuses a website
+subject with `Website subjects are managed elsewhere` (code `2004`). Reads need the **viewer**
+role; writes need **editor**.
+
+### List signals
+
+**`GET /v2/subjects/{subject_slug}/signals`**
+
+Returns the subject's [signal objects](#signal-object-v2). A subject you just created has none.
+
+### Create a signal
+
+**`POST /v2/subjects/{subject_slug}/signals`**
+
+```json
+{ "name": "Worker pulse", "kind": "custom_heartbeat", "meta": { "team": "payments" } }
+```
+
+| Field | Required | Meaning |
+|---|---|---|
+| `name` | yes | Must contain at least one letter or digit; it produces the slug. |
+| `kind` | yes | `custom_heartbeat` or `custom_event` (`heartbeat` and `event` are accepted spellings). Fixed once created. |
+| `meta` | no | Any JSON object, stored and returned untouched. |
+
+Returns the stored [signal object](#signal-object-v2). Choosing between heartbeat and event is
+choosing what your silence means — see
+[Signals & rules](/v1.6.0/core-concepts/signals-and-rules/#signals).
+
+| Answer | When |
+|---|---|
+| `Invalid signal kind` (code `2001`) | `kind` is missing or is not one of the four accepted words. A platform HTTP signal cannot be authored. |
+| `Invalid name` (code `2001`) | The name has no letter or digit. |
+| `Signal name taken` (code `2001`) | Another signal on this subject already has that slug. |
+| `Invalid meta` (code `2001`) | `meta` is not a JSON object. |
+
+### Get a signal
+
+**`GET /v2/subjects/{subject_slug}/signals/{signal_slug}`**
+
+Returns one [signal object](#signal-object-v2), or `Signal not found` (code `2002`).
+
+### Update a signal
+
+**`POST /v2/subjects/{subject_slug}/signals/{signal_slug}`** — there is no `PUT`.
+
+```json
+{ "name": "Worker heartbeat", "meta": {} }
+```
+
+Renames the signal and **replaces** its `meta`. `kind` and the slug are immutable: senders are
+already posting to that address, so a rename never moves it.
+
+A built-in signal — the platform HTTP one a website monitor maintains — answers
+`Signal is managed by Website monitoring` (code `2003`).
+
+### Delete a signal
+
+**`DELETE /v2/subjects/{subject_slug}/signals/{signal_slug}`**
+
+```json
+{ "message": "Signal deleted successfully", "signal_id": "worker-pulse", "subject_id": "payments-worker" }
+```
+
+This removes the signal **and its observations**. A signal a rule reads answers
+`Signal is still used by a rule` (code `2003`): retarget or remove those rules first. Uptimer
+never unlinks a rule on its own, because that would quietly change what the rule watches in
+order to complete an unrelated delete.
+
+## Custom rules
+
+The same nesting, the same roles, the same cross-kind refusal as the signal routes above.
+
+### List subject rules
+
+**`GET /v2/subjects/{subject_slug}/rules`**
+
+Returns the subject's [rule objects](#rule-object-v2), each with its policy document.
+
+### Author a rule
+
+**`POST /v2/subjects/{subject_slug}/rules`**
+
+```json
+{
+  "name": "Export health",
+  "document": {
+    "inputs": [{ "signal": "worker-pulse", "mode": "status", "no_data_after": "5m" }],
+    "decision": { "state": "down", "need": "any" },
+    "wait": { "confirm_after": "2m", "close_after": "2m" }
+  }
+}
+```
+
+Returns the stored [rule object](#rule-object-v2) at `policy_version: 1`. Every input must cite
+a signal or a rule **of this subject** — add the signals first.
+
+| Answer | When |
+|---|---|
+| `Invalid name` (code `2001`) | The name has no letter or digit. |
+| `Rule name taken` (code `2001`) | Another rule on this subject already has that slug. |
+| `Unknown input` (code `2001`) | An input cites a signal or rule this subject does not have. |
+| `Invalid input mode` (code `2001`) | Neither or both of `status` and `latest_value`, or a mode on a rule input. |
+| `Invalid rule document` (code `2001`) | The document is otherwise not a valid policy. |
+
+### Get a subject rule
+
+**`GET /v2/subjects/{subject_slug}/rules/{rule_slug}`**
+
+Returns one [rule object](#rule-object-v2), or `Rule not found` (code `2002`).
+
+### Update a subject rule
+
+**`POST /v2/subjects/{subject_slug}/rules/{rule_slug}`** — there is no `PUT`.
+
+Body: the same shape as [author](#author-a-rule). The policy is a **full replacement**, not a
+patch, and a successful save increments `policy_version`. The rule keeps its identity and its
+slug, so the incidents and timeline already pointing at it stay attached.
+
+A rule website monitoring created answers `Rule is managed by Website monitoring` (code `2003`):
+its policy is the check form's, and a save here would be rewritten on the next check save.
+
+### Delete a subject rule
+
+**`DELETE /v2/subjects/{subject_slug}/rules/{rule_slug}`**
+
+```json
+{ "message": "Rule deleted successfully", "rule_id": "export-health", "subject_id": "payments-worker" }
+```
+
+A rule another rule cites as an input answers `Rule is still used as an input` (code `2003`);
+a built-in Reachability rule answers `Rule is managed by Website monitoring` (code `2003`) and
+cannot be deleted at all.
+
+## Observations
 
 ### Report an observation
 
 **`POST /v2/subjects/{subject_slug}/signals/{signal_slug}/observations`**
 
-Reports one observation to a **custom heartbeat or event** signal. Both slugs are shown on the
-signal's page in the dashboard.
+Reports one observation to a **custom heartbeat or event** signal of a Custom subject. Both
+slugs are shown on the signal's page in the dashboard, and by
+[list signals](#list-signals).
 
 | Field | Required | Meaning |
 |---|---|---|
@@ -497,6 +738,7 @@ Refusals, all of which store nothing:
 | `Signal not found` (code `2002`) | No signal with that slug on the subject. |
 | `Subject not found` (code `2002`) | No subject with that slug in a workspace you belong to — the same answer a subject you cannot see gives. |
 | `Signal does not accept posted observations` (code `2003`) | The signal is **platform HTTP**. Its stream belongs to Uptimer's own probe, so a posted claim is never mixed in with a measurement. |
+| `Website subjects are managed elsewhere` (code `2004`) | The subject is a website check. Its readings are its workers'. |
 
 The workspace comes from your token's membership, not the path: a subject slug is unique per
 workspace, not globally. If the same slug exists in two of your workspaces the answer is

@@ -49,18 +49,24 @@ description: "User-facing changes from 1.1 to 1.6.0."
 - **Delete removes a subject and its history**, of either kind.
 
 ### API and SDK
-- **`GET /v2/subjects`** lists everything a workspace watches, both kinds, each with its
-  `subject_kind`, `signal_count` and `rule_count`; **`GET /v2/subjects/{subject}`** fetches one
-  by slug; **`POST /v2/subjects`** creates one empty **Custom** subject. Asking for a website
-  here is refused and pointed at `POST /v2/monitoring/websites`. There is no update and no
-  delete. See [Subjects](/v1.6.0/reference/rest-api/#list-subjects).
-- **`POST /v2/subjects/{subject}/signals/{signal}/observations`** reports one observation to a
-  custom signal. v1 is unchanged and still frozen.
-- Signals and rules have no API collection in this release: they are authored in the dashboard,
-  and `signal_count`/`rule_count` are how a client sees what a subject holds.
+- **A whole Custom subject can be built over the API.** `/v2/subjects` lists, fetches and
+  creates Custom subjects; `/v2/subjects/{subject}/signals` and
+  `/v2/subjects/{subject}/rules` add, read, change and remove the signals and the rules under
+  one; `/v2/subjects/{subject}/signals/{signal}/observations` reports the readings. The API
+  offers what the Custom screens offer. See
+  [the v2 reference](/v1.6.0/reference/rest-api/#list-custom-subjects).
+- **The API is split by subject kind.** Website monitoring is `/v1/rules` and its
+  `/v2/monitoring/websites` alias; custom monitoring is `/v2/subjects`. Neither serves the
+  other's subjects: a website subject is refused on every `/v2/subjects` route, and a subject
+  being maintained by hand leaves the website listing and refuses website writes. Ordinary
+  website monitors are unaffected, and v1 is otherwise unchanged and still frozen. See
+  [The API is split by subject kind](/v1.6.0/reference/rest-api/#the-api-is-split-by-subject-kind).
+- Subjects created before 1.6.0 are classified once, on upgrade: one that already carried a
+  hand-made signal or rule is Custom; everything else is Website.
 - **Python SDK 1.6.0** adds `client.v2.subjects.all(...)` / `.get(...)` / `.create(...)` and
   `client.v2.subjects(subject).signals(signal).observations.create(...)`, with typed
-  request/response models. See [Python SDK](/v1.6.0/reference/python-sdk/#subjects).
+  request/response models. Authoring signals and rules over the API is not in the SDK yet —
+  call those routes directly. See [Python SDK](/v1.6.0/reference/python-sdk/#subjects).
 
 ## 1.5.0
 
