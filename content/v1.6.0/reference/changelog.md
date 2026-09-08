@@ -7,11 +7,17 @@ description: "User-facing changes from 1.1 to 1.6.0."
 
 ## 1.6.0
 
-### Your own signals
-- **Add custom heartbeat and event signals** to an existing website monitoring subject
-  (**Monitoring → subject → Signals → Add signal**). A heartbeat reports on a schedule and its
-  silence can become no data; an event reports only when something happens and its silence means
-  nothing. See [Signals & rules](/v1.6.0/core-concepts/signals-and-rules/).
+### Custom checks
+- **Add Custom check** creates a monitoring subject of your own, with nothing under it — no URL,
+  no probe, no interval. It sits in the Monitoring list beside your website checks, and each row
+  now says which kind it is. See [Signals & rules](/v1.6.0/core-concepts/signals-and-rules/).
+- **Add custom heartbeat and event signals** to a Custom subject
+  (**Monitoring → the subject → Signals → Add signal**). A heartbeat reports on a schedule and
+  its silence can become no data; an event reports only when something happens and its silence
+  means nothing.
+- **A Website check keeps its own shape.** Its HTTP signal and its Reachability rule are created
+  and rewritten by the check form, so it has no Add signal and no Add rule — you change it by
+  editing the check. Custom signals and custom rules live on Custom subjects.
 - **Report observations over the API:**
   `POST /v2/subjects/{subject}/signals/{signal}/observations`, with a Bearer token. A `status`
   of `ok` or `problem`, plus an optional number, error text and your own labels. Retries replace
@@ -22,30 +28,39 @@ description: "User-facing changes from 1.1 to 1.6.0."
 - A signal a rule reads **cannot be deleted** — the page names the rules and links to them.
 
 ### The rules editor
-- **Add and edit rules** on a subject (**Monitoring → subject → Rules**). A rule combines the
-  platform HTTP signal, your custom signals, and **other rules of the same subject**.
+- **Add and edit rules** on a Custom subject (**Monitoring → the subject → Rules**). A rule
+  combines that subject's signals and **other rules of the same subject**; cross-subject inputs
+  are not possible.
 - **Choose what counts as a problem per input:** *Status*, or *Latest value* compared with `<` or
-  `>` against one threshold. Platform HTTP is always Status.
-- **Select observations by label.** Platform HTTP offers the locations the website form watches,
-  plus *Any location* and *Any observation*; custom signals take free-text keys and values, where
-  `*` matches any value of a key.
+  `>` against one threshold.
+- **Select observations by label** — free-text keys and values, where `*` matches any value of a
+  key.
 - **Quorum gains "At least N"** beside Any, Majority and All, and **Confirm after**, **Close
   after** and per-input **No data after** are editable.
-- **Reachability is edited here too.** Its policy is editable in the same form; it keeps its
-  identity and still cannot be deleted.
+- **Reachability is not edited here.** A website check's rule stays owned by the check form: its
+  inputs are the locations it watches and its quorum is *Locations Required to Fail*, so it is
+  changed by editing the check. It can be read, and it still cannot be deleted.
 - A rule shows its policy in plain language on the rule page and in the rules list.
 
 ### Monitoring list
-- Each row links to that subject's **Signals (N)** and **Rules (N)**, and offers **View rules**.
-- **The Website check Edit action is gone.** Creating a website is unchanged; after creation you
-  change the subject through Signals and Rules.
+- Each row is labelled **Website** or **Custom**. A Custom row links to that subject's
+  **Signals (N)** and **Rules (N)** and offers **View rules**; a Website row keeps **Edit**,
+  which opens the website monitoring form.
+- **Delete removes a subject and its history**, of either kind.
 
 ### API and SDK
-- `POST /v2/subjects/{subject}/signals/{signal}/observations` is the one new endpoint. v1 is
-  unchanged and still frozen.
-- **Python SDK 1.6.0** adds
-  `client.v2.subjects(subject).signals(signal).observations.create(...)` with typed
-  request/response models. See [Python SDK](/v1.6.0/reference/python-sdk/#reporting-observations).
+- **`GET /v2/subjects`** lists everything a workspace watches, both kinds, each with its
+  `subject_kind`, `signal_count` and `rule_count`; **`GET /v2/subjects/{subject}`** fetches one
+  by slug; **`POST /v2/subjects`** creates one empty **Custom** subject. Asking for a website
+  here is refused and pointed at `POST /v2/monitoring/websites`. There is no update and no
+  delete. See [Subjects](/v1.6.0/reference/rest-api/#list-subjects).
+- **`POST /v2/subjects/{subject}/signals/{signal}/observations`** reports one observation to a
+  custom signal. v1 is unchanged and still frozen.
+- Signals and rules have no API collection in this release: they are authored in the dashboard,
+  and `signal_count`/`rule_count` are how a client sees what a subject holds.
+- **Python SDK 1.6.0** adds `client.v2.subjects.all(...)` / `.get(...)` / `.create(...)` and
+  `client.v2.subjects(subject).signals(signal).observations.create(...)`, with typed
+  request/response models. See [Python SDK](/v1.6.0/reference/python-sdk/#subjects).
 
 ## 1.5.0
 

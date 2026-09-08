@@ -58,11 +58,25 @@ Every row links to that method's own section.
 | GET | [`/v2/monitoring/websites/{id}`](#get-a-website-monitor) | Get one. |
 | POST | [`/v2/monitoring/websites/{id}`](#update-a-website-monitor) | Update one (there is no `PUT`). |
 | DELETE | [`/v2/monitoring/websites/{id}`](#delete-a-website-monitor) | Delete one. |
+| GET | [`/v2/subjects`](#list-subjects) | Everything a workspace watches, both kinds. |
+| POST | [`/v2/subjects`](#create-a-custom-subject) | Create one empty **Custom** subject. |
+| GET | [`/v2/subjects/{subject}`](#get-a-subject) | Get one by its slug. |
 | POST | [`/v2/subjects/{subject}/signals/{signal}/observations`](#report-an-observation) | Report one observation to a custom signal. |
 
 Website monitoring is a built-in **template**, which is why its resource sits under
 `/v2/monitoring/` rather than at `/v2/monitors`. That name is reserved for the
 general model.
+
+A **subject** is the thing being watched, and `/v2/subjects` is where both kinds of it
+appear. Creating one here creates a **Custom** subject; website monitoring keeps its own
+route, because its request needs a URL, an interval and locations. There is no update and
+no `DELETE` for a subject: a website subject changes through
+[its monitor](#update-a-website-monitor), and deleting either kind takes its whole history
+with it, so it is a dashboard action rather than a script's.
+
+Signals and rules have no collection of their own in this release. `signal_count` and
+`rule_count` on a subject are how you see what is under one, and signals are authored in
+the dashboard.
 
 ## Endpoints (v1, frozen)
 
@@ -78,7 +92,7 @@ general model.
 
 ## Shared payloads
 
-Three schemas are referenced by more than one method, so they are written once here.
+These schemas are referenced by more than one method, so they are written once here.
 
 ### Website monitor object (v2)
 
@@ -154,13 +168,45 @@ disagree:
 stays in `unknown` and still counts toward the agreement — that is a real state, not a
 missing one.
 
+### Subject object (v2)
+
+One thing a workspace watches, returned by the [subject](#list-subjects) methods.
+
+```json
+{
+  "id": "payments-worker",
+  "name": "Payments worker",
+  "subject_kind": "custom",
+  "workspace_id": "<uid>",
+  "signal_count": 1,
+  "rule_count": 1,
+  "kind": "subject"
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `id` | The subject's **slug** — what the API addresses it by, and the first half of the observation route. There is no database id in the payload, and renaming the subject does not move it. |
+| `subject_kind` | `website` or `custom`. How the subject is configured, and therefore what may be done to it. |
+| `signal_count`, `rule_count` | How much is under the subject. There is no signals or rules collection, so these are how you see that a new Custom subject really is empty. |
+| `kind` | Always `"subject"`. |
+
+`kind` and `subject_kind` are separate on purpose: `kind` says **what** the object is, so a
+client switching on it keeps working when a third subject kind arrives; `subject_kind` says how
+this particular one is configured.
+
+A **website** subject is created by [website monitoring](#create-a-website-monitor) and its
+signal, its Reachability rule and its probe belong to that form. A **custom** subject is yours:
+you add [signals](/v1.6.0/core-concepts/signals-and-rules/) to it in the dashboard and report
+their observations here.
+
 ### Observation object (v2)
 
 What the server stored, returned by [report an observation](#report-an-observation).
 
 ```json
 {
-  "subject_id": "check-8f3c1a2b",
+  "subject_id": "payments-worker",
   "signal_id": "worker-pulse",
   "observed_at": "2026-09-01T12:00:00Z",
   "received_at": "2026-09-01T12:00:01Z",
@@ -353,6 +399,69 @@ This removes the monitor **and everything under it** — its monitoring subject,
 signal, its rule and their history. Deleting an id that is already gone answers
 `Website monitor not found` (code `2002`).
 
+### List subjects
+
+**`GET /v2/subjects?workspace_id=<uid>`**
+
+| Parameter | Required | Meaning |
+|---|---|---|
+| `workspace_id` | yes | The workspace to read. Missing → `Missing workspace ID` (code `2004`). |
+
+Returns every [subject object](#subject-object-v2) in that workspace, **both kinds** — the
+website subjects the check form created and the custom ones you added. Read `subject_kind` to
+tell them apart. A non-member gets `Access denied` (code `2005`).
+
+This is the list that answers "what does this workspace watch?".
+[`GET /v2/monitoring/websites`](#list-website-monitors) is the narrower question — the website
+monitors and their configuration — and never returns a custom subject.
+
+### Create a custom subject
+
+**`POST /v2/subjects`**
+
+```json
+{ "workspace_id": "<uid>", "name": "Payments worker" }
+```
+
+| Field | Required | Meaning |
+|---|---|---|
+| `workspace_id` | yes | Where the subject is created. |
+| `name` | yes | Must contain at least one letter or digit; it produces the slug. |
+| `subject_kind` | no | May only say `"custom"`. It exists so a client that sends the field is answered rather than surprised. |
+
+Returns the stored [subject object](#subject-object-v2). The subject arrives **empty** —
+`signal_count` and `rule_count` are `0`, and it has no HTTP probe. Add a signal to it in the
+dashboard (**Monitoring → the subject → Signals → Add signal**), then report to that signal with
+[report an observation](#report-an-observation).
+
+Unknown fields are refused rather than dropped, so a body carrying `url` or `interval` answers
+`Invalid JSON` (code `2006`) instead of quietly creating something that probes nothing.
+
+**Website monitoring is not created here.** `subject_kind: "website"` answers
+`Website subjects are created elsewhere` (code `2004`), pointing at
+[`POST /v2/monitoring/websites`](#create-a-website-monitor) — a website needs a URL, an interval
+and locations, and its form owns the signal and rule it creates.
+
+Creating requires the workspace **editor** role; a viewer gets `Access denied` (code `2005`).
+
+### Get a subject
+
+**`GET /v2/subjects/{subject_slug}`**
+
+`{subject_slug}` is the subject's `id`. Returns one [subject object](#subject-object-v2).
+
+| Parameter | Required | Meaning |
+|---|---|---|
+| `workspace_id` | no | Settles an ambiguity rather than being required. |
+
+A subject slug is unique **per workspace**, not globally, so without `workspace_id` the server
+searches the workspaces you belong to. Nothing found answers `Subject not found` (code `2002`) —
+the same answer a subject you cannot see gives. The same slug in two of your workspaces answers
+`Ambiguous subject` (code `2004`), naming them, so you can add the parameter.
+
+Reading a subject needs only the **viewer** role: it is what you can already see in the
+dashboard.
+
 ### Report an observation
 
 **`POST /v2/subjects/{subject_slug}/signals/{signal_slug}/observations`**
@@ -369,7 +478,7 @@ signal's page in the dashboard.
 | `labels` | no | An open string map that rules match on. |
 
 ```sh
-curl -X POST "$UPTIMER_URL/api/v2/subjects/check-8f3c1a2b/signals/worker-pulse/observations"   -H "Authorization: Bearer $UPTIMER_TOKEN"   -H "Content-Type: application/json"   -d '{"status":"ok","value":1.5,"labels":{"instance":"worker-3"}}'
+curl -X POST "$UPTIMER_URL/api/v2/subjects/payments-worker/signals/worker-pulse/observations"   -H "Authorization: Bearer $UPTIMER_TOKEN"   -H "Content-Type: application/json"   -d '{"status":"ok","value":1.5,"labels":{"instance":"worker-3"}}'
 ```
 
 Returns the stored [observation object](#observation-object-v2).

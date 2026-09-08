@@ -39,9 +39,10 @@ That's **dev mode**: one process, fake auth, throwaway data — great for a look
 
 ## New in 1.6.0
 
-Add your own **signals** to a website monitoring subject and report observations to them over
-the API, then write **rules** that combine them with the website check — label selection, status
-or numeric thresholds, quorum and timing. See
+**Custom checks.** Add a subject of your own, give it heartbeat or event **signals**, report
+observations to them over the API, and write **rules** over those signals — label selection,
+status or numeric thresholds, quorum and timing. `GET /v2/subjects` lists everything a workspace
+watches, website checks included. See
 [Signals & rules](/v1.6.0/core-concepts/signals-and-rules/) and the
 [changelog](/v1.6.0/reference/changelog/).
 

@@ -27,9 +27,10 @@ and the history are showing you.
 > subject is in trouble. Saving website monitoring creates the subject, its built-in HTTP
 > **signal** and that rule for you.
 
-**New in 1.6.0:** a subject is no longer limited to what the website form created. You can add
-your own signals to it, report observations to them over the API, and write rules that combine
-them — including editing Reachability's own policy. See
+**New in 1.6.0:** a subject is no longer only something the website form created. **Add Custom
+check** makes an empty one that is yours: you add your own signals, report observations to them
+over the API, and write rules over them. A website subject keeps its own shape — its signal and
+its Reachability rule belong to the check form. See
 [Signals & rules](/v1.6.0/core-concepts/signals-and-rules/).
 
 Intervals are whole minutes and the scheduler ticks once a minute, so **one minute is the finest

@@ -157,8 +157,13 @@ version visible rather than hiding it: everything v2 offers is reached through
 - `client.v2.incidents.all(workspace_id, monitor_id=None)` — **open** incidents
 - `client.v2.monitoring.websites.all(workspace_id)` · `.get(id)` · `.create(...)` ·
   `.update(id, ...)` · `.delete(id)`
+- `client.v2.subjects.all(workspace_id)` · `.get(slug, workspace_id=None)` ·
+  `.create(...)` — **new in 1.6.0**, see [Subjects](#subjects)
 - `client.v2.subjects(subject).signals(signal).observations.create(...)` — **new in
   1.6.0**, see [Reporting observations](#reporting-observations)
+
+`subjects` is both a collection and a path: call the methods on it to list, fetch or
+create a subject, and call it *with a slug* to reach what is under one.
 
 The types those calls take and return are versioned the same way — import them from
 **`uptimer.models.v2`**:
@@ -200,11 +205,49 @@ The hosted service at [myuptime.info](https://myuptime.info) versions on its own
 release does not serve yet raises `IncompatibleServerError` when you call it, rather than
 a bare 404.
 
+## Subjects
+
+**New in 1.6.0.** A [subject](/v1.6.0/core-concepts/signals-and-rules/) is one thing a
+workspace watches. `client.v2.subjects` lists them all — website checks included — and
+creates the **Custom** ones.
+
+```python
+from uptimer.models.v2 import SUBJECT_KIND_CUSTOM, CreateSubjectRequest
+
+subjects = client.v2.subjects
+
+# Everything this workspace watches, of both kinds.
+for subject in subjects.all(workspace.id):
+    print(subject.id, subject.subject_kind, subject.signal_count, subject.rule_count)
+
+# A Custom subject of your own. It arrives empty: no signal, no rule, no probe.
+created = subjects.create(
+    CreateSubjectRequest(name="Payments worker", workspace_id=workspace.id),
+)
+assert created.is_custom and created.signal_count == 0
+
+# One by its slug. workspace_id settles the case where the same slug exists in two
+# of your workspaces; without it the server searches your memberships.
+fetched = subjects.get(created.id, workspace_id=workspace.id)
+```
+
+`subject.id` is the **slug**, which is what the API addresses a subject by and the first
+half of the observation route. `subject_kind` is `SUBJECT_KIND_WEBSITE` or
+`SUBJECT_KIND_CUSTOM`, and `is_website` / `is_custom` read it; that is separate from
+`kind`, which is always `"subject"`.
+
+Website monitoring is **not** created here — `client.v2.monitoring.websites.create(...)`
+is, and asking for `subject_kind="website"` raises a `DefaultUptimerApiError` saying so.
+There is no update and no delete: a website subject changes through its monitor, and
+deleting either kind takes its whole history with it.
+
+Signals are added in the dashboard; the SDK reports to one that already exists.
+
 ## Reporting observations
 
 **New in 1.6.0.** Send your own readings to a custom heartbeat or event
-[signal](/v1.6.0/core-concepts/signals-and-rules/). The two slugs are the address, and
-both are shown on the signal's page in the dashboard.
+[signal](/v1.6.0/core-concepts/signals-and-rules/) of a Custom subject. The two slugs are
+the address, and both are shown on the signal's page in the dashboard.
 
 ```python
 from uptimer.client import UptimerClient
@@ -215,7 +258,7 @@ from uptimer.models.v2 import (
 )
 
 client = UptimerClient(api_key="...", base_url="http://127.0.0.1:2517/api")
-observations = client.v2.subjects("check-8f3c1a2b").signals("worker-pulse").observations
+observations = client.v2.subjects("payments-worker").signals("worker-pulse").observations
 
 # A heartbeat: "I ran, and I am fine."
 observations.create(CreateObservationRequest(status=OBSERVATION_STATUS_OK))
