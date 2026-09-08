@@ -1,8 +1,8 @@
-# Uptimer 1.6.0 (preview: pulls :edge until 1.6.0 ships — see examples README) behind nginx HTTP Basic Auth.
+# Uptimer 1.6.0 behind nginx HTTP Basic Auth.
 # `docker compose up`, then open http://localhost  (admin / password).
 services:
   uptimer:
-    image: ghcr.io/myuptime-info/uptimer:edge
+    image: ghcr.io/myuptime-info/uptimer:1.6.0
     volumes:
       - ./data:/data
 

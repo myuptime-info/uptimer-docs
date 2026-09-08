@@ -3,9 +3,6 @@
 A self-contained Keycloak + Uptimer stack. The imported realm defines the `uptimer-dev` client
 and a `test / test` user, and maps a custom `nickname` claim that Uptimer uses as the username.
 
-> **Preview.** 1.6.0 is not released yet, so this compose file pulls `:edge`. When 1.6.0
-> ships it is pinned to `ghcr.io/myuptime-info/uptimer:1.6.0`.
-
 ```sh
 # resolve the hostnames the realm/redirect URLs use
 echo "127.0.0.1 keycloak uptimer-dev" | sudo tee -a /etc/hosts

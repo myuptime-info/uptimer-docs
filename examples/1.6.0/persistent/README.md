@@ -2,9 +2,6 @@
 
 A single Uptimer container in dev mode, backed by PostgreSQL so data survives restarts.
 
-> **Preview.** 1.6.0 is not released yet, so this compose file pulls `:edge`. When 1.6.0
-> ships it is pinned to `ghcr.io/myuptime-info/uptimer:1.6.0`.
-
 ```sh
 docker compose up
 ```

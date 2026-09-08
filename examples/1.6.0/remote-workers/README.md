@@ -3,9 +3,6 @@
 Runs the server split into services plus two workers, all on one host — the shape of a
 distributed deployment. Workers reach the server over gRPC on `50051`.
 
-> **Preview.** 1.6.0 is not released yet, so this compose file pulls `:edge`. When 1.6.0
-> ships it is pinned to `ghcr.io/myuptime-info/uptimer:1.6.0`.
-
 ## One-time bootstrap
 
 ```sh
