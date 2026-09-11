@@ -1,0 +1,48 @@
+{
+    "realm": "uptimer-dev-keycloak-example",
+    "enabled": true,
+    "clients": [
+      {
+        "clientId": "uptimer-dev",
+        "secret": "1234567890",
+        "redirectUris": ["http://uptimer-dev:2517/ui/auth/oauth/callback"],
+        "protocolMappers": [
+          {
+            "name": "nickname",
+            "protocol": "openid-connect",
+            "protocolMapper": "oidc-usermodel-attribute-mapper",
+            "config": {
+              "user.attribute": "nickname",
+              "claim.name": "nickname",
+              "jsonType.label": "String",
+              "id.token.claim": "true",
+              "access.token.claim": "true",
+              "userinfo.token.claim": "true",
+              "full.group.path": "false"
+            }
+          }
+        ]
+      }
+    ],
+    "users": [
+      {
+        "username": "test",
+        "enabled": true,
+        "emailVerified": true,
+        "firstName": "Test",
+        "lastName": "User",
+        "email": "test@example.com",
+        "attributes": {
+          "nickname": ["TestUser"]
+        },
+        "credentials": [
+          {
+            "type": "password",
+            "value": "test",
+            "temporary": false
+          }
+        ]
+      }
+    ]
+  }
+  

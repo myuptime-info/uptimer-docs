@@ -12,12 +12,14 @@ disableKinds = ['taxonomy', 'term']
 # banner and the /latest/ redirects (#24/#25).
 [params.versions]
 default = "1.6.0"
-available = ["1.6.0", "1.5.0", "1.4.0", "1.3.0", "1.0.0"]
+available = ["1.7.0", "1.6.0", "1.5.0", "1.4.0", "1.3.0", "1.0.0"]
 latest = "1.6.0"
-# No `preview` key while every documented version is released. Add one back when
-# the next tree is written ahead of its release: it keeps `default`/`latest` on
-# the shipped version, makes `{{< image >}}` emit :edge, and shows the preview
-# banner. See VERSIONING.md.
+# preview: 1.7.0 is documented but not released, so `default` and `latest` stay
+# on 1.6.0 and /latest/ is unchanged. This keeps `{{< image >}}` emitting :edge
+# in the 1.7.0 tree and shows the preview banner there. The operator promotes it
+# at final ship (VERSIONING.md): set default+latest, repoint /latest/* and the
+# root redirect, and swap the examples' :edge images for :1.7.0.
+preview = "1.7.0"
 
 # Home also emits index.json — the client-side search index (see layouts/index.json).
 [outputs]

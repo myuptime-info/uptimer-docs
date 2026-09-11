@@ -1,0 +1,49 @@
+---
+title: "Uptimer v1.7.0"
+lede: "Self-hosted uptime & synthetic monitoring in a single Go binary — up and running in one command."
+description: "Uptimer — self-hosted uptime monitoring you can run in one command."
+---
+
+Uptimer watches your HTTP(S) endpoints on a schedule, from one or many locations, and alerts you
+the moment they break. One Go binary under 100 MB, with a REST API the dashboard itself is built
+on — anything you can click, you can script.
+
+## Open source, or hosted — one engine
+
+Run it yourself (these docs) or use the hosted service at
+[myuptime.info](https://myuptime.info). **Same engine, same REST API.** Your data stays yours:
+export any time and move between self-hosted and cloud — no vendor lock-in.
+
+## Try it in one command
+
+```sh
+docker run -p 2517:2517 {{< image >}}
+```
+
+{{< imagenote >}}
+
+Open **http://127.0.0.1:2517** and you land on **Monitoring** — add website monitoring, point it
+at a URL, watch it go up or down. The REST API is on the same port under `/api`; calls take a
+Bearer token you create in the dashboard (**User → API Keys**), shown once when you create it:
+
+```sh
+curl -H "Authorization: Bearer $UPTIMER_TOKEN" http://127.0.0.1:2517/api/version
+```
+```json
+{ "result": "1.6.0", "error": null, "meta": null }
+```
+
+That's **dev mode**: one process, fake auth, throwaway data — great for a look.
+[Quick start](/v1.7.0/getting-started/quick-start/) explains what just happened;
+[Self-hosting](/v1.7.0/getting-started/self-hosting/) turns it into a real deployment.
+
+## New in 1.6.0
+
+**Custom checks.** Add a subject of your own, give it heartbeat or event **signals**, report
+observations to them over the API, and write **rules** over those signals — label selection,
+status or numeric thresholds, quorum and timing. The whole of it is scriptable: `/v2/subjects`
+and the signal, rule and observation routes nested under it do what the Custom screens do. See
+[Signals & rules](/v1.7.0/core-concepts/signals-and-rules/) and the
+[changelog](/v1.7.0/reference/changelog/).
+
+## Explore
