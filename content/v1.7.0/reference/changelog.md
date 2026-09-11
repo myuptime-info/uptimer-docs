@@ -8,9 +8,13 @@ description: "User-facing changes from 1.1 to 1.6.0."
 ## 1.7.0
 
 ### Acknowledging an incident
-- **Acknowledge** an open incident from its rule page. The timeline records who acknowledged
-  it and when, so the next person to look can see somebody is already on it. See
+- **Acknowledge** an open incident from the subject's page — where you land from Monitoring —
+  or from a rule page. The timeline records who acknowledged it and when, so the next person
+  to look can see somebody is already on it. See
   [Monitors & incidents](/v1.7.0/core-concepts/monitors-and-incidents/#acknowledging-an-incident).
+- **One incident per press.** A subject page acts on the worst of its open incidents, by the
+  same order its status reads by, and names the rule on a Custom subject. It never
+  acknowledges the rest.
 - **It changes nothing about the incident.** The verdict, the evidence and the locations are
   untouched, the close wait carries on, and recovery and closure happen as they would have.
   Alerting is unchanged: acknowledging does not silence anything.

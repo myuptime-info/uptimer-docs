@@ -126,8 +126,14 @@ A timeline row is one event, with the locations that caused it:
 
 ### Acknowledging an incident
 
-**New in 1.7.0.** On a rule's page, an open incident offers **Acknowledge**. Pressing it
-records that you have seen it, and the timeline gains a row with your name and the time.
+**New in 1.7.0.** A subject with an open incident offers **Acknowledge** in the header of its
+page, beside its timeline. Pressing it records that you have seen the incident, and the
+timeline gains a row with your name and the time. The page stays where it is; the action
+becomes **Acknowledged**, with the timeline underneath holding who and when.
+
+Each rule page carries the same action for its own incident. The subject page is the one to
+reach for: it is where you land from Monitoring, and a website monitor has no rule page to
+open.
 
 It is a note about a person, not a change to the incident. A problem stays a problem: the
 verdict, the evidence and the locations are exactly what they were, the close wait carries on,
@@ -153,6 +159,11 @@ A few details worth knowing:
   you so. It never lands on the newer incident, which you have not seen.
 - **It survives a restart.** Who acknowledged what and when is stored with the incident, not
   held in the page.
+- **One incident at a time.** A subject can have several incidents open at once, and its page
+  has one button. It acts on the worst of them — the same order the subject's own status
+  reads by, ties going to the first rule in the list — and on a Custom subject the rule is
+  named beside the action so it is clear which one. Acknowledging it says nothing about the
+  others; acknowledge those on their own rule pages.
 
 The **Locations** column shows which were failing (red) and which were silent (grey) at that
 event, plus the error text they reported. Where an event recorded no evidence of its own,
