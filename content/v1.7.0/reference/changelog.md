@@ -15,6 +15,9 @@ description: "User-facing changes from 1.1 to 1.6.0."
 - **One incident per press.** A subject page acts on the worst of its open incidents, by the
   same order its status reads by, and names the rule on a Custom subject. It never
   acknowledges the rest.
+- **Monitoring shows an acknowledged problem.** A subject's row carries an **Acknowledged**
+  badge beside its status while the acknowledged incident is a confirmed problem, and loses it
+  once that incident recovers or closes.
 - **It changes nothing about the incident.** The verdict, the evidence and the locations are
   untouched, the close wait carries on, and recovery and closure happen as they would have.
   Alerting is unchanged: acknowledging does not silence anything.

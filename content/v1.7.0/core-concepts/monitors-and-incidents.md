@@ -159,6 +159,12 @@ A few details worth knowing:
   you so. It never lands on the newer incident, which you have not seen.
 - **It survives a restart.** Who acknowledged what and when is stored with the incident, not
   held in the page.
+- **Monitoring shows it while it is still a problem.** The subject's row on Monitoring carries
+  an **Acknowledged** badge beside its status while the acknowledged incident is a confirmed
+  problem, so you can see who is covered without opening anything. It disappears as soon as
+  that incident starts recovering or closes — and it never appears for a pending or no-data
+  one — because beside a row that is no longer failing it would read as "handled". The record
+  stays in the timeline.
 - **One incident at a time.** A subject can have several incidents open at once, and its page
   has one button. It acts on the worst of them — the same order the subject's own status
   reads by, ties going to the first rule in the list — and on a Custom subject the rule is
