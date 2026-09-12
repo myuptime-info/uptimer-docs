@@ -159,6 +159,11 @@ A few details worth knowing:
   you so. It never lands on the newer incident, which you have not seen.
 - **It survives a restart.** Who acknowledged what and when is stored with the incident, not
   held in the page.
+- **Any open incident can be acknowledged.** Pending, recovering and no-data incidents are
+  still incidents somebody can be on, so the action is offered for all of them. That is a
+  wider rule than the Monitoring **badge** below, which deliberately shows only a confirmed
+  problem — what may be acknowledged and what is worth a badge on a list are two different
+  questions.
 - **Monitoring shows it while it is still a problem.** The subject's row on Monitoring carries
   an **Acknowledged** badge beside its status while the acknowledged incident is a confirmed
   problem, so you can see who is covered without opening anything. It disappears as soon as
@@ -170,6 +175,13 @@ A few details worth knowing:
   reads by, ties going to the first rule in the list — and on a Custom subject the rule is
   named beside the action so it is clear which one. Acknowledging it says nothing about the
   others; acknowledge those on their own rule pages.
+
+**Over the API**, an incident is acknowledged through the API of its own kind of monitoring:
+`POST /v1/rules/{uid}/incidents/{incident}/acknowledge` for a website monitor, and
+`POST /v2/subjects/{subject}/incidents/{incident}/acknowledge` for a custom subject. Unlike the
+dashboard, the API never chooses an incident for you — the id is the target. See
+[Acknowledging an incident](/v1.7.0/reference/rest-api/#acknowledging-an-incident) in the REST
+reference.
 
 The **Locations** column shows which were failing (red) and which were silent (grey) at that
 event, plus the error text they reported. Where an event recorded no evidence of its own,

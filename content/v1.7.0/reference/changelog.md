@@ -18,6 +18,14 @@ description: "User-facing changes from 1.1 to 1.6.0."
 - **Monitoring shows an acknowledged problem.** A subject's row carries an **Acknowledged**
   badge beside its status while the acknowledged incident is a confirmed problem, and loses it
   once that incident recovers or closes.
+- **Find a custom subject's open incidents over the API.**
+  `GET /v2/subjects/{subject}/incidents` lists them with the ids acknowledgement takes, the
+  rule each belongs to and whether somebody is already on it. `GET /v2/incidents` is unchanged
+  and stays the website path.
+- **Acknowledge over the API.** `POST /v1/rules/{uid}/incidents/{incident}/acknowledge` for a
+  website monitor, `POST /v2/subjects/{subject}/incidents/{incident}/acknowledge` for a custom
+  subject — each kind of monitoring through its own API, no body, and one exact incident per
+  call. See the [REST reference](/v1.7.0/reference/rest-api/#acknowledging-an-incident).
 - **It changes nothing about the incident.** The verdict, the evidence and the locations are
   untouched, the close wait carries on, and recovery and closure happen as they would have.
   Alerting is unchanged: acknowledging does not silence anything.

@@ -72,6 +72,8 @@ Every row links to that method's own section.
 | POST | [`/v2/subjects/{subject}/rules/{rule}`](#update-a-subject-rule) | Replace its name and policy. |
 | DELETE | [`/v2/subjects/{subject}/rules/{rule}`](#delete-a-subject-rule) | Delete it. |
 | POST | [`/v2/subjects/{subject}/signals/{signal}/observations`](#report-an-observation) | Report one observation to a custom signal. |
+| GET | [`/v2/subjects/{subject}/incidents`](#list-a-custom-subjects-open-incidents) | That subject's **open** incidents, with their ids. |
+| POST | [`/v2/subjects/{subject}/incidents/{incident}/acknowledge`](#acknowledge-a-custom-incident) | Say you have seen one open **Custom** incident. |
 
 ### The API is split by subject kind
 
@@ -112,6 +114,7 @@ history with it, so it is a dashboard action rather than a script's.
 | GET | [`/v1/rules/{uid}`](#get-a-rule) | Get one rule. |
 | POST | [`/v1/rules/{uid}`](#update-a-rule) | Update a rule. |
 | DELETE | [`/v1/rules/{uid}`](#delete-a-rule) | Delete a rule. |
+| POST | [`/v1/rules/{uid}/incidents/{incident}/acknowledge`](#acknowledge-a-website-incident) | Say you have seen one open **Website** incident. |
 | GET | [`/v1/regions`](#list-regions) | List regions + active worker counts. |
 
 ## Shared payloads
@@ -191,6 +194,70 @@ disagree:
 `locations` is the evidence the verdict came from. A location that has never reported
 stays in `unknown` and still counts toward the agreement — that is a real state, not a
 missing one.
+
+### Subject incident object (v2)
+
+One open incident of a **Custom** subject, returned by
+[list a custom subject's open incidents](#list-a-custom-subjects-open-incidents).
+
+```json
+{
+  "id": "xeOkfGadru8",
+  "subject_id": "payments-worker",
+  "rule_id": "export-health",
+  "rule_name": "Export health",
+  "status": "problem",
+  "trouble_since": "2026-09-12T10:47:45Z",
+  "confirmed_at": "2026-09-12T10:47:45Z",
+  "well_since": null,
+  "acknowledged": true,
+  "acknowledged_at": "2026-09-12T11:47:45Z",
+  "acknowledged_by": "ops",
+  "kind": "subject_incident"
+}
+```
+
+It is **not** the [incident object](#incident-object-v2) above: that one describes a website
+monitor's incident and carries `monitor_id`, `monitor_name` and the locations the probe ran
+from. A custom incident has none of those, so instead of inventing them this object names the
+**rule** that opened it — `rule_id` is the rule's slug, `rule_name` the name you gave it.
+
+- `id` is the value the [acknowledge](#acknowledge-a-custom-incident) method takes.
+- `status` uses [the same five words](#incident-object-v2) as everywhere else.
+- `acknowledged_by` is `""` and `acknowledged_at` `null` while nobody has acknowledged it.
+
+### Incident acknowledgement object
+
+The answer to both [acknowledge](#acknowledging-an-incident) methods. One shape for both
+families: what differs is only how the incident was addressed.
+
+```json
+{
+  "incident_id": "xeOkfGadru8",
+  "monitor_id": "<uid>",
+  "status": "problem",
+  "acknowledged": true,
+  "acknowledged_at": "2026-09-12T11:30:57Z",
+  "acknowledged_by": "ops",
+  "recorded": true,
+  "trouble_since": "2026-09-12T10:30:57Z",
+  "confirmed_at": "2026-09-12T10:30:57Z",
+  "well_since": null,
+  "closed_at": null,
+  "kind": "incident_acknowledgement"
+}
+```
+
+- `monitor_id` is present on a **Website** answer. A **Custom** answer carries `subject_id`
+  and `rule_id` — the subject's slug and the slug of the rule the incident belongs to —
+  instead. The other family's field is absent, not empty.
+- `acknowledged_by` is the display name, or the username where there is none: the same name
+  the dashboard timeline shows.
+- **`recorded` says whether *this* call wrote the acknowledgement.** `false` means it was
+  already acknowledged and nothing changed — the call succeeded, no second history entry was
+  added, and `acknowledged_at` / `acknowledged_by` are the **first** person's.
+- `status` is the incident's condition, unchanged by acknowledging it. A closed incident has
+  no current condition, so it reads `ok`; `closed_at` is what tells you it closed.
 
 ### Subject object (v2)
 
@@ -748,6 +815,194 @@ Reporting requires the workspace **editor** role; a viewer gets `Access denied` 
 
 Retries are safe: an observation is identified by its signal, `observed_at` and labels, so
 re-sending the same one replaces it rather than counting twice.
+
+### List a custom subject's open incidents
+
+**`GET /v2/subjects/{subject}/incidents?workspace_id=<uid>`**
+
+**New in 1.7.0.** The **open** incidents of one Custom subject, with the ids the
+[acknowledge](#acknowledge-a-custom-incident) method takes.
+
+| Parameter | Where | Meaning |
+|---|---|---|
+| `subject` | path | The Custom subject's slug. |
+| `workspace_id` | query | Only needed when the same subject slug exists in two of your workspaces. |
+
+```sh
+curl "$UPTIMER_URL/api/v2/subjects/payments-worker/incidents" \
+  -H "Authorization: Bearer $UPTIMER_TOKEN"
+```
+
+```json
+{ "result": [
+    { "id": "v8dLj9O1tzs", "subject_id": "payments-worker", "rule_id": "queue-depth",
+      "rule_name": "Queue depth", "status": "problem",
+      "trouble_since": "2026-09-12T10:47:45Z", "confirmed_at": "2026-09-12T10:47:45Z",
+      "well_since": null, "acknowledged": false, "acknowledged_at": null,
+      "acknowledged_by": "", "kind": "subject_incident" },
+    { "id": "xeOkfGadru8", "subject_id": "payments-worker", "rule_id": "export-health",
+      "rule_name": "Export health", "status": "problem",
+      "trouble_since": "2026-09-12T10:47:45Z", "confirmed_at": "2026-09-12T10:47:45Z",
+      "well_since": null, "acknowledged": true, "acknowledged_at": "2026-09-12T11:47:45Z",
+      "acknowledged_by": "ops", "kind": "subject_incident" } ],
+  "error": null, "meta": null }
+```
+
+Returns a list of [subject incident objects](#subject-incident-object-v2), newest
+`trouble_since` first; ties fall back to the rule slug, so the order is the same on every call.
+
+**Open incidents only, and all of them.** A subject can have one incident open per rule, and
+they are all listed — pending, recovering and no-data included, and acknowledged ones too: that
+somebody is already on one is half of what you ask this for. Nothing open answers `[]`. Closed
+history is not here; it lives on the subject timeline in the dashboard.
+
+This is a **read**, so the workspace **viewer** role is enough — acknowledging one of them is
+not. A website subject answers `Website subjects are managed elsewhere` (code `2004`) like
+every other `/v2/subjects` route: its incidents are listed by
+[`GET /v2/incidents`](#list-open-incidents).
+
+## Acknowledging an incident
+
+**New in 1.7.0.** Acknowledging says a **person has seen** an open incident. It changes nothing
+the engine decided — the verdict, the evidence, the close hold and the alerting all carry on —
+and it is recorded once, with who and when, on the incident's timeline. The dashboard does the
+same thing from the subject's page; see
+[Acknowledging an incident](/v1.7.0/core-concepts/monitors-and-incidents/#acknowledging-an-incident).
+
+Each kind of monitoring acknowledges through **its own API**, like everything else
+([the split](#the-api-is-split-by-subject-kind)):
+
+| Monitoring | Method |
+|---|---|
+| Website | [`POST /v1/rules/{uid}/incidents/{incident}/acknowledge`](#acknowledge-a-website-incident) |
+| Custom | [`POST /v2/subjects/{subject}/incidents/{incident}/acknowledge`](#acknowledge-a-custom-incident) |
+
+Both take **no body**: the person recorded is the owner of the API key you called with, and the
+time is the time of the call. A body is refused rather than ignored (`This request takes no
+body`, code `2001`) — silently filing an acknowledgement under somebody else's name would be
+worse than any error.
+
+Both name **one exact incident**. There is no "the current incident": a subject can have
+several open at once, and an id that belongs to another monitor, another subject, another
+workspace or the other kind of monitoring is simply `Incident not found` (code `2002`) where
+you asked for it.
+
+**Where the incident id comes from — one list per kind, as everywhere else.** For a website
+monitor, [`GET /v2/incidents`](#list-open-incidents) has returned each open incident's `id`
+since 1.5.0, and remains the Website discovery path. For a custom subject,
+[`GET /v2/subjects/{subject}/incidents`](#list-a-custom-subjects-open-incidents) does the same
+for that subject. Both flows are API-only:
+
+```sh
+# Website: find it, then acknowledge it.
+INCIDENT_ID=$(curl -s "$UPTIMER_URL/api/v2/incidents?workspace_id=$WORKSPACE_ID" \
+  -H "Authorization: Bearer $UPTIMER_TOKEN" | jq -r '.result[0].id')
+MONITOR_UID=$(curl -s "$UPTIMER_URL/api/v2/incidents?workspace_id=$WORKSPACE_ID" \
+  -H "Authorization: Bearer $UPTIMER_TOKEN" | jq -r '.result[0].monitor_id')
+curl -X POST "$UPTIMER_URL/api/v1/rules/$MONITOR_UID/incidents/$INCIDENT_ID/acknowledge" \
+  -H "Authorization: Bearer $UPTIMER_TOKEN"
+
+# Custom: the same two steps, under the subject.
+INCIDENT_ID=$(curl -s "$UPTIMER_URL/api/v2/subjects/payments-worker/incidents" \
+  -H "Authorization: Bearer $UPTIMER_TOKEN" | jq -r '.result[0].id')
+curl -X POST "$UPTIMER_URL/api/v2/subjects/payments-worker/incidents/$INCIDENT_ID/acknowledge" \
+  -H "Authorization: Bearer $UPTIMER_TOKEN"
+```
+
+Pick the incident you mean rather than `.result[0]` when a subject has several open — that is
+what `rule_id` and `rule_name` are in the listing for.
+
+Both require the workspace **editor** role: acknowledging writes a claim about a person, so a
+viewer gets `Access denied` (code `2005`) — they can still read that an incident was
+acknowledged.
+
+### Acknowledge a website incident
+
+**`POST /v1/rules/{uid}/incidents/{incident}/acknowledge`**
+
+| Parameter | Where | Meaning |
+|---|---|---|
+| `uid` | path | The website monitor's uid — the same `id` [`GET /v1/rules`](#list-rules) returns. |
+| `incident` | path | The incident's [opaque id](#incident-object-v2). |
+
+```sh
+curl -X POST "$UPTIMER_URL/api/v1/rules/$MONITOR_UID/incidents/$INCIDENT_ID/acknowledge" \
+  -H "Authorization: Bearer $UPTIMER_TOKEN"
+```
+
+```json
+{ "result": {
+    "incident_id": "xeOkfGadru8",
+    "monitor_id": "<uid>",
+    "status": "problem",
+    "acknowledged": true,
+    "acknowledged_at": "2026-09-12T11:30:57Z",
+    "acknowledged_by": "ops",
+    "recorded": true,
+    "trouble_since": "2026-09-12T10:30:57Z",
+    "confirmed_at": "2026-09-12T10:30:57Z",
+    "well_since": null,
+    "closed_at": null,
+    "kind": "incident_acknowledgement" },
+  "error": null, "meta": null }
+```
+
+Returns the [incident acknowledgement object](#incident-acknowledgement-object).
+
+### Acknowledge a custom incident
+
+**`POST /v2/subjects/{subject}/incidents/{incident}/acknowledge`**
+
+| Parameter | Where | Meaning |
+|---|---|---|
+| `subject` | path | The Custom subject's slug. |
+| `incident` | path | The incident's [opaque id](#incident-object-v2). |
+| `workspace_id` | query | Only needed when the same subject slug exists in two of your workspaces. |
+
+```sh
+curl -X POST "$UPTIMER_URL/api/v2/subjects/payments-worker/incidents/$INCIDENT_ID/acknowledge" \
+  -H "Authorization: Bearer $UPTIMER_TOKEN"
+```
+
+```json
+{ "result": {
+    "incident_id": "v8dLj9O1tzs",
+    "subject_id": "payments-worker",
+    "rule_id": "export-health",
+    "status": "problem",
+    "acknowledged": true,
+    "acknowledged_at": "2026-09-12T11:30:57Z",
+    "acknowledged_by": "ops",
+    "recorded": true,
+    "trouble_since": "2026-09-12T10:30:57Z",
+    "confirmed_at": "2026-09-12T10:30:57Z",
+    "well_since": null,
+    "closed_at": null,
+    "kind": "incident_acknowledgement" },
+  "error": null, "meta": null }
+```
+
+`rule_id` is the rule the incident belongs to — useful on a subject with several rules, where
+acknowledging one incident says nothing about the others.
+
+### Repeats, closed incidents and refusals
+
+**A repeat is safe and keeps the first person.** Acknowledging again succeeds, adds no second
+history entry, and answers `recorded: false` with the original `acknowledged_at` and
+`acknowledged_by`. A retried request is therefore not a second claim.
+
+**A closed incident cannot be newly acknowledged**: `Incident is closed` (code `2004`). One
+that was acknowledged while it was open keeps that acknowledgement after closing, and
+acknowledging it again answers `recorded: false` rather than an error — the look did happen.
+
+| Answer | When |
+|---|---|
+| `Incident not found` (code `2002`) | No such incident under the monitor or subject you named — including one that belongs to another monitor, another subject, another workspace, or the other kind of monitoring. A malformed id answers the same way. |
+| `Incident is closed` (code `2004`) | The incident closed before the call arrived and had not been acknowledged. Anything open now is a **different** incident. |
+| `This request takes no body` (code `2001`) | Something was sent in the body. |
+| `Custom subjects are managed elsewhere` (code `2004`) | The v1 path named a monitor whose subject is maintained by hand — acknowledge it on `/v2/subjects`. |
+| `Website subjects are managed elsewhere` (code `2004`) | The v2 path named a website subject — acknowledge it on `/v1/rules`. |
+| `Access denied` (code `2005`) | The key's owner is a viewer, or not a member of that workspace. |
 
 ## v1 methods (frozen)
 
