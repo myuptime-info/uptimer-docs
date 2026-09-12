@@ -84,6 +84,30 @@ A signal a rule reads cannot be deleted — the page says which rules and links 
 from those rules first. Uptimer never unlinks a rule on its own, because that would quietly
 change what the rule watches in order to complete an unrelated delete.
 
+### The signal's page
+
+Opening a signal — from **Signals**, or from a rule that reads it — gives you the whole of it on
+one page, in this order:
+
+1. **What it is.** Its kind, the subject it belongs to, its sending address (or the probe URL,
+   for a website check's signal), and when something was last accepted.
+2. **What you can do to it.** **Edit** and **Delete**, for a signal you added — with Delete
+   disabled, and the reason on the button, while a rule reads it.
+3. **How to send to it.** The request that posts one observation: open while nothing has
+   arrived, folded away once something has.
+4. **Its observation history.** The same **All / Unaccepted** filter, day picker and paging as
+   before, on the same page.
+
+**New in 1.7.0:** the first three. The page used to be the history alone, so reading a signal's
+data and acting on that signal were two screens.
+
+A **website check's** platform HTTP signal shows only what it is and its history. Those rows are
+the worker reports behind every verdict and are worth reading; the signal itself is not edited,
+deleted or posted to from here, because the check form rewrites it on every save.
+
+**Signals** stays the overview: one row per signal, with its latest acceptance, linking to each
+signal's own page.
+
 ## Observations
 
 One observation is one report: a **status** (`ok` or `problem`), an optional numeric **value**,

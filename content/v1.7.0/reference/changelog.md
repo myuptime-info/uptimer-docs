@@ -25,6 +25,14 @@ description: "User-facing changes from 1.1 to 1.6.0."
   adds no second row and does not replace the original name or time. Acknowledging requires
   edit access, and a closed incident cannot be newly acknowledged.
 
+### Signals
+- **A signal's page carries the signal, not just its log.** Opening a signal now shows what it
+  is and when it last accepted something, then Edit and Delete where they apply, then the
+  request that sends an observation, and then its observation history — the same filter, day
+  picker and paging as before. A website check's platform HTTP signal shows its history without
+  gaining those actions: its probe stays on the check form. See
+  [Signals & rules](/v1.7.0/core-concepts/signals-and-rules/#the-signals-page).
+
 ### Reliability
 - **Server services survive a database outage.** A server that cannot reach its database now
   waits and retries — immediately, then after 5s, 15s, 30s, and every 60s after that — instead
