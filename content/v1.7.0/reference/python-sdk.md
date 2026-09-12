@@ -161,6 +161,11 @@ version visible rather than hiding it: everything v2 offers is reached through
   `.create(...)` — **new in 1.6.0**, see [Subjects](#subjects)
 - `client.v2.subjects(subject).signals(signal).observations.create(...)` — **new in
   1.6.0**, see [Reporting observations](#reporting-observations)
+- `client.v2.subjects(subject).incidents.all()` ·
+  `client.v2.subjects(subject).incidents(id).acknowledge()` — **new in 1.7.0**, see
+  [Acknowledging an incident](#acknowledging-an-incident)
+- `client.v1.rules(monitor_uid).incidents(id).acknowledge()` — **new in 1.7.0**, the
+  website half of the same thing
 
 `subjects` is both a collection and a path: call the methods on it to list, fetch or
 create a subject, and call it *with a slug* to reach what is under one.
@@ -188,6 +193,12 @@ produced the payload.
 
 Website monitoring sits under `client.v2.monitoring` because it is a built-in template,
 not the general monitor model.
+
+**`client.v1` holds exactly one thing**: website incident acknowledgement, which the
+API serves under `/v1/rules/{uid}/incidents/{id}/acknowledge` because website
+monitoring is v1's resource. This is still a v2 client — there is no rule listing,
+create, update or delete under `client.v1`, and monitors are read and written through
+`client.v2.monitoring.websites`.
 
 Every model carries the API's `kind`, and the SDK strips `kind` out of anything it
 sends: it is the server telling you what an object is, not a field you set.
@@ -329,6 +340,90 @@ yet**.
 `incident.locations` splits the evidence into `.failing`, `.unknown` and `.ok`. A
 location that has never reported stays in `unknown` and still counts toward the
 agreement — that is a real state, not a missing one.
+
+## Acknowledging an incident
+
+**New in 1.7.0.** Acknowledging says a **person has seen** an open incident. It changes nothing the engine decided — the verdict, the
+evidence, the close hold and the alerting all carry on — and it is recorded once, with
+who and when. See
+[Acknowledging an incident](/v1.7.0/core-concepts/monitors-and-incidents/#acknowledging-an-incident)
+for what it means, and
+[the REST reference](/v1.7.0/reference/rest-api/#acknowledging-an-incident) for the
+routes underneath.
+
+Each kind of monitoring acknowledges through **its own family**, the same split
+subjects follow. There is deliberately no kind-agnostic method: acknowledging is a
+claim about one specific incident, and a call that guessed the family could claim the
+wrong one.
+
+**What you need.** These methods are the SDK's **1.7.0** release, not the published
+1.6.0 package — until 1.7.0 is on PyPI, use them from a checkout of
+[the SDK repository](https://github.com/myuptime-info/uptimer-python-sdk). They also
+need this server: the routes arrive with **uptimer 1.7.0**, so a 1.6.x server answers
+nothing useful. On [myuptime.info](https://myuptime.info) they arrive when the hosted
+service picks up the 1.7.0 API.
+
+**Custom monitoring** — list the subject's open incidents, choose one, acknowledge it
+by id:
+
+```python
+subject = client.v2.subjects("payments-worker", "your-workspace-id")
+
+open_incidents = subject.incidents.all()
+for incident in open_incidents:
+    print(incident.id, incident.rule_name, incident.status, incident.acknowledged)
+
+# Nothing open is an ordinary answer, not an error.
+if open_incidents:
+    # Acknowledge by the id the listing gave you — never a guessed or stored one.
+    target = open_incidents[0]
+    record = subject.incidents(target.id).acknowledge()
+    print(record.acknowledged_by, record.acknowledged_at, record.recorded)
+```
+
+`subject.incidents.all()` lists every **open** incident of that subject, newest trouble
+first — pending, recovering and no-data included, and already-acknowledged ones too.
+A subject has one open incident per rule, so each carries `rule_id` and `rule_name`;
+nothing open returns `[]`. The second argument to `subjects(...)` is the workspace, and
+it settles an ambiguity rather than being required: pass it when the same slug exists in
+two of your workspaces, and both the listing and the acknowledgement carry it.
+
+**Website monitoring** — the ids come from the workspace incident list, which has named
+each incident's monitor since 1.5.0:
+
+```python
+# An empty list means nothing is wrong: the loop simply does not run.
+for incident in client.v2.incidents.all("your-workspace-id"):
+    record = client.v1.rules(incident.monitor_id).incidents(incident.id).acknowledge()
+    print(record.incident_id, record.acknowledged_by, record.recorded)
+```
+
+There is no body and no actor argument either way: the person recorded is the owner of
+the API key, at the time of the call.
+
+What `IncidentAcknowledgement` says:
+
+| field | meaning |
+|---|---|
+| `recorded` | whether **this call** wrote it. `False` means it was already acknowledged and nothing changed |
+| `acknowledged_by` / `acknowledged_at` | the record — on a repeat, the **first** person's name and time |
+| `status` | the incident's condition, unchanged by acknowledging it |
+| `monitor_id` | set for a website incident, `None` for a custom one |
+| `subject_id` / `rule_id` | set for a custom incident, `None` for a website one |
+| `closed_at` | set if the incident had already closed |
+
+**Repeating is safe**: no second history entry, and the original name and time come
+back with `recorded=False`, so a retry after a timeout is not a second claim.
+
+**Refusals are raised, not worked around.** `DefaultUptimerApiError` means the incident
+is not this parent's — another monitor's, another subject's, another workspace's, or the
+other kind of monitoring. Neither method retries through the other family.
+
+**Closing cuts both ways.** A **first** acknowledgement of an incident that has already
+closed is refused (`Incident is closed`) — there is nothing left to be on, and anything
+open now is a different incident. An incident acknowledged **while it was open** keeps
+that record after closing, so asking again is not an error: it answers the original name
+and time with `recorded=False` and `closed_at` set.
 
 ## Errors
 
