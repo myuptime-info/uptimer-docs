@@ -61,7 +61,8 @@ different kind of thing from your own signals — rules read them all the same w
 
 ### Adding one
 
-**Monitoring → a Custom subject → Signals → Add signal.** Give it a name and pick heartbeat or
+**Monitoring → a Custom subject → Signals → Add signal** — the subject's own **Signals** block
+offers **Add signal** beside **View signals** as well. Give it a name and pick heartbeat or
 event. The name produces the signal's slug, which is the address senders use; renaming the
 signal later does not move it.
 

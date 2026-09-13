@@ -190,10 +190,10 @@ reference.
 ### Maintenance: silencing a subject on purpose
 
 **New in 1.7.0.** You are about to deploy, move a database or pull a cable, and you do not want
-to be paged about the breakage you are causing. In the **Incident controls** block on the
-subject's page, press **Start maintenance**. It opens a small panel with **1 hour, 4 hours, 8 hours, 12 hours** and **1 day**
-— one press is the whole thing — or a field for a time none of those covers. The window begins
-immediately.
+to be paged about the breakage you are causing. The **Maintenance** row of the **Incident
+controls** block is one line: **1 hour, 4 hours, 8 hours, 12 hours** and **1 day** — one press is
+the whole thing — a field for a time none of those covers, and the actions at the end of it. The
+window begins immediately.
 
 While it runs, that subject's **problem notifications wait**. Everything else carries on exactly
 as before: the checks run, observations arrive, rules decide, incidents open and close, and the
@@ -212,9 +212,9 @@ A few details worth knowing:
 - **It ends by itself, quietly.** Nothing is sent when it expires and nothing is replayed: a
   problem that is still there after the window simply notifies under the normal rules the next
   time it would have.
-- **While it runs the control says Maintenance set, view**, in the maintenance colour, so the
-  block tells you at a glance that this subject is silenced. Opening it shows until when, and
-  offers the two things you might want next.
+- **While it runs the row says Maintenance set**, in the maintenance colour, followed by until
+  when and how long is left — and the same line moves the end or ends it, with no panel to open
+  first.
 - **Change moves the end of the window you already have.** It is not a cancel and a new one: the
   window keeps its start, nothing sees the subject briefly leave maintenance, and nobody is
   notified — moving an end time is a correction to a plan, not an event. A new end that has

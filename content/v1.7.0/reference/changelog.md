@@ -47,10 +47,10 @@ description: "User-facing changes from 1.1 to 1.6.0."
   when it ends, and its problem notifications wait until then — including for incidents that
   were already open. Recoveries are still sent, monitoring and the timeline are untouched, and
   the window survives a restart. End it early with **End now**. Monitoring flags the row while
-  it runs. The control is one quiet button — **Start maintenance**, or **Maintenance set, view**
-  while a window is running — that opens a small panel with 1 hour / 4 hours / 8 hours / 12 hours / 1 day, the
-  exact end time, **Change** (which moves the end of the same window, silently) and **End
-  maintenance**. See
+  it runs. The control is one inline line — 1 hour / 4 hours / 8 hours / 12 hours / 1 day, the
+  exact end time, and at the end of it **Start maintenance**, or **Change** (which moves the end
+  of the same window, silently) and **End maintenance** while one is running. A running window
+  says **Maintenance set** in the maintenance colour, with until when beside it. See
   [Maintenance](/v1.7.0/core-concepts/monitors-and-incidents/#maintenance-silencing-a-subject-on-purpose)
   and the [REST API](/v1.7.0/reference/rest-api/#maintenance-windows).
 
@@ -59,10 +59,16 @@ description: "User-facing changes from 1.1 to 1.6.0."
   **Incident controls** — the two things you do to a subject that is misbehaving — instead of
   spreading them through a header row shared with Edit, Add signal and Delete. Both work exactly
   as before.
-- **Add rule sits with the rules.** The Rules block of a Custom subject carries **Add rule**
-  beside **View rules**, and the page header no longer repeats a link to the same screen. Add
-  rule still waits until the subject has a signal for a rule to read, and a Website subject has
-  neither.
+- **The maintenance control is an inline line, not a panel that opens.** The durations and the
+  exact end sit in the Maintenance row with **Start maintenance** — or **Change** and **End
+  maintenance** — at the end of it. Nothing floats over the page, and on a narrow screen the line
+  wraps.
+- **Add signal and Add rule sit with what they add to.** A Custom subject's page carries a
+  **Signals** block and a **Rules** block, each with its own **Add** and **View** actions, and
+  the page header no longer holds either. Add rule still waits until the subject has a signal for
+  a rule to read; a Website subject has neither block.
+- **The Monitoring row opens View details**, not "Timeline": the subject page is its incident
+  controls, its signals, its rules and its timeline. Same page, same link.
 
 ### Reliability
 - **Server services survive a database outage.** A server that cannot reach its database now
