@@ -67,7 +67,7 @@ description: "User-facing changes from 1.1 to 1.6.0."
   **Signals** block and a **Rules** block, each with its own **Add** and **View** actions, and
   the page header no longer holds either. Add rule still waits until the subject has a signal for
   a rule to read; a Website subject has neither block.
-- **The Monitoring row opens View details**, not "Timeline": the subject page is its incident
+- **The Monitoring row opens View**, not "Timeline": the subject page is its incident
   controls, its signals, its rules and its timeline. Same page, same link.
 
 ### Reliability
