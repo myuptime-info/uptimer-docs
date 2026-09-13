@@ -15,9 +15,10 @@ description: "User-facing changes from 1.1 to 1.6.0."
 - **One incident per press.** A subject page acts on the worst of its open incidents, by the
   same order its status reads by, and names the rule on a Custom subject. It never
   acknowledges the rest.
-- **Monitoring shows an acknowledged problem.** A subject's row carries an **Acknowledged**
-  badge beside its status while the acknowledged incident is a confirmed problem, and loses it
-  once that incident recovers or closes.
+- **Monitoring shows who is on it.** A subject's row carries a small **Acknowledged** icon in
+  its own column beside the status, with the acknowledger — and, on a Custom subject, the rule —
+  in its tooltip. It follows the same open incident the subject page acts on, in every state,
+  and goes when that incident closes.
 - **Find a custom subject's open incidents over the API.**
   `GET /v2/subjects/{subject}/incidents` lists them with the ids acknowledgement takes, the
   rule each belongs to and whether somebody is already on it. `GET /v2/incidents` is unchanged

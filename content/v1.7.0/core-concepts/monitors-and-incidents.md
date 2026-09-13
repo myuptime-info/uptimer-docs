@@ -160,16 +160,15 @@ A few details worth knowing:
 - **It survives a restart.** Who acknowledged what and when is stored with the incident, not
   held in the page.
 - **Any open incident can be acknowledged.** Pending, recovering and no-data incidents are
-  still incidents somebody can be on, so the action is offered for all of them. That is a
-  wider rule than the Monitoring **badge** below, which deliberately shows only a confirmed
-  problem — what may be acknowledged and what is worth a badge on a list are two different
-  questions.
-- **Monitoring shows it while it is still a problem.** The subject's row on Monitoring carries
-  an **Acknowledged** badge beside its status while the acknowledged incident is a confirmed
-  problem, so you can see who is covered without opening anything. It disappears as soon as
-  that incident starts recovering or closes — and it never appears for a pending or no-data
-  one — because beside a row that is no longer failing it would read as "handled". The record
-  stays in the timeline.
+  still incidents somebody can be on, so the action is offered for all of them — and the
+  Monitoring icon below follows the same rule, so a row and the page it opens never disagree
+  about the same incident.
+- **Monitoring shows a small icon, for as long as the incident is open.** The subject's row
+  carries an **Acknowledged** tick in its own narrow column beside the status, and its tooltip
+  says who acknowledged it — and, on a Custom subject, which rule. It follows exactly what the
+  subject page shows: the current open incident, whatever it is reading — problem, pending,
+  recovering or no data. It goes when that incident closes, and never moves to the next one:
+  a new incident is nobody's until somebody says so. The record stays in the timeline.
 - **One incident at a time.** A subject can have several incidents open at once, and its page
   has one button. It acts on the worst of them — the same order the subject's own status
   reads by, ties going to the first rule in the list — and on a Custom subject the rule is
