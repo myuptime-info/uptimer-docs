@@ -61,9 +61,9 @@ different kind of thing from your own signals — rules read them all the same w
 
 ### Adding one
 
-**Monitoring → a Custom subject → Signals → Add signal** — the subject's own **Signals** block
-offers **Add signal** beside **View signals** as well. Give it a name and pick heartbeat or
-event. The name produces the signal's slug, which is the address senders use; renaming the
+**Monitoring → a Custom subject → Add signal**, in the subject's own **Signals** block — which is
+also where its signals are listed, with the kind of each one and when it last accepted something.
+Give it a name and pick heartbeat or event. The name produces the signal's slug, which is the address senders use; renaming the
 signal later does not move it.
 
 A Website subject has no Add signal: its stream is the probe, and the check form owns it. If you
