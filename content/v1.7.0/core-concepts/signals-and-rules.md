@@ -139,7 +139,8 @@ retry that replaces a row does not add one. Current allowances and prices are on
 ## Rules
 
 A rule takes some inputs, decides how many of them must look like a problem, and holds that
-answer before it becomes an incident. **Monitoring → a Custom subject → Rules → Add rule**, or
+answer before it becomes an incident. **Monitoring → a Custom subject → Rules → Add rule** —
+the subject's own **Rules** block offers **Add rule** beside **View rules** as well — or
 [`POST /v2/subjects/{subject}/rules`](/v1.7.0/reference/rest-api/#author-a-rule). A subject
 needs a signal before it can have a rule, so add the signal first.
 

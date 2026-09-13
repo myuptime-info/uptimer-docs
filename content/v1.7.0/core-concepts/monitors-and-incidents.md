@@ -126,10 +126,15 @@ A timeline row is one event, with the locations that caused it:
 
 ### Acknowledging an incident
 
-**New in 1.7.0.** A subject with an open incident offers **Acknowledge** in the header of its
-page, beside its timeline. Pressing it records that you have seen the incident, and the
-timeline gains a row with your name and the time. The page stays where it is; the action
-becomes **Acknowledged**, with the timeline underneath holding who and when.
+**New in 1.7.0.** A subject with an open incident offers **Acknowledge** in the **Incident
+controls** block at the top of its page, above its rules and its timeline. Pressing it records
+that you have seen the incident, and the timeline gains a row with your name and the time. The
+page stays where it is; the action becomes **Acknowledged**, with the timeline underneath
+holding who and when.
+
+**Incident controls** is the block that holds the two things you do to a subject that is
+misbehaving: say you have seen it, and stop it paging you while you work on it. Nothing else
+lives there — adding signals and rules, editing and deleting are elsewhere on the page.
 
 Each rule page carries the same action for its own incident. The subject page is the one to
 reach for: it is where you land from Monitoring, and a website monitor has no rule page to
@@ -185,8 +190,8 @@ reference.
 ### Maintenance: silencing a subject on purpose
 
 **New in 1.7.0.** You are about to deploy, move a database or pull a cable, and you do not want
-to be paged about the breakage you are causing. On the subject's page, press **Start
-maintenance**. It opens a small panel with **1 hour, 4 hours, 8 hours, 12 hours** and **1 day**
+to be paged about the breakage you are causing. In the **Incident controls** block on the
+subject's page, press **Start maintenance**. It opens a small panel with **1 hour, 4 hours, 8 hours, 12 hours** and **1 day**
 — one press is the whole thing — or a field for a time none of those covers. The window begins
 immediately.
 
@@ -207,9 +212,9 @@ A few details worth knowing:
 - **It ends by itself, quietly.** Nothing is sent when it expires and nothing is replayed: a
   problem that is still there after the window simply notifies under the normal rules the next
   time it would have.
-- **While it runs the control says View**, in the maintenance colour, so the header tells you at
-  a glance that this subject is silenced. Opening it shows until when, and offers the two things
-  you might want next.
+- **While it runs the control says Maintenance set, view**, in the maintenance colour, so the
+  block tells you at a glance that this subject is silenced. Opening it shows until when, and
+  offers the two things you might want next.
 - **Change moves the end of the window you already have.** It is not a cancel and a new one: the
   window keeps its start, nothing sees the subject briefly leave maintenance, and nobody is
   notified — moving an end time is a correction to a plan, not an event. A new end that has
