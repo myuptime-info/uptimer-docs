@@ -42,6 +42,15 @@ description: "User-facing changes from 1.1 to 1.6.0."
   gaining those actions: its probe stays on the check form. See
   [Signals & rules](/v1.7.0/core-concepts/signals-and-rules/#the-signals-page).
 
+### Maintenance windows
+- **Silence one subject while you work on it.** Start a window on the subject's page, choose
+  when it ends, and its problem notifications wait until then — including for incidents that
+  were already open. Recoveries are still sent, monitoring and the timeline are untouched, and
+  the window survives a restart. End it early with **End now**. Monitoring flags the row while
+  it runs. See
+  [Maintenance](/v1.7.0/core-concepts/monitors-and-incidents/#maintenance-silencing-a-subject-on-purpose)
+  and the [REST API](/v1.7.0/reference/rest-api/#maintenance-windows).
+
 ### Reliability
 - **Server services survive a database outage.** A server that cannot reach its database now
   waits and retries — immediately, then after 5s, 15s, 30s, and every 60s after that — instead

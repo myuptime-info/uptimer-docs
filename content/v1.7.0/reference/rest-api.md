@@ -73,6 +73,9 @@ Every row links to that method's own section.
 | DELETE | [`/v2/subjects/{subject}/rules/{rule}`](#delete-a-subject-rule) | Delete it. |
 | POST | [`/v2/subjects/{subject}/signals/{signal}/observations`](#report-an-observation) | Report one observation to a custom signal. |
 | GET | [`/v2/subjects/{subject}/incidents`](#list-a-custom-subjects-open-incidents) | That subject's **open** incidents, with their ids. |
+| GET | [`/v2/subjects/{subject}/maintenance`](#maintenance-windows) | The running maintenance window, or `null`. |
+| POST | [`/v2/subjects/{subject}/maintenance`](#maintenance-windows) | Start one, ending when you say. |
+| DELETE | [`/v2/subjects/{subject}/maintenance`](#maintenance-windows) | End it early. |
 | POST | [`/v2/subjects/{subject}/incidents/{incident}/acknowledge`](#acknowledge-a-custom-incident) | Say you have seen one open **Custom** incident. |
 
 ### The API is split by subject kind
@@ -860,6 +863,97 @@ This is a **read**, so the workspace **viewer** role is enough — acknowledging
 not. A website subject answers `Website subjects are managed elsewhere` (code `2004`) like
 every other `/v2/subjects` route: its incidents are listed by
 [`GET /v2/incidents`](#list-open-incidents).
+
+## Maintenance windows
+
+**New in 1.7.0.** A maintenance window holds back one subject's **problem** notifications until
+a time you choose — for a deploy, a migration, anything that will make it look broken on
+purpose. Monitoring, evidence, incidents and the timeline are untouched, so the outage still
+reads afterwards exactly as it happened, and **recoveries are never held back**.
+
+Three operations, on the subject: read the running window, start one, end it early. There is no
+update — a window is cancelled and started again rather than edited, so nobody's "until when"
+moves under them — and no history listing.
+
+Like everything else under `/v2/subjects`, this is **Custom subjects only**. A website check is
+put into maintenance from its page in the dashboard; a website subject answers
+`Website subjects are managed elsewhere` (code `2004`) here.
+
+Reading takes the workspace **viewer** role; starting and cancelling take **editor**.
+
+### Read the running window
+
+**`GET /v2/subjects/{subject}/maintenance?workspace_id=<uid>`**
+
+```sh
+curl "$UPTIMER_URL/api/v2/subjects/payments-worker/maintenance" \
+  -H "Authorization: Bearer $UPTIMER_TOKEN"
+```
+
+```json
+{ "result": {
+    "subject_id": "payments-worker",
+    "started_at": "2026-09-13T09:00:00Z",
+    "ends_at": "2026-09-13T11:00:00Z",
+    "cancelled_at": null,
+    "active": true,
+    "muted": ["problem", "no_data"],
+    "kind": "maintenance_window" },
+  "error": null, "meta": null }
+```
+
+**Nothing scheduled answers `"result": null`**, not an error: a script asking "is it safe to
+deploy?" should not have to catch an exception for the ordinary case.
+
+`active` is the question you actually have — is this subject silenced right now? — answered by
+the server rather than left to you comparing three timestamps against your own clock. The three
+states are told apart by the fields: `active` true is running, `cancelled_at` set is ended
+early, and neither is a window that simply ran out. `muted` says what waits, and a recovery is
+never in it.
+
+### Start one
+
+**`POST /v2/subjects/{subject}/maintenance`**
+
+| Field | Required | Meaning |
+|---|---|---|
+| `ends_at` | yes | RFC 3339, and it carries its own zone: `2026-09-13T18:00:00Z` or `2026-09-13T20:00:00+02:00`. |
+
+The window starts **immediately**; there is no future start and no recurring schedule.
+
+```sh
+curl -X POST "$UPTIMER_URL/api/v2/subjects/payments-worker/maintenance" \
+  -H "Authorization: Bearer $UPTIMER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"ends_at":"2026-09-13T11:00:00Z"}'
+```
+
+Returns the window. Refusals, none of which change anything:
+
+| Answer | When |
+|---|---|
+| `invalid ends_at` (code `2001`) | Missing, unparsable, or a time that has already passed. |
+| `Already in maintenance` (code `2004`) | A window is running. Cancel it before starting another. |
+| `Website subjects are managed elsewhere` (code `2004`) | The subject is a website check. |
+| `Subject not found` (code `2002`) | No such subject in a workspace you belong to. |
+| `Access denied` (code `2005`) | The key's owner is a viewer, or not a member. |
+
+### End it early
+
+**`DELETE /v2/subjects/{subject}/maintenance`**
+
+```sh
+curl -X DELETE "$UPTIMER_URL/api/v2/subjects/payments-worker/maintenance" \
+  -H "Authorization: Bearer $UPTIMER_TOKEN"
+```
+
+Returns the window as it was recorded, with `cancelled_at` set and `active` false.
+Notifications are normal again immediately. A subject with no window running answers
+`No maintenance window` (code `2002`) — "it was already over" is worth knowing rather than
+reported as success.
+
+**Expiry is silent.** Nothing is sent when a window ends and nothing is replayed: a problem
+that is still there afterwards notifies under the normal rules the next time it would have.
 
 ## Acknowledging an incident
 

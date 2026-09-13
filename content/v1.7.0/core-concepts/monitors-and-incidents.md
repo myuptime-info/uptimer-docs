@@ -182,6 +182,38 @@ dashboard, the API never chooses an incident for you — the id is the target. S
 [Acknowledging an incident](/v1.7.0/reference/rest-api/#acknowledging-an-incident) in the REST
 reference.
 
+### Maintenance: silencing a subject on purpose
+
+**New in 1.7.0.** You are about to deploy, move a database or pull a cable, and you do not want
+to be paged about the breakage you are causing. On the subject's page, pick when the work ends
+and press **Start maintenance**. The window begins immediately.
+
+While it runs, that subject's **problem notifications wait**. Everything else carries on exactly
+as before: the checks run, observations arrive, rules decide, incidents open and close, and the
+timeline records all of it — so afterwards you can read exactly what happened during the window.
+
+**Recoveries are never held back.** "It is back" is the message you most want after maintenance,
+and silencing it would leave you believing something is still broken.
+
+A few details worth knowing:
+
+- **It covers what is already broken too.** Incidents open when the window starts are silenced
+  along with the ones that begin during it — what the window gates is the message, at the moment
+  it would be sent.
+- **It is one subject.** A window on one says nothing about any other, and there is no
+  silence-everything control.
+- **It ends by itself, quietly.** Nothing is sent when it expires and nothing is replayed: a
+  problem that is still there after the window simply notifies under the normal rules the next
+  time it would have.
+- **End it early with End now.** Notifications are normal again immediately.
+- **It survives a restart.** The window is stored, not held in memory.
+- **Monitoring shows it.** The subject's row carries a maintenance icon in the same small column
+  the acknowledgement tick uses, and its tooltip — hover or keyboard focus — says until when.
+- **The end time is UTC**, like every other time on these screens.
+
+It needs edit access, the same as the other subject actions. The same window can be started,
+read and cancelled [over the API](/v1.7.0/reference/rest-api/#maintenance-windows).
+
 The **Locations** column shows which were failing (red) and which were silent (grey) at that
 event, plus the error text they reported. Where an event recorded no evidence of its own,
 the last known evidence is carried forward and marked as such.

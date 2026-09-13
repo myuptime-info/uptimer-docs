@@ -166,6 +166,8 @@ version visible rather than hiding it: everything v2 offers is reached through
   [Acknowledging an incident](#acknowledging-an-incident)
 - `client.v1.rules(monitor_uid).incidents(id).acknowledge()` — **new in 1.7.0**, the
   website half of the same thing
+- `client.v2.subjects(subject).maintenance.get()` · `.start(ends_at)` · `.cancel()` — **new in
+  1.7.0**, see [Maintenance windows](#maintenance-windows)
 
 `subjects` is both a collection and a path: call the methods on it to list, fetch or
 create a subject, and call it *with a slug* to reach what is under one.
@@ -424,6 +426,40 @@ closed is refused (`Incident is closed`) — there is nothing left to be on, and
 open now is a different incident. An incident acknowledged **while it was open** keeps
 that record after closing, so asking again is not an error: it answers the original name
 and time with `recorded=False` and `closed_at` set.
+
+## Maintenance windows
+
+**New in 1.7.0**, and it needs an uptimer 1.7.0+ server (same availability note as
+[acknowledgement](#acknowledging-an-incident): the SDK methods are the 1.7.0 release, not the
+published 1.6.0 package). A window holds back one subject's **problem** notifications until a
+time you choose. Monitoring, incidents and the timeline are untouched, and **recoveries are
+never held back**.
+
+```python
+maintenance = client.v2.subjects("payments-worker", "your-workspace-id").maintenance
+
+# Is it silenced right now? None means nothing is scheduled — an answer, not an error.
+window = maintenance.get()
+if window is None:
+    window = maintenance.start("2026-09-13T18:00:00Z")
+
+print(window.active, window.ends_at, window.muted)
+
+# When the work is done.
+maintenance.cancel()
+```
+
+`ends_at` is RFC 3339 and carries its own zone, so there is nothing to guess. The window starts
+**immediately**; there is no future start and no recurring schedule, and no update — cancel and
+start again rather than editing, so nobody's "until when" moves under them.
+
+`MaintenanceWindow` tells its three states apart by its fields: `active` true is running,
+`cancelled_at` set is ended early, and neither is a window that ran out. `muted` is what waits,
+in the server's own words — a recovery is never in it.
+
+Refusals are raised as `DefaultUptimerApiError`: a time that has already passed, a window
+already running (cancel it first), a website subject — those are managed from the dashboard —
+or a caller who is not an editor. Reading takes the viewer role.
 
 ## Errors
 
