@@ -990,8 +990,11 @@ that is still there afterwards notifies under the normal rules the next time it 
 ## Acknowledging an incident
 
 **New in 1.7.0.** Acknowledging says a **person has seen** an open incident. It changes nothing
-the engine decided — the verdict, the evidence, the close hold and the alerting all carry on —
-and it is recorded once, with who and when, on the incident's timeline. The dashboard does the
+the engine decided — the verdict, the evidence and the close hold all carry on — and it is
+recorded once, with who and when, on the incident's timeline. Its one effect on alerting is that
+the four-hour
+[reminders](/v1.7.0/core-concepts/monitors-and-incidents/#reminders-a-problem-nobody-has-answered-says-so-again)
+for that incident stop. The dashboard does the
 same thing from the subject's page; see
 [Acknowledging an incident](/v1.7.0/core-concepts/monitors-and-incidents/#acknowledging-an-incident).
 

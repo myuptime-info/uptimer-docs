@@ -29,7 +29,8 @@ description: "User-facing changes from 1.1 to 1.6.0."
   call. See the [REST reference](/v1.7.0/reference/rest-api/#acknowledging-an-incident).
 - **It changes nothing about the incident.** The verdict, the evidence and the locations are
   untouched, the close wait carries on, and recovery and closure happen as they would have.
-  Alerting is unchanged: acknowledging does not silence anything.
+  The one thing it changes about alerting is the four-hour reminders below, which stop for that
+  incident; nothing else is silenced.
 - **Recorded once.** The first acknowledgement is the one that is kept — pressing it again
   adds no second row and does not replace the original name or time. Acknowledging requires
   edit access, and a closed incident cannot be newly acknowledged.
@@ -69,6 +70,22 @@ description: "User-facing changes from 1.1 to 1.6.0."
   a rule to read; a Website subject has neither block.
 - **The Monitoring row opens View**, not "Timeline": the subject page is its incident
   controls, its signals, its rules and its timeline. Same page, same link.
+
+### Reminders
+- **A confirmed problem that nobody has answered repeats every four hours**, through the same
+  workspace webhook as the first notification, until it is acknowledged or it recovers. One
+  reminder per incident, not per signal. See
+  [Reminders](/v1.7.0/core-concepts/monitors-and-incidents/#reminders-a-problem-nobody-has-answered-says-so-again).
+- **Acknowledging stops them, recovery cancels them**, and an active maintenance window pauses
+  them. The incident's state is re-read at the moment of sending, so a problem that recovered or
+  was acknowledged in the meantime sends nothing.
+- **Nothing is ever replayed.** A maintenance window ending, or a service that was down for a
+  day, does not produce the reminders that were missed — the incident rejoins the ordinary
+  cadence.
+- **The schedule is stored**, so it survives a restart, and one due reminder is one message
+  however many workers are running.
+- Four hours is a fixed product default in this release: there is no reminder setting, screen or
+  API, and no escalation or routing.
 
 ### Reliability
 - **Server services survive a database outage.** A server that cannot reach its database now

@@ -346,8 +346,10 @@ agreement — that is a real state, not a missing one.
 ## Acknowledging an incident
 
 **New in 1.7.0.** Acknowledging says a **person has seen** an open incident. It changes nothing the engine decided — the verdict, the
-evidence, the close hold and the alerting all carry on — and it is recorded once, with
-who and when. See
+evidence and the close hold all carry on — and it is recorded once, with
+who and when. Its one effect on alerting is that the four-hour
+[reminders](/v1.7.0/core-concepts/monitors-and-incidents/#reminders-a-problem-nobody-has-answered-says-so-again)
+for that incident stop. See
 [Acknowledging an incident](/v1.7.0/core-concepts/monitors-and-incidents/#acknowledging-an-incident)
 for what it means, and
 [the REST reference](/v1.7.0/reference/rest-api/#acknowledging-an-incident) for the

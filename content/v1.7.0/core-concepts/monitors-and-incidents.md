@@ -142,12 +142,15 @@ open.
 
 It is a note about a person, not a change to the incident. A problem stays a problem: the
 verdict, the evidence and the locations are exactly what they were, the close wait carries on,
-and the incident recovers and closes on its own as it would have. Nothing about alerting
-changes either — acknowledging does not silence anything.
+and the incident recovers and closes on its own as it would have.
+
+It does one thing to alerting, and one only: it stops the four-hour
+[reminders](#reminders-a-problem-nobody-has-answered-says-so-again) for that incident. Nothing
+else is silenced — the recovery still arrives, and every other incident carries on as it was.
 
 That is the point. Acknowledgement answers "is anyone on this?", which is a different question
-from "is it broken?", and answering one must not change the other. To stop the noise rather
-than to claim the problem, that is a separate thing and not in this release.
+from "is it broken?", and answering one must not change the other. Suppressing a problem you are
+*not* on is a different action, and it is not in this release.
 
 A few details worth knowing:
 
@@ -227,6 +230,46 @@ A few details worth knowing:
 
 It needs edit access, the same as the other subject actions. The same window can be started,
 read and cancelled [over the API](/v1.7.0/reference/rest-api/#maintenance-windows).
+
+### Reminders: a problem nobody has answered says so again
+
+**New in 1.7.0.** An alert fires at 03:00, whoever is on call sleeps through it, and by morning
+the only trace is one message halfway up a channel. Nothing since. Was it fixed? Is it still
+down? Silence reads exactly like "it is fine".
+
+A confirmed `problem` that is still open now repeats **every four hours** through the same
+workspace webhook the first notification used, until somebody acknowledges it or it recovers.
+The message is the same message — this adds no notification type, no second destination and no
+escalation — and it says how long the problem has been running, so the third one reads as a
+reminder rather than as a new outage.
+
+Four hours is the product's answer in this release. There is no per-rule, per-workspace or
+per-user reminder setting, and no schedule.
+
+What starts, stops and pauses it:
+
+- **The first reminder is four hours after the problem was confirmed** — that is, four hours
+  after you were first told, not four hours after the first failing tick.
+- **It is one reminder per incident**, however many signals or locations contribute to it.
+- **Only confirmed `problem` incidents remind.** A pending incident has not been announced at
+  all, and an incident that is recovering or reading `no data` is not currently a confirmed
+  problem: it is skipped, and rejoins the cadence if it becomes one again.
+- **Acknowledging it stops the reminders.** That is what the button is for: the incident is
+  still a problem, still evaluated, still recovering on its own — it just stops asking whether
+  anybody has noticed.
+- **Recovery stops them too**, including one that was about to go out: the state is re-read at
+  the moment of sending, so a problem that recovered in the meantime sends nothing.
+- **Maintenance pauses them.** While a subject's window is active its problem messages wait,
+  and a reminder is a problem message.
+- **Nothing is replayed.** When a maintenance window ends, or after the service was down for a
+  while, the incident rejoins the ordinary four-hour cadence — it does not send the reminders it
+  missed. A reminder says "this is still happening now", and saying it six times does not make
+  it truer.
+- **It survives a restart.** The schedule is stored with the incident, not held in memory.
+- **A problem that was already running when you upgraded joins in.** It starts counting from the
+  upgrade, four hours out — installing the feature is not itself a reason to page anybody.
+- **A new incident starts its own lifecycle.** An acknowledged incident that closes and a new one
+  that opens on the same rule are two incidents; the second one reminds.
 
 The **Locations** column shows which were failing (red) and which were silent (grey) at that
 event, plus the error text they reported. Where an event recorded no evidence of its own,
