@@ -166,8 +166,8 @@ version visible rather than hiding it: everything v2 offers is reached through
   [Acknowledging an incident](#acknowledging-an-incident)
 - `client.v1.rules(monitor_uid).incidents(id).acknowledge()` — **new in 1.7.0**, the
   website half of the same thing
-- `client.v2.subjects(subject).maintenance.get()` · `.start(ends_at)` · `.cancel()` — **new in
-  1.7.0**, see [Maintenance windows](#maintenance-windows)
+- `client.v2.subjects(subject).maintenance.get()` · `.start(ends_at)` · `.update_end(ends_at)` ·
+  `.cancel()` — **new in 1.7.0**, see [Maintenance windows](#maintenance-windows)
 
 `subjects` is both a collection and a path: call the methods on it to list, fetch or
 create a subject, and call it *with a slug* to reach what is under one.
@@ -445,13 +445,20 @@ if window is None:
 
 print(window.active, window.ends_at, window.muted)
 
-# When the work is done.
+# The work is taking longer: move the end of the SAME window.
+maintenance.update_end("2026-09-13T20:00:00Z")
+
+# When it is done.
 maintenance.cancel()
 ```
 
 `ends_at` is RFC 3339 and carries its own zone, so there is nothing to guess. The window starts
-**immediately**; there is no future start and no recurring schedule, and no update — cancel and
-start again rather than editing, so nobody's "until when" moves under them.
+**immediately**; there is no future start and no recurring schedule.
+
+`update_end` is a real update rather than a cancel and a new window: it keeps the window's
+identity and its start, nothing sees the subject briefly leave maintenance, and nobody is
+notified. Moving the end into the past raises rather than stopping the window — to stop it now,
+`cancel()`.
 
 `MaintenanceWindow` tells its three states apart by its fields: `active` true is running,
 `cancelled_at` set is ended early, and neither is a window that ran out. `muted` is what waits,

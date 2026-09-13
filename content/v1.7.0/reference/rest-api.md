@@ -75,6 +75,7 @@ Every row links to that method's own section.
 | GET | [`/v2/subjects/{subject}/incidents`](#list-a-custom-subjects-open-incidents) | That subject's **open** incidents, with their ids. |
 | GET | [`/v2/subjects/{subject}/maintenance`](#maintenance-windows) | The running maintenance window, or `null`. |
 | POST | [`/v2/subjects/{subject}/maintenance`](#maintenance-windows) | Start one, ending when you say. |
+| POST | [`/v2/subjects/{subject}/maintenance/ends_at`](#move-the-end) | Move the end of the running one. |
 | DELETE | [`/v2/subjects/{subject}/maintenance`](#maintenance-windows) | End it early. |
 | POST | [`/v2/subjects/{subject}/incidents/{incident}/acknowledge`](#acknowledge-a-custom-incident) | Say you have seen one open **Custom** incident. |
 
@@ -871,9 +872,8 @@ a time you choose — for a deploy, a migration, anything that will make it look
 purpose. Monitoring, evidence, incidents and the timeline are untouched, so the outage still
 reads afterwards exactly as it happened, and **recoveries are never held back**.
 
-Three operations, on the subject: read the running window, start one, end it early. There is no
-update — a window is cancelled and started again rather than edited, so nobody's "until when"
-moves under them — and no history listing.
+Four operations, on the subject: read the running window, start one, move its end, end it
+early. There is no history listing — past windows are not something a client acts on.
 
 Like everything else under `/v2/subjects`, this is **Custom subjects only**. A website check is
 put into maintenance from its page in the dashboard; a website subject answers
@@ -936,6 +936,38 @@ Returns the window. Refusals, none of which change anything:
 | `Already in maintenance` (code `2004`) | A window is running. Cancel it before starting another. |
 | `Website subjects are managed elsewhere` (code `2004`) | The subject is a website check. |
 | `Subject not found` (code `2002`) | No such subject in a workspace you belong to. |
+| `Access denied` (code `2005`) | The key's owner is a viewer, or not a member. |
+
+### Move the end
+
+**`POST /v2/subjects/{subject}/maintenance/ends_at`**
+
+**New in 1.7.0.** Moves the end of the window that is already running. It POSTs to its own path
+because POSTing the collection already means "start one".
+
+| Field | Required | Meaning |
+|---|---|---|
+| `ends_at` | yes | The new end, RFC 3339, as for starting one. |
+
+```sh
+curl -X POST "$UPTIMER_URL/api/v2/subjects/payments-worker/maintenance/ends_at" \
+  -H "Authorization: Bearer $UPTIMER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"ends_at":"2026-09-13T15:00:00Z"}'
+```
+
+**It is an update, not a cancel and a new window.** The window keeps its identity and its
+`started_at`, so "since when have we been silencing this?" keeps one answer and nothing that
+reads it sees the subject briefly leave maintenance. Nothing is notified: moving an end time is
+a correction to a plan, not an event.
+
+Returns the window with its new `ends_at`. Refusals, none of which change anything:
+
+| Answer | When |
+|---|---|
+| `invalid ends_at` (code `2001`) | Missing, unparsable, or already passed. To stop the window now, cancel it instead. |
+| `No maintenance window` (code `2002`) | Nothing is running on this subject, so there is no end to move. |
+| `Website subjects are managed elsewhere` (code `2004`) | The subject is a website check. |
 | `Access denied` (code `2005`) | The key's owner is a viewer, or not a member. |
 
 ### End it early

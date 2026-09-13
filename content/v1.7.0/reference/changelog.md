@@ -47,7 +47,10 @@ description: "User-facing changes from 1.1 to 1.6.0."
   when it ends, and its problem notifications wait until then — including for incidents that
   were already open. Recoveries are still sent, monitoring and the timeline are untouched, and
   the window survives a restart. End it early with **End now**. Monitoring flags the row while
-  it runs. See
+  it runs. The control is one quiet button — **Start maintenance**, or **View** while a window is
+  running — that opens a small panel with 1 hour / 4 hours / 8 hours / 12 hours / 1 day, the
+  exact end time, **Change** (which moves the end of the same window, silently) and **End
+  maintenance**. See
   [Maintenance](/v1.7.0/core-concepts/monitors-and-incidents/#maintenance-silencing-a-subject-on-purpose)
   and the [REST API](/v1.7.0/reference/rest-api/#maintenance-windows).
 
