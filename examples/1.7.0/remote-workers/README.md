@@ -5,9 +5,6 @@ distributed deployment. Workers reach the server over gRPC on `50051`.
 
 ## One-time bootstrap
 
-> **Preview.** 1.7.0 is not released yet, so this compose file pulls `:edge`. When 1.7.0
-> ships it is pinned to `ghcr.io/myuptime-info/uptimer:1.7.0`.
-
 ```sh
 # generate identities
 docker compose run --rm uptimer-ui server init      # server.pem / server.uuid
