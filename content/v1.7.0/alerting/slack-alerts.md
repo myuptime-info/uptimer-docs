@@ -7,7 +7,10 @@ description: "Send alerts to Slack via the workspace webhook."
 
 Uptimer sends alerts through **one webhook per workspace**. Point it at a Slack
 [incoming webhook](https://api.slack.com/messaging/webhooks) and you get a message when a monitor
-has a **confirmed problem**, when it has **confirmed no data**, and when it **recovers**.
+has a **confirmed problem**, when it has **confirmed no data**, and when it **recovers**. Since
+1.7.0 the same webhook also carries a **reminder every four hours** while a confirmed problem is
+unresolved, unacknowledged and not under maintenance. See
+[Reminders](/v1.7.0/core-concepts/monitors-and-incidents/#reminders-a-problem-nobody-has-answered-says-so-again).
 
 ## Set it up
 
@@ -58,7 +61,9 @@ tell whether the site is up — which is not the same claim as "your site is dow
 says how long the outage lasted and when it ended.
 
 > Alerts fire on **state transitions**, not on every check: one message when a monitor goes down,
-> one when it recovers — not one per interval.
+> one when it recovers — not one per interval. A problem that stays unanswered adds one reminder
+> every four hours (1.7.0), which is a message about time passing rather than about anything
+> changing.
 
 The webhook is configured in the dashboard (not the REST API), and there is **one URL per
 workspace**. It covers **everything** in that workspace — there is no per-monitor or per-rule
@@ -79,7 +84,10 @@ is no need for a healthy period first, which is what makes it worth testing:
   Data and sends the "no data" alert — it does not stay quiet.
 - **Recovery alerts only follow an alert.** If a problem clears inside the 2-minute hold, nothing
   was announced, so no recovery is announced either.
-- Alerts are one per incident, not one per check: one when it is confirmed, one when it closes.
+- Alerts are one per incident, not one per check: one when it is confirmed, one when it closes,
+  and one reminder every four hours in between while nobody has acknowledged it and no
+  [maintenance window](/v1.7.0/core-concepts/monitors-and-incidents/#maintenance-silencing-a-subject-on-purpose)
+  is running.
 
 The webhook is called **from the Uptimer server** (or its container), so the URL must be
 reachable from there — a `localhost` receiver on your laptop is **not** reachable from inside the

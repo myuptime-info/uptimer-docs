@@ -11,7 +11,9 @@ relay, or your own service.
 
 ## Payload
 
-When an incident is confirmed or closes, Uptimer POSTs:
+When an incident is confirmed, when a
+[reminder](/v1.7.0/core-concepts/monitors-and-incidents/#reminders-a-problem-nobody-has-answered-says-so-again)
+about it comes due, and when it closes, Uptimer POSTs:
 
 ```json
 {
@@ -35,6 +37,11 @@ The title is the monitor name plus its state, and the colour follows it:
 | Confirmed problem | `{monitor} is down` | `#d50201` red |
 | Confirmed no data | `{monitor} — no data` | `#f0ad4e` amber |
 | Recovered | `{monitor} is back up` | `#2eb887` green |
+
+**New in 1.7.0:** a four-hour reminder about a problem nobody has answered is the **same payload
+on the same webhook** as the problem alert, with the elapsed time in its `text`. There is no
+reminder-specific type, title or colour to branch on: a consumer that already handles the
+confirmed-problem message handles reminders without a change.
 
 The `text` is plain text with Slack's `<url|label>` link syntax, so a non-Slack consumer should
 expect that markup rather than HTML or Markdown.

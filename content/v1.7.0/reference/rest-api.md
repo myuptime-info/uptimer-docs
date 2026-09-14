@@ -879,7 +879,8 @@ Like everything else under `/v2/subjects`, this is **Custom subjects only**. A w
 put into maintenance from its page in the dashboard; a website subject answers
 `Website subjects are managed elsewhere` (code `2004`) here.
 
-Reading takes the workspace **viewer** role; starting and cancelling take **editor**.
+Reading takes the workspace **viewer** role; starting a window, moving its end and cancelling it
+take **editor**.
 
 ### Read the running window
 
