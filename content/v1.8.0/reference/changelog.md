@@ -7,8 +7,6 @@ description: "User-facing changes from 1.1 to 1.8.0."
 
 ## 1.8.0
 
-> **Preview.** 1.8.0 is not released yet; this tree documents the release candidate.
-
 ### Destinations: as many as a workspace needs
 - **A workspace can send alerts to more than one place.** A **destination** is a Slack incoming
   webhook or any HTTP endpoint, created in **Workspace → Settings → Destinations**, with a name,
@@ -71,8 +69,9 @@ description: "User-facing changes from 1.1 to 1.8.0."
   lists, a test send is a real send, and the all-samples save rule applies to both.
 - **Reading these routes needs `EditWorkspace`**, not just membership — they carry webhook URLs
   and sent bodies. The transformation samples are the one open route.
-- **Python SDK:** these routes are REST-only for now. SDK support for 1.8.0 arrives with the final
-  SDK release; see [Python SDK](/v1.8.0/reference/python-sdk/).
+- **Python SDK 1.8.0** wraps all of it — destinations, transformations, a subject's delivery table
+  and the delivery log — and adds Custom signal and rule authoring. `pip install
+  "uptimer-python-sdk>=1.8.0"`; see [Python SDK](/v1.8.0/reference/python-sdk/).
 
 ## 1.7.0
 

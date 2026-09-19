@@ -6,17 +6,17 @@ description: "The uptimer-python-sdk package."
 ---
 
 ```sh
-pip install "uptimer-python-sdk>=1.6.0"      # or: uv add "uptimer-python-sdk>=1.6.0"
+pip install "uptimer-python-sdk>=1.8.0"      # or: uv add "uptimer-python-sdk>=1.8.0"
 ```
 
-**The SDK version tracks the server it targets.** 1.6.x speaks to uptimer 1.6.0 and
+**The SDK version tracks the server it targets.** 1.8.x speaks to uptimer 1.8.0 and
 later; patch numbers move independently. So install the SDK whose major.minor matches
-your server — no compatibility table to look up. Reporting observations needs 1.6.x on
-both sides.
+your server — no compatibility table to look up. `client.ensure_compatible()` checks it
+and fails with a message that names the fix.
 
 Still on API v1? Pin `uptimer-python-sdk<1`. The server's v1 is unchanged and
-supported, so 0.4.x keeps working against a 1.6.0 server — it just cannot use anything
-new. There is no v1 surface left in 1.x: `client.v1`, its models and its kinds are
+supported, so 0.4.x keeps working against a current server — it just cannot use
+anything new. There is no v1 surface left in 1.x: `client.v1`, its models and its kinds are
 gone — `client.v2` takes its place.
 
 ## A complete example
@@ -256,21 +256,53 @@ is, and asking for `subject_kind="website"` raises a `DefaultUptimerApiError` sa
 Passing a website subject's slug to any `subjects` call raises the same error. There is
 no update and no delete: deleting a subject takes its whole history with it.
 
-**Signals and rules are configured in the dashboard**, on the subject's own page; the
-SDK reports observations to a signal that already exists. Their REST routes are
-documented under [Custom signals](/v1.8.0/reference/rest-api/#custom-signals) and
-[Custom rules](/v1.8.0/reference/rest-api/#custom-rules).
+**New in SDK 1.8.0: signals and rules are authored here too.**
+`client.v2.subjects(slug).signals` and `.rules` each list, create, get, update and
+delete, with typed policy models for a rule's document — and reporting observations to
+an existing signal is unchanged. One spelling to know: a rule input that cites another
+rule is `from_rule` in Python, because `from` is a keyword, and it is sent and received
+as `from`. The routes underneath are [Custom signals](/v1.8.0/reference/rest-api/#custom-signals)
+and [Custom rules](/v1.8.0/reference/rest-api/#custom-rules).
 
 ## Alert destinations, transformations and delivery
 
-**New in 1.8.0**, and **REST-only for now.**
-[Destinations](/v1.8.0/alerting/destinations/),
-[transformations](/v1.8.0/alerting/transformations/), a subject's
-[alert delivery](/v1.8.0/alerting/alert-delivery/) table and the
-[delivery log](/v1.8.0/alerting/delivery-log/) all have public routes — see
-[Notifications](/v1.8.0/reference/rest-api/#notifications) — and the dashboard configures
-the same model. Python SDK support for them arrives with the final SDK release for
-Uptimer 1.8.0.
+**New in 1.8.0**, and wrapped by **SDK 1.8.0**. Where a workspace's alerts go, what they
+look like, which destinations one subject tells, and what was actually sent:
+
+```python
+notifications = client.v2.notifications
+
+# Destinations: list/create/get/update/delete, plus the three that are not CRUD.
+notifications.destinations.all("your-workspace-id")
+notifications.destinations.set_enabled(1, enabled=False, workspace_id="your-workspace-id")
+notifications.destinations.make_default(1, workspace_id="your-workspace-id")
+notifications.destinations.send_test(1, workspace_id="your-workspace-id")   # a real send
+
+# Transformations: the same five, plus the vocabulary and a dry run.
+notifications.transformations.samples()
+notifications.transformations.preview('{"event": "{{ kind }}"}', workspace_id="your-workspace-id")
+
+# What was actually sent, kept 30 days.
+notifications.deliveries.all(workspace_id="your-workspace-id", undelivered=True)
+
+# Which destinations one subject tells. The table IS the resource: a save replaces it.
+delivery = client.v2.subjects("payments-worker", "your-workspace-id").delivery
+delivery.get()
+delivery.clear()
+
+# A website monitor carries the same table on its own collection.
+client.v2.monitoring.websites("monitor-id").delivery.get()
+```
+
+The models are typed the way the rest of the SDK is — `Destination`, `Transformation`,
+`TransformationPreview`, `SubjectAlertDelivery`, `DeliveryRecord` — and the rules the
+screens enforce are the server's, so they apply here unchanged: a transformation is
+stored only once it renders all three sample messages, `transformation_id=None` means
+Uptimer's built-in body, and a test send is a real send with a real delivery record.
+
+Reading a destination or the delivery log needs the **editor** role, not just
+membership: a destination holds a webhook URL. The routes underneath are
+[Notifications](/v1.8.0/reference/rest-api/#notifications).
 
 ## Reporting observations
 
