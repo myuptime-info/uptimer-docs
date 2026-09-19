@@ -1,0 +1,19 @@
+# Uptimer 1.8.0 behind nginx HTTP Basic Auth.
+# PREVIEW: 1.8.0 is not released yet, so the images below pull :edge, the newest
+# pre-release build. Swap them for :1.8.0 once it ships.
+# `docker compose up`, then open http://localhost  (admin / password).
+services:
+  uptimer:
+    image: ghcr.io/myuptime-info/uptimer:edge
+    volumes:
+      - ./data:/data
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./.htpasswd:/etc/nginx/.htpasswd:ro
+    depends_on:
+      - uptimer

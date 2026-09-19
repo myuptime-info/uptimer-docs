@@ -1,0 +1,318 @@
+---
+title: "Monitors & incidents"
+weight: 10
+lede: "A monitor is one thing you watch. When enough locations agree it is broken, Uptimer opens an incident."
+description: "What a monitor is, and how Uptimer decides something is wrong."
+---
+
+A **monitor** describes what to watch: **what** to request (an HTTP or HTTPS URL, with a method
+and an optional body), **how often** (an interval), and the
+[expected response](/v1.8.0/core-concepts/assertions/) that decides healthy from broken. Uptimer
+checks it on that interval from every [location](/v1.8.0/core-concepts/locations/) you assign —
+the server, or a [remote worker](/v1.8.0/core-concepts/remote-workers/) — and each check is one
+report from one location.
+
+When enough of those reports say the same thing, Uptimer opens an **incident**: the period the
+monitor was not healthy, what the locations saw, and how it ended. That is what the status badge
+and the history are showing you.
+
+> Checks are **HTTP/HTTPS only** in this release: no TCP, DNS, ping or keyword types.
+
+> **What it is called where.** The dashboard calls this **website monitoring**, and the thing it
+> produces a **monitoring subject**. [API v2](/v1.8.0/reference/rest-api/) and the Python SDK
+> agree: `website_monitor`. API v1 and import/export still say `rule` — v1 is frozen and
+> supported, so existing clients keep working.
+>
+> "Rule" now means something narrower: the **incident rule** (Reachability) that decides when a
+> subject is in trouble. Saving website monitoring creates the subject, its built-in HTTP
+> **signal** and that rule for you.
+
+**New in 1.6.0:** a subject is no longer only something the website form created. **Add Custom
+check** makes an empty one that is yours: you add your own signals, report observations to them
+over the API, and write rules over them. A website subject keeps its own shape — its signal and
+its Reachability rule belong to the check form. See
+[Signals & rules](/v1.8.0/core-concepts/signals-and-rules/).
+
+Intervals are whole minutes and the scheduler ticks once a minute, so **one minute is the finest
+resolution**.
+
+You create monitors in the dashboard or over the API — the dashboard is just an API client. For
+the exact request/response fields, see the [REST API reference](/v1.8.0/reference/rest-api/).
+
+## Monitor status
+
+A monitor settles into one of three outcomes:
+
+| Status | Meaning |
+|---|---|
+| **Up** | Enough locations report the check passing. |
+| **Down** | Enough locations report it failing — wrong status code, missing body substring, or a connection/TLS error. |
+| **No Data** | Not enough locations have reported to decide. Usually because **no [location](/v1.8.0/core-concepts/locations/) is assigned**, or because the workers serving them have gone quiet. |
+
+While a monitor is inside one of the 2-minute holds, the list shows the hold instead:
+
+| Badge | Meaning |
+|---|---|
+| **Pending** | Failing, but not for 2 minutes yet — no alert has been sent. |
+| **Recovering** | Passing again, but not for 2 minutes yet — the incident is still open. |
+
+So the list can show five badges in total. See
+[When an alert actually fires](/v1.8.0/alerting/slack-alerts/#when-an-alert-actually-fires).
+
+### How many locations must fail
+
+Status is a decision across *all* the locations a monitor runs from, not simply the most recent
+check to arrive. The website monitoring form has a **Locations Required to Fail** control, and
+**1.5.0 adds a third setting**:
+
+| Setting | API v2 `agreement` | The monitor goes Down when |
+|---|---|---|
+| **Majority of locations** *(default)* | `majority` | More than half of its locations report a failure. |
+| **At least one location** | `any` | Any single location reports a failure. |
+| **All locations** *(new in 1.5.0)* | `all` | Every one of its locations reports a failure. |
+
+A majority stops one unhappy location from raising an incident on its own; *all locations* is the
+other end — useful when a single vantage point failing is expected noise. A location that never
+reports is not ignored: it counts as **unknown** and stays inside the decision, which is why a
+half-silent monitor reads **No Data** rather than quietly falling back to whichever location did
+answer.
+
+With a single location assigned, all three settings behave identically.
+
+**New in 1.5.0: the [REST API](/v1.8.0/reference/rest-api/) can set it too.** API v2 carries the
+same choice as the `agreement` field on a website monitor, so a monitor created headlessly gets
+the agreement you asked for instead of the default. Omitting `agreement` on an update keeps the
+stored value. API v1 has no such field — a monitor created through v1 uses **Majority of
+locations** until you change it.
+
+Each location you select becomes **one input on the rule**. The rule page lists them, what each is
+currently reporting, and the agreement in force.
+
+### Confirming and closing
+
+A monitor going bad opens an incident straight away, but nothing is sent for the first **2 minutes**
+— the run has to last that long before the incident is *confirmed* and an alert goes out. On the
+way back, an ok run has to last **2 minutes** before the incident closes, and the incident is
+then backdated to the first ok check.
+
+That is what stops a single blip from paging you, and it is why a short outage can appear in the
+history without ever having produced an alert. These waits are fixed in this release.
+
+### Where you see what happened
+
+**Changed in 1.5.0.** **Monitoring** is the workspace home and the only list. Each row is a
+monitoring subject with the state of its rules, filtered by **All** or **With incidents**, and
+links into that subject. The old checks list and the per-rule history page are gone; `/checks`
+redirects to Monitoring, so existing links still land.
+
+Three screens answer three different questions:
+
+| Screen | What it shows |
+|---|---|
+| **Timeline** | What happened to a subject, newest first. A closing event carries how long the incident lasted. |
+| **Observation log** | Every report each location sent for a signal, with a day picker and paging. |
+| **Rule page** | One input per selected location, what each is reporting now, the agreement in force, and the confirm/close holds. |
+
+A timeline row is one event, with the locations that caused it:
+
+| Event | Meaning |
+|---|---|
+| **pending** | Something started failing. Not confirmed yet, so no alert has been sent. |
+| **problem** | Confirmed failing. |
+| **no data** | Confirmed, but the locations have gone quiet rather than reported a failure. |
+| **recovering** | Reporting ok again, still inside the close wait. |
+| **closed** | Back to normal. The row carries how long the incident lasted. |
+| **acknowledged** | Somebody said they have seen it. The row carries their name. |
+
+### Acknowledging an incident
+
+**New in 1.7.0.** A subject with an open incident offers **Acknowledge** in the **Incident
+controls** block at the top of its page, above its rules and its timeline. Pressing it records
+that you have seen the incident, and the timeline gains a row with your name and the time. The
+page stays where it is; the action becomes **Acknowledged**, with the timeline underneath
+holding who and when.
+
+**Incident controls** is the block that holds the two things you do to a subject that is
+misbehaving: say you have seen it, and stop it paging you while you work on it. Nothing else
+lives there — adding signals and rules, editing and deleting are elsewhere on the page.
+
+Each rule page carries the same action for its own incident. The subject page is the one to
+reach for: it is where you land from Monitoring, and a website monitor has no rule page to
+open.
+
+It is a note about a person, not a change to the incident. A problem stays a problem: the
+verdict, the evidence and the locations are exactly what they were, the close wait carries on,
+and the incident recovers and closes on its own as it would have.
+
+It does one thing to alerting, and one only: it stops the four-hour
+[reminders](#reminders-a-problem-nobody-has-answered-says-so-again) for that incident. Nothing
+else is silenced — the recovery still arrives, and every other incident carries on as it was.
+
+That is the point. Acknowledgement answers "is anyone on this?", which is a different question
+from "is it broken?", and answering one must not change the other. Suppressing a problem you are
+*not* on is a different action, and it is not in this release.
+
+A few details worth knowing:
+
+- **It is recorded once.** The first person to acknowledge is the one the record keeps.
+  Pressing it again — by you or anyone else — adds no second row and does not replace the
+  original name or time.
+- **It needs edit access.** A viewer can read that an incident was acknowledged but cannot
+  acknowledge one, because it writes a claim about a person into the record.
+- **A closed incident cannot be acknowledged.** There is nothing left to be on. An incident
+  acknowledged while it was open keeps that acknowledgement after it closes, because it
+  happened.
+- **It acknowledges the incident you are looking at.** If that one closed while the page was
+  open — and the monitor has since opened another — the press is refused and the page tells
+  you so. It never lands on the newer incident, which you have not seen.
+- **It survives a restart.** Who acknowledged what and when is stored with the incident, not
+  held in the page.
+- **Any open incident can be acknowledged.** Pending, recovering and no-data incidents are
+  still incidents somebody can be on, so the action is offered for all of them — and the
+  Monitoring icon below follows the same rule, so a row and the page it opens never disagree
+  about the same incident.
+- **Monitoring shows a small icon, for as long as the incident is open.** The subject's row
+  carries an **Acknowledged** tick in its own narrow column beside the status, and its tooltip
+  says who acknowledged it — and, on a Custom subject, which rule. It follows exactly what the
+  subject page shows: the current open incident, whatever it is reading — problem, pending,
+  recovering or no data. It goes when that incident closes, and never moves to the next one:
+  a new incident is nobody's until somebody says so. The record stays in the timeline.
+- **One incident at a time.** A subject can have several incidents open at once, and its page
+  has one button. It acts on the worst of them — the same order the subject's own status
+  reads by, ties going to the first rule in the list — and on a Custom subject the rule is
+  named beside the action so it is clear which one. Acknowledging it says nothing about the
+  others; acknowledge those on their own rule pages.
+
+**Over the API**, an incident is acknowledged through the API of its own kind of monitoring:
+`POST /v1/rules/{uid}/incidents/{incident}/acknowledge` for a website monitor, and
+`POST /v2/subjects/{subject}/incidents/{incident}/acknowledge` for a custom subject. Unlike the
+dashboard, the API never chooses an incident for you — the id is the target. See
+[Acknowledging an incident](/v1.8.0/reference/rest-api/#acknowledging-an-incident) in the REST
+reference.
+
+### Maintenance: silencing a subject on purpose
+
+**New in 1.7.0.** You are about to deploy, move a database or pull a cable, and you do not want
+to be paged about the breakage you are causing. The **Maintenance** row of the **Incident
+controls** block says **no maintenance** and offers **Set**. Press it and the row becomes two
+selects — **days** and **hours** — and a **Set** button: choose how long you need, and the window
+begins immediately.
+
+While it runs, that subject's **problem notifications wait**. Everything else carries on exactly
+as before: the checks run, observations arrive, rules decide, incidents open and close, and the
+timeline records all of it — so afterwards you can read exactly what happened during the window.
+
+**Recoveries are never held back.** "It is back" is the message you most want after maintenance,
+and silencing it would leave you believing something is still broken.
+
+A few details worth knowing:
+
+- **It covers what is already broken too.** Incidents open when the window starts are silenced
+  along with the ones that begin during it — what the window gates is the message, at the moment
+  it would be sent.
+- **It is one subject.** A window on one says nothing about any other, and there is no
+  silence-everything control.
+- **It ends by itself, quietly.** Nothing is sent when it expires and nothing is replayed: a
+  problem that is still there after the window simply notifies under the normal rules the next
+  time it would have.
+- **While it runs the row says how long is left** — "ends after 1 day, 4 hours" in the
+  maintenance colour — and offers **End maintenance** and **Edit**. There is no form on the page
+  until one of them asks for it.
+- **Edit moves the end of the window you already have.** It opens the same two selects, filled in
+  with what is left (rounded up to whole hours, so pressing Set without changing anything never
+  ends a window early). It is not a cancel and a new one: the window keeps its start, nothing
+  sees the subject briefly leave maintenance, and nobody is notified — moving an end time is a
+  correction to a plan, not an event.
+- **End maintenance ends it early.** Notifications are normal again immediately.
+- **Days go up to 5 and hours from 1 to 23.** A window longer than that is not maintenance, it is
+  a subject nobody is watching. The API still takes any end time you can justify.
+- **It survives a restart.** The window is stored, not held in memory.
+- **Monitoring shows it.** The subject's row carries a maintenance icon in the same small column
+  the acknowledgement tick uses, and its tooltip — hover or keyboard focus — says until when.
+- **The end time is UTC**, like every other time on these screens — but you never type one: the
+  screen asks how long, and the server works out when that ends.
+
+It needs edit access, the same as the other subject actions. The same window can be started,
+read and cancelled [over the API](/v1.8.0/reference/rest-api/#maintenance-windows).
+
+### Reminders: a problem nobody has answered says so again
+
+**New in 1.7.0.** An alert fires at 03:00, whoever is on call sleeps through it, and by morning
+the only trace is one message halfway up a channel. Nothing since. Was it fixed? Is it still
+down? Silence reads exactly like "it is fine".
+
+A confirmed `problem` that is still open repeats **every four hours** to the same
+[destinations](/v1.8.0/alerting/destinations/) the first notification used, until somebody
+acknowledges it or it recovers. The message is the same message — this adds no notification type,
+no extra destination and no escalation — and it says how long the problem has been running, so the
+third one reads as a reminder rather than as a new outage.
+
+A reminder rides with **Problems & reminders** in a subject's
+[Alert delivery](/v1.8.0/alerting/alert-delivery/) table: a destination that hears about problems
+hears the reminders, and one that does not, does not.
+
+Four hours is the product's answer in this release. There is no per-rule, per-workspace or
+per-user reminder setting, and no schedule.
+
+What starts, stops and pauses it:
+
+- **The first reminder is four hours after the problem was confirmed** — that is, four hours
+  after you were first told, not four hours after the first failing tick.
+- **It is one reminder per incident**, however many signals or locations contribute to it.
+- **Only confirmed `problem` incidents remind.** A pending incident has not been announced at
+  all, and an incident that is recovering or reading `no data` is not currently a confirmed
+  problem: it is skipped, and rejoins the cadence if it becomes one again.
+- **Acknowledging it stops the reminders.** That is what the button is for: the incident is
+  still a problem, still evaluated, still recovering on its own — it just stops asking whether
+  anybody has noticed.
+- **Recovery stops them too**, including one that was about to go out: the state is re-read at
+  the moment of sending, so a problem that recovered in the meantime sends nothing.
+- **Maintenance pauses them.** While a subject's window is active its problem messages wait,
+  and a reminder is a problem message.
+- **Nothing is replayed.** When a maintenance window ends, or after the service was down for a
+  while, the incident rejoins the ordinary four-hour cadence — it does not send the reminders it
+  missed. A reminder says "this is still happening now", and saying it six times does not make
+  it truer.
+- **It survives a restart.** The schedule is stored with the incident, not held in memory.
+- **A problem that was already running when you upgraded joins in.** It starts counting from the
+  upgrade, four hours out — installing the feature is not itself a reason to page anybody.
+- **A new incident starts its own lifecycle.** An acknowledged incident that closes and a new one
+  that opens on the same rule are two incidents; the second one reminds.
+
+The **Locations** column shows which were failing (red) and which were silent (grey) at that
+event, plus the error text they reported. Where an event recorded no evidence of its own,
+the last known evidence is carried forward and marked as such.
+
+The observation log is the one to open when the screens disagree with reality. Its **Unaccepted**
+filter shows reports that were stored but not used for a verdict, and says why — which is what
+answers *"the workers are running, so why does the rule say no data?"*.
+
+> **Not yet replaced on Monitoring:** the uptime history strip and sorting by name, status or
+> up-since went with the old checks list. Monitoring has the All / With incidents filter only.
+
+> Monitoring URLs use **opaque ids** rather than database numbers. They are derived from
+> [`server.sqids_salt`](/v1.8.0/operating/configuration/) — change that value and existing
+> Monitoring links (and API incident ids) stop resolving.
+
+> Dashboard timestamps use **`YY/MM/DD`** order (e.g. `26/07/14` is 2026-07-14).
+
+## How checks identify themselves
+
+**New in 1.4.0.** Every HTTP(S) check sends a User-Agent that names the product and its version:
+
+```
+Uptimer/1.5.0 (+https://uptimer.myuptime.info)
+```
+
+The version is the build's own, so a pre-release image sends what it actually is — for example
+`Uptimer/1.5.0-rc13 (+https://uptimer.myuptime.info)` on an `:edge` build.
+
+Before this, monitoring traffic arrived as `Go-http-client/1.1` — indistinguishable from any
+other Go program, and it inflated bot metrics in analytics and error trackers.
+
+- The same value is sent by checks running on the server and on remote workers.
+- It carries the product and version only — no workspace, monitor, worker or location.
+- It is **not configurable**, and a rule cannot set its own headers in this release.
+
+To exclude Uptimer from analytics or logs, filter on the `Uptimer/` prefix — for example
+`User-Agent` starting with `Uptimer/`, which survives version bumps.
