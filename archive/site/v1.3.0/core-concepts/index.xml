@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Core concepts on Uptimer</title><link>https://uptimer.myuptime.info/v1.3.0/core-concepts/</link><description>Recent content in Core concepts on Uptimer</description><generator>Hugo</generator><language>en</language><atom:link href="https://uptimer.myuptime.info/v1.3.0/core-concepts/index.xml" rel="self" type="application/rss+xml"/><item><title>Rules &amp; checks</title><link>https://uptimer.myuptime.info/v1.3.0/core-concepts/rules-and-checks/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.3.0/core-concepts/rules-and-checks/</guid><description>&lt;p&gt;A &lt;strong&gt;rule&lt;/strong&gt; describes a check: &lt;strong&gt;what&lt;/strong&gt; to request (an HTTP or HTTPS URL, with a method and an
+optional body), &lt;strong&gt;how often&lt;/strong&gt; (an interval), and the
+&lt;a href="https://uptimer.myuptime.info/v1.3.0/core-concepts/assertions/"&gt;expected response&lt;/a&gt; that decides up vs. down. Uptimer runs
+the check on that interval — from the server, or from a
+&lt;a href="https://uptimer.myuptime.info/v1.3.0/core-concepts/remote-workers/"&gt;remote worker&lt;/a&gt; — and records the result.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Checks are &lt;strong&gt;HTTP/HTTPS only&lt;/strong&gt; in this release: no TCP, DNS, ping or keyword types.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Intervals are whole minutes and the scheduler ticks once a minute, so &lt;strong&gt;one minute is the finest
+resolution&lt;/strong&gt;.&lt;/p&gt;</description></item><item><title>Expected response</title><link>https://uptimer.myuptime.info/v1.3.0/core-concepts/assertions/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.3.0/core-concepts/assertions/</guid><description>&lt;p&gt;A check passes when three things hold:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;the request completes — no connection or timeout error,&lt;/li&gt;
+&lt;li&gt;the response &lt;strong&gt;status code&lt;/strong&gt; is one you allow (default: &lt;code&gt;200&lt;/code&gt;), and&lt;/li&gt;
+&lt;li&gt;optionally, the response &lt;strong&gt;body contains&lt;/strong&gt; a substring you specify.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Anything else marks the rule &lt;strong&gt;down&lt;/strong&gt;. There&amp;rsquo;s no assertion language, no latency threshold and
+no header checks — just status codes and an optional body match. Connection and TLS timeouts are
+a fixed 10 seconds.&lt;/p&gt;</description></item><item><title>Regions</title><link>https://uptimer.myuptime.info/v1.3.0/core-concepts/regions/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.3.0/core-concepts/regions/</guid><description>&lt;p&gt;A &lt;strong&gt;region&lt;/strong&gt; is a named location checks run from — for example &lt;code&gt;local&lt;/code&gt;, or a geography you add
+with a &lt;a href="https://uptimer.myuptime.info/v1.3.0/core-concepts/remote-workers/"&gt;remote worker&lt;/a&gt;. Each region is served by one or
+more workers.&lt;/p&gt;
+&lt;p&gt;Manage regions in the dashboard. Assign a rule to specific regions from the dashboard, or over the
+&lt;a href="https://uptimer.myuptime.info/v1.3.0/reference/rest-api/"&gt;REST API&lt;/a&gt; and &lt;a href="https://uptimer.myuptime.info/v1.3.0/reference/python-sdk/"&gt;Python SDK&lt;/a&gt; with the
+rule&amp;rsquo;s &lt;code&gt;regions&lt;/code&gt; field (region names). The region-management UI is being reworked, so expect it to
+change.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;A rule with no region is never checked — it stays at &amp;ldquo;No Data&amp;rdquo; forever.&lt;/strong&gt; Assign at least one
+region to every rule you want monitored. This applies to rules created in the UI, over the
+&lt;a href="https://uptimer.myuptime.info/v1.3.0/reference/rest-api/"&gt;REST API&lt;/a&gt;, and via
+&lt;a href="https://uptimer.myuptime.info/v1.3.0/core-concepts/workspaces/#export--import"&gt;import&lt;/a&gt;.&lt;/p&gt;</description></item><item><title>Remote workers</title><link>https://uptimer.myuptime.info/v1.3.0/core-concepts/remote-workers/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.3.0/core-concepts/remote-workers/</guid><description>&lt;p&gt;A &lt;strong&gt;worker&lt;/strong&gt; is a prober: it pulls rules from the server, runs the checks, and reports results
+back over gRPC. Running one elsewhere adds a &lt;a href="https://uptimer.myuptime.info/v1.3.0/core-concepts/regions/"&gt;region&lt;/a&gt; you
+control — inside a private network, or a second geography. Each worker has its own identity and
+must be &lt;strong&gt;registered once&lt;/strong&gt; in the dashboard before it can connect.&lt;/p&gt;
+&lt;h2 id="add-a-worker"&gt;Add a worker&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;1. Generate the worker&amp;rsquo;s identity.&lt;/strong&gt; This writes &lt;code&gt;worker.pem&lt;/code&gt; + &lt;code&gt;worker.uuid&lt;/code&gt; to the data dir
+and prints what you&amp;rsquo;ll register:&lt;/p&gt;</description></item><item><title>Workspaces</title><link>https://uptimer.myuptime.info/v1.3.0/core-concepts/workspaces/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.3.0/core-concepts/workspaces/</guid><description>&lt;p&gt;A &lt;strong&gt;workspace&lt;/strong&gt; groups rules, the people who can access them, and the
+&lt;a href="https://uptimer.myuptime.info/v1.3.0/alerting/slack-alerts/"&gt;alert webhook&lt;/a&gt;. Every rule belongs to one workspace.&lt;/p&gt;
+&lt;p&gt;Members have a role:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;owner&lt;/strong&gt; — manage the workspace and its rules&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;editor&lt;/strong&gt; — manage rules&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;viewer&lt;/strong&gt; — read-only&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;A separate account-level &lt;strong&gt;admin&lt;/strong&gt; role manages server-wide things: workers, regions and
+settings.&lt;/p&gt;
+&lt;h2 id="export--import"&gt;Export &amp;amp; import&lt;/h2&gt;
+&lt;p&gt;Export a workspace to a YAML file from &lt;strong&gt;Workspace → Settings → Export&lt;/strong&gt;. It contains every rule
+(target, interval, expected response) and, for each rule, the &lt;strong&gt;names&lt;/strong&gt; of the regions it runs
+in. Import it from &lt;strong&gt;Workspace → Import&lt;/strong&gt;.&lt;/p&gt;</description></item></channel></rss>

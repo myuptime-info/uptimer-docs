@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Alerting on Uptimer</title><link>https://uptimer.myuptime.info/v1.8.0/alerting/</link><description>Recent content in Alerting on Uptimer</description><generator>Hugo</generator><language>en</language><atom:link href="https://uptimer.myuptime.info/v1.8.0/alerting/index.xml" rel="self" type="application/rss+xml"/><item><title>Destinations</title><link>https://uptimer.myuptime.info/v1.8.0/alerting/destinations/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.8.0/alerting/destinations/</guid><description>&lt;p&gt;A &lt;strong&gt;destination&lt;/strong&gt; is one place alerts can go: a Slack incoming webhook, or any HTTP endpoint that
+accepts a POST. A workspace has as many as it needs, and each &lt;a href="https://uptimer.myuptime.info/v1.8.0/core-concepts/signals-and-rules/"&gt;subject&lt;/a&gt;
+decides which of them it tells — see &lt;a href="https://uptimer.myuptime.info/v1.8.0/alerting/alert-delivery/"&gt;Alert delivery&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Before 1.8.0 a workspace had exactly one webhook URL and every alert in it went there. That field
+is gone. &lt;strong&gt;On upgrade the address you had becomes a destination named &lt;code&gt;Default&lt;/code&gt;&lt;/strong&gt;, enabled and
+marked as the workspace default, so alerting continues unchanged until you change it.&lt;/p&gt;</description></item><item><title>Alert delivery</title><link>https://uptimer.myuptime.info/v1.8.0/alerting/alert-delivery/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.8.0/alerting/alert-delivery/</guid><description>&lt;p&gt;A workspace-wide webhook says one thing for everything a team watches. &lt;strong&gt;Alert delivery&lt;/strong&gt; is the
+other half: the marketing site telling nobody must not stop the payments API paging the on-call.&lt;/p&gt;
+&lt;p&gt;The choice lives on the subject. Open a subject and scroll to &lt;strong&gt;Alert delivery&lt;/strong&gt;.&lt;/p&gt;
+&lt;h2 id="the-table-is-the-form"&gt;The table is the form&lt;/h2&gt;
+&lt;p&gt;Pick a &lt;a href="https://uptimer.myuptime.info/v1.8.0/alerting/destinations/"&gt;destination&lt;/a&gt; from the select, press &lt;strong&gt;Add&lt;/strong&gt;, and it
+arrives as a row with all three alert kinds ticked — someone adding a destination means &amp;ldquo;tell this
+channel about this thing&amp;rdquo;, and unticking what you do not want is easier than finding the box you
+forgot. Untick what this subject should not send there, then &lt;strong&gt;Save&lt;/strong&gt;.&lt;/p&gt;</description></item><item><title>Transformations</title><link>https://uptimer.myuptime.info/v1.8.0/alerting/transformations/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.8.0/alerting/transformations/</guid><description>&lt;p&gt;A &lt;strong&gt;transformation&lt;/strong&gt; is a named template for what a destination receives — a PagerDuty event, your
+own JSON, a line of text. Without one, a destination gets Uptimer&amp;rsquo;s built-in Slack-shaped
+&lt;a href="https://uptimer.myuptime.info/v1.8.0/alerting/webhooks/"&gt;message&lt;/a&gt;; attaching one replaces the body.&lt;/p&gt;
+&lt;p&gt;Transformations live in &lt;strong&gt;Workspace → Settings → Transformations&lt;/strong&gt;, and a
+&lt;a href="https://uptimer.myuptime.info/v1.8.0/alerting/destinations/"&gt;destination&lt;/a&gt; picks one in its own form. &lt;strong&gt;Default&lt;/strong&gt; there means
+Uptimer&amp;rsquo;s own message — the absence of a transformation, not a template called &amp;ldquo;Default&amp;rdquo;.&lt;/p&gt;
+&lt;h2 id="writing-one"&gt;Writing one&lt;/h2&gt;
+&lt;p&gt;The editor is three steps, in the order you work through them.&lt;/p&gt;</description></item><item><title>Delivery log</title><link>https://uptimer.myuptime.info/v1.8.0/alerting/delivery-log/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.8.0/alerting/delivery-log/</guid><description>&lt;p&gt;Every send Uptimer attempts is recorded: the body it posted, whether it was accepted, and when.
+It is the answer to &amp;ldquo;the alert never arrived&amp;rdquo; without asking the destination.&lt;/p&gt;
+&lt;p&gt;Open it from a destination&amp;rsquo;s &lt;strong&gt;More → View delivery&lt;/strong&gt; in
+&lt;strong&gt;Workspace → Settings → Destinations&lt;/strong&gt;, or from the Delivery page&amp;rsquo;s own destination select.&lt;/p&gt;
+&lt;h2 id="what-a-row-says"&gt;What a row says&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;Column&lt;/th&gt;
+					&lt;th&gt;What it holds&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;Payload&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;the body as it was sent, one line of it in the cell. &lt;strong&gt;View&lt;/strong&gt; opens the whole thing. Under it, the alert kind this was.&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;Status&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;strong&gt;Delivered&lt;/strong&gt; or &lt;strong&gt;Undelivered&lt;/strong&gt;, and on a failure the reason the far end gave, quoted.&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;When&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;the moment of the attempt, in UTC.&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;View&lt;/strong&gt; opens the full payload over the page rather than inside the row, so reading one attempt
+does not move the others.&lt;/p&gt;</description></item><item><title>Slack alerts</title><link>https://uptimer.myuptime.info/v1.8.0/alerting/slack-alerts/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.8.0/alerting/slack-alerts/</guid><description>&lt;p&gt;Slack is one kind of &lt;a href="https://uptimer.myuptime.info/v1.8.0/alerting/destinations/"&gt;destination&lt;/a&gt;. Point one at a Slack
+&lt;a href="https://api.slack.com/messaging/webhooks"&gt;incoming webhook&lt;/a&gt; and you get a message when a monitor
+has a &lt;strong&gt;confirmed problem&lt;/strong&gt;, when it has &lt;strong&gt;confirmed no data&lt;/strong&gt;, and when it &lt;strong&gt;recovers&lt;/strong&gt;, plus a
+&lt;strong&gt;reminder every four hours&lt;/strong&gt; while a confirmed problem is unresolved, unacknowledged and not
+under maintenance. See
+&lt;a href="https://uptimer.myuptime.info/v1.8.0/core-concepts/monitors-and-incidents/#reminders-a-problem-nobody-has-answered-says-so-again"&gt;Reminders&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="set-it-up"&gt;Set it up&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Set &lt;a href="https://uptimer.myuptime.info/v1.8.0/operating/configuration/"&gt;&lt;code&gt;general.site_url&lt;/code&gt;&lt;/a&gt; to your instance&amp;rsquo;s public base URL,
+for example &lt;code&gt;UPTIMER__GENERAL__SITE_URL: &amp;quot;https://uptimer.example.com&amp;quot;&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;In Slack, create an &lt;strong&gt;Incoming Webhook&lt;/strong&gt; and copy its URL.&lt;/li&gt;
+&lt;li&gt;In Uptimer, open &lt;strong&gt;Workspace → Settings → Destinations → Add Slack webhook destination&lt;/strong&gt;, paste
+the URL, name the row, and save. The first destination in a workspace becomes its &lt;strong&gt;default&lt;/strong&gt;,
+so every subject that has chosen nothing sends there.&lt;/li&gt;
+&lt;li&gt;Optional: give the row a &lt;strong&gt;channel&lt;/strong&gt; (&lt;code&gt;#incidents&lt;/code&gt;). A modern Slack webhook is already bound to
+one, so leaving it empty is normal.&lt;/li&gt;
+&lt;li&gt;Use &lt;strong&gt;More → Send test&lt;/strong&gt; to prove it before you need it.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Changed in 1.8.0.&lt;/strong&gt; Earlier releases had one webhook URL per workspace, in workspace settings.
+That field is gone: on upgrade its address becomes a destination named &lt;code&gt;Default&lt;/code&gt;, and everything
+keeps working. Which subjects send to it is now yours to choose —
+&lt;a href="https://uptimer.myuptime.info/v1.8.0/alerting/alert-delivery/"&gt;Alert delivery&lt;/a&gt;.&lt;/p&gt;</description></item><item><title>Webhooks</title><link>https://uptimer.myuptime.info/v1.8.0/alerting/webhooks/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.8.0/alerting/webhooks/</guid><description>&lt;p&gt;A &lt;strong&gt;webhook&lt;/strong&gt; &lt;a href="https://uptimer.myuptime.info/v1.8.0/alerting/destinations/"&gt;destination&lt;/a&gt; is an HTTP &lt;code&gt;POST&lt;/code&gt; with a Slack-style
+JSON body. Any endpoint that accepts that shape works — a Slack incoming webhook, a relay, or your
+own service. To send a &lt;strong&gt;different&lt;/strong&gt; shape, attach a
+&lt;a href="https://uptimer.myuptime.info/v1.8.0/alerting/transformations/"&gt;transformation&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id="the-built-in-payload"&gt;The built-in payload&lt;/h2&gt;
+&lt;p&gt;When an incident is confirmed, when a
+&lt;a href="https://uptimer.myuptime.info/v1.8.0/core-concepts/monitors-and-incidents/#reminders-a-problem-nobody-has-answered-says-so-again"&gt;reminder&lt;/a&gt;
+about it comes due, and when it closes, Uptimer POSTs:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;attachments&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;author_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Uptimer&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;title&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Checkout API is down&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;color&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;#d50201&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;text&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Failing from 2 of 3 locations — de, fr\n`dial tcp 104.20.23.154:9: i/o timeout`\nDown for 2m before we alerted.\n&amp;lt;https://uptimer.example.com/ui/workspace/{workspace}/monitoring/subject/{subject}|View timeline&amp;gt;&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;footer&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Uptimer&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;timestamp&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;1786642711&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The title is the monitor name plus its state, and the colour follows it:&lt;/p&gt;</description></item></channel></rss>

@@ -1,0 +1,76 @@
+<!doctype html><html lang=en data-theme=light><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Slack alerts · Uptimer docs</title><meta name=description content="Send alerts to Slack via a Slack destination."><link rel=icon href=/favicon.svg type=image/svg+xml><link rel=manifest href=/manifest.json><meta name=theme-color content="#4f46e5"><link rel=preconnect href=https://fonts.bunny.net crossorigin><link rel=stylesheet href="https://fonts.bunny.net/css?family=inter:400,500,600,700|jetbrains-mono:400,600"><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css><link rel=stylesheet href=/css/tokens.min.23f9249a946a7e06300ef28528ef40b3d03b70d8ac458907427b1f42a0369162.css><link rel=stylesheet href=/css/docs.min.70ac0a09c8350e5e795f84a945a75c34c3241ff979eb6e4dff1e4d9798f9779f.css></head><body><header class=site-header><nav class=site-nav><a class=logo href=/v1.8.0/ aria-label="Uptimer docs home"><svg width="22" height="20" viewBox="0 0 50 44" fill="none" aria-hidden="true"><path d="M8 6V22a17 17 0 0034 0V6" stroke="#161a21" stroke-width="8" stroke-linecap="round"/><path d="M2 26h8l4-13 6 24 5-17h18" stroke="#0f9d58" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+Uptimer <span class=docs>/ docs</span></a><div class=site-search-wrap><input class=site-search type=search placeholder="Search  ⌘K" aria-label="Search docs" autocomplete=off spellcheck=false role=combobox aria-expanded=false aria-controls=site-search-results data-version=1.8.0><div class=site-search-results id=site-search-results role=listbox hidden></div></div><details class=verpill-wrap><summary class=verpill>v1.8.0 ▾</summary><ul class=verpill-menu><li><a href=/v1.8.0/ class=on>v1.8.0 · latest</a></li><li><a href=/v1.7.0/>v1.7.0</a></li><li><a href=/v1.6.0/>v1.6.0</a></li><li><a href=/v1.5.0/>v1.5.0</a></li><li><a href=/v1.4.0/>v1.4.0</a></li><li><a href=/v1.3.0/>v1.3.0</a></li><li><a href=/v1.0.0/>v1.0.0</a></li></ul></details><span class=spacer></span>
+<a class=navlink href=/v1.8.0/getting-started/quick-start/>Guides</a>
+<a class=navlink href=/v1.8.0/reference/rest-api/>API Reference</a>
+<a class=navlink href=/v1.8.0/reference/python-sdk/>SDK</a>
+<a class=navlink href=https://myuptime.info rel=noopener>myuptime.info</a></nav></header><div class=shell><nav class=side><div class=grp><a href=/v1.8.0/getting-started/>Getting started</a></div><a href=/v1.8.0/getting-started/quick-start/>Quick start</a>
+<a href=/v1.8.0/getting-started/self-hosting/>Self-hosting</a>
+<a href=/v1.8.0/getting-started/requirements/>Requirements</a><div class=grp><a href=/v1.8.0/core-concepts/>Core concepts</a></div><a href=/v1.8.0/core-concepts/monitors-and-incidents/>Monitors & incidents</a>
+<a href=/v1.8.0/core-concepts/signals-and-rules/>Signals & rules</a>
+<a href=/v1.8.0/core-concepts/assertions/>Expected response</a>
+<a href=/v1.8.0/core-concepts/locations/>Locations</a>
+<a href=/v1.8.0/core-concepts/remote-workers/>Remote workers</a>
+<a href=/v1.8.0/core-concepts/workspaces/>Workspaces</a><div class=grp><a href=/v1.8.0/alerting/>Alerting</a></div><a href=/v1.8.0/alerting/destinations/>Destinations</a>
+<a href=/v1.8.0/alerting/alert-delivery/>Alert delivery</a>
+<a href=/v1.8.0/alerting/transformations/>Transformations</a>
+<a href=/v1.8.0/alerting/delivery-log/>Delivery log</a>
+<a href=/v1.8.0/alerting/slack-alerts/ class=on>Slack alerts</a>
+<a href=/v1.8.0/alerting/webhooks/>Webhooks</a><div class=grp><a href=/v1.8.0/operating/>Operating</a></div><a href=/v1.8.0/operating/configuration/>Configuration</a>
+<a href=/v1.8.0/operating/storage/>Persistent storage</a>
+<a href=/v1.8.0/operating/authentication/>Authentication</a>
+<a href=/v1.8.0/operating/production/>Production deployment</a><div class=grp><a href=/v1.8.0/reference/>Reference</a></div><a href=/v1.8.0/reference/rest-api/>REST API</a>
+<a href=/v1.8.0/reference/python-sdk/>Python SDK</a>
+<a href=/v1.8.0/reference/metrics/>Metrics</a>
+<a href=/v1.8.0/reference/changelog/>Changelog</a></nav><main class=content><div class=crumbs><a href=/v1.8.0/alerting/>Alerting</a> ›
+Slack alerts</div><h1>Slack alerts</h1><p class=lede>Post a message to Slack when a monitor changes state.</p><p>Slack is one kind of <a href=/v1.8.0/alerting/destinations/>destination</a>. Point one at a Slack
+<a href=https://api.slack.com/messaging/webhooks>incoming webhook</a> and you get a message when a monitor
+has a <strong>confirmed problem</strong>, when it has <strong>confirmed no data</strong>, and when it <strong>recovers</strong>, plus a
+<strong>reminder every four hours</strong> while a confirmed problem is unresolved, unacknowledged and not
+under maintenance. See
+<a href=/v1.8.0/core-concepts/monitors-and-incidents/#reminders-a-problem-nobody-has-answered-says-so-again>Reminders</a>.</p><h2 id=set-it-up>Set it up</h2><ol><li>Set <a href=/v1.8.0/operating/configuration/><code>general.site_url</code></a> to your instance&rsquo;s public base URL,
+for example <code>UPTIMER__GENERAL__SITE_URL: "https://uptimer.example.com"</code>.</li><li>In Slack, create an <strong>Incoming Webhook</strong> and copy its URL.</li><li>In Uptimer, open <strong>Workspace → Settings → Destinations → Add Slack webhook destination</strong>, paste
+the URL, name the row, and save. The first destination in a workspace becomes its <strong>default</strong>,
+so every subject that has chosen nothing sends there.</li><li>Optional: give the row a <strong>channel</strong> (<code>#incidents</code>). A modern Slack webhook is already bound to
+one, so leaving it empty is normal.</li><li>Use <strong>More → Send test</strong> to prove it before you need it.</li></ol><p><strong>Changed in 1.8.0.</strong> Earlier releases had one webhook URL per workspace, in workspace settings.
+That field is gone: on upgrade its address becomes a destination named <code>Default</code>, and everything
+keeps working. Which subjects send to it is now yours to choose —
+<a href=/v1.8.0/alerting/alert-delivery/>Alert delivery</a>.</p><p>On the next status change, Uptimer POSTs a Slack-formatted message with a link back to the
+<strong>subject timeline</strong> — the page that carries the check, its signal, its rule and its history, so
+the alert answers &ldquo;what happened&rdquo; without a second click.</p><blockquote><p><strong>No destination, no notifications.</strong> Monitoring shows a warning while the workspace has no
+destination switched on: incidents are still detected and recorded on the timeline, but nobody
+is told until you add one.</p></blockquote><blockquote><p><strong>Set <code>site_url</code> on every server process, not just the web one.</strong> Alerts are sent by
+<code>server --services availabilities</code>, and that is the process that builds the link — putting the
+setting on the UI container alone leaves the alerting one without it. Without <code>site_url</code> the
+alert is still sent; its link just reads <code>SITE_URL_NOT_CONFIGURED/ui/…</code> instead of a working
+address, and the server logs a warning at startup.</p></blockquote><h2 id=what-an-alert-says>What an alert says</h2><p>There are three, and the colour tells them apart at a glance: red for a confirmed problem, amber
+for no data, green for a recovery.</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-text data-lang=text><span style=display:flex><span>Checkout API is down
+</span></span><span style=display:flex><span>Failing from 2 of 3 locations — de, fr
+</span></span><span style=display:flex><span>`Get &#34;https://checkout.example/health&#34;: dial tcp 104.20.23.154:9: i/o timeout`
+</span></span><span style=display:flex><span>Down for 2m before we alerted.
+</span></span><span style=display:flex><span>View timeline
+</span></span></code></pre></div><ul><li><strong>The location count is the useful part.</strong> &ldquo;2 of 3&rdquo; separates a real outage from one bad
+vantage point — the reason a monitor is checked from several
+<a href=/v1.8.0/core-concepts/locations/>locations</a> at all. A monitor with a single location omits
+the line: there is nothing to compare against.</li><li><strong>The error is the sender&rsquo;s own</strong>, quoted and truncated, never reworded. <code>i/o timeout</code> versus
+<code>connection refused</code> versus a TLS error is the first thing worth acting on.</li><li><strong>&ldquo;Down for 2m before we alerted&rdquo;</strong> is the confirmation hold, not slowness — Uptimer waits to
+be sure before it pages anyone.</li></ul><p>A <strong>no data</strong> alert says <code>No reports from 2 of 3 locations</code> and, plainly, that Uptimer cannot
+tell whether the site is up — which is not the same claim as &ldquo;your site is down&rdquo;. A <strong>recovery</strong>
+says how long the outage lasted and when it ended.</p><p>This is the built-in body. To send a different shape — a PagerDuty event, your own JSON — attach a
+<a href=/v1.8.0/alerting/transformations/>transformation</a> to the destination.</p><blockquote><p>Alerts fire on <strong>state transitions</strong>, not on every check: one message when a monitor goes down,
+one when it recovers — not one per interval. A problem that stays unanswered adds one reminder
+every four hours, which is a message about time passing rather than about anything changing.</p></blockquote><h2 id=when-an-alert-actually-fires>When an alert actually fires</h2><p>An alert is sent when a problem is <strong>confirmed</strong> — that is, when it has held for 2 minutes. There
+is no need for a healthy period first, which is what makes it worth testing:</p><ul><li><strong>A monitor that is failing from the moment you create it does alert.</strong> It opens an incident on
+its first bad check and alerts about 2 minutes later. No prior Up state is required.</li><li>During those 2 minutes the list shows <strong>Pending</strong>. That is the confirmation hold, not a delay in
+delivery.</li><li><strong>No Data confirms and alerts too.</strong> A monitor with no
+<a href=/v1.8.0/core-concepts/locations/>location</a> assigned cannot be decided, so it settles on No
+Data and sends the &ldquo;no data&rdquo; alert — it does not stay quiet.</li><li><strong>Recovery alerts only follow an alert.</strong> If a problem clears inside the 2-minute hold, nothing
+was announced, so no recovery is announced either.</li><li>Alerts are one per incident, not one per check: one when it is confirmed, one when it closes,
+and one reminder every four hours in between while nobody has acknowledged it and no
+<a href=/v1.8.0/core-concepts/monitors-and-incidents/#maintenance-silencing-a-subject-on-purpose>maintenance window</a>
+is running.</li></ul><p>A destination is called <strong>from the Uptimer server</strong> (or its container), so its URL must be
+reachable from there — a <code>localhost</code> receiver on your laptop is <strong>not</strong> reachable from inside the
+container.</p><blockquote><p><strong>Delivery is best-effort.</strong> Uptimer sends once, in the background; there is no retry. What it
+sent and what the far end answered is recorded for 30 days in the
+<a href=/v1.8.0/alerting/delivery-log/>delivery log</a> — since 1.8.0 that is the place to look, rather
+than the server logs.</p></blockquote><div class=pager><a href=/v1.8.0/alerting/delivery-log/><span class=sm>Previous</span>← Delivery log</a>
+<a class=next href=/v1.8.0/alerting/webhooks/><span class=sm>Next</span>Webhooks →</a></div></main><aside class=toc><div class=h>On this page</div><nav id=TableOfContents><ul><li><a href=#set-it-up>Set it up</a></li><li><a href=#what-an-alert-says>What an alert says</a></li><li><a href=#when-an-alert-actually-fires>When an alert actually fires</a></li></ul></nav></aside></div><script src=/js/search.min.8f9e560dddad932cfa30c1e1f5d6b1f249b9cdc934773e1d111334f124355b62.js defer></script></body></html>

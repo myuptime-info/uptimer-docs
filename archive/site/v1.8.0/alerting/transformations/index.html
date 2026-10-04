@@ -1,0 +1,52 @@
+<!doctype html><html lang=en data-theme=light><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Transformations · Uptimer docs</title><meta name=description content="Outbound payload templates: fields, preview, and the all-samples save rule."><link rel=icon href=/favicon.svg type=image/svg+xml><link rel=manifest href=/manifest.json><meta name=theme-color content="#4f46e5"><link rel=preconnect href=https://fonts.bunny.net crossorigin><link rel=stylesheet href="https://fonts.bunny.net/css?family=inter:400,500,600,700|jetbrains-mono:400,600"><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css><link rel=stylesheet href=/css/tokens.min.23f9249a946a7e06300ef28528ef40b3d03b70d8ac458907427b1f42a0369162.css><link rel=stylesheet href=/css/docs.min.70ac0a09c8350e5e795f84a945a75c34c3241ff979eb6e4dff1e4d9798f9779f.css></head><body><header class=site-header><nav class=site-nav><a class=logo href=/v1.8.0/ aria-label="Uptimer docs home"><svg width="22" height="20" viewBox="0 0 50 44" fill="none" aria-hidden="true"><path d="M8 6V22a17 17 0 0034 0V6" stroke="#161a21" stroke-width="8" stroke-linecap="round"/><path d="M2 26h8l4-13 6 24 5-17h18" stroke="#0f9d58" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+Uptimer <span class=docs>/ docs</span></a><div class=site-search-wrap><input class=site-search type=search placeholder="Search  ⌘K" aria-label="Search docs" autocomplete=off spellcheck=false role=combobox aria-expanded=false aria-controls=site-search-results data-version=1.8.0><div class=site-search-results id=site-search-results role=listbox hidden></div></div><details class=verpill-wrap><summary class=verpill>v1.8.0 ▾</summary><ul class=verpill-menu><li><a href=/v1.8.0/ class=on>v1.8.0 · latest</a></li><li><a href=/v1.7.0/>v1.7.0</a></li><li><a href=/v1.6.0/>v1.6.0</a></li><li><a href=/v1.5.0/>v1.5.0</a></li><li><a href=/v1.4.0/>v1.4.0</a></li><li><a href=/v1.3.0/>v1.3.0</a></li><li><a href=/v1.0.0/>v1.0.0</a></li></ul></details><span class=spacer></span>
+<a class=navlink href=/v1.8.0/getting-started/quick-start/>Guides</a>
+<a class=navlink href=/v1.8.0/reference/rest-api/>API Reference</a>
+<a class=navlink href=/v1.8.0/reference/python-sdk/>SDK</a>
+<a class=navlink href=https://myuptime.info rel=noopener>myuptime.info</a></nav></header><div class=shell><nav class=side><div class=grp><a href=/v1.8.0/getting-started/>Getting started</a></div><a href=/v1.8.0/getting-started/quick-start/>Quick start</a>
+<a href=/v1.8.0/getting-started/self-hosting/>Self-hosting</a>
+<a href=/v1.8.0/getting-started/requirements/>Requirements</a><div class=grp><a href=/v1.8.0/core-concepts/>Core concepts</a></div><a href=/v1.8.0/core-concepts/monitors-and-incidents/>Monitors & incidents</a>
+<a href=/v1.8.0/core-concepts/signals-and-rules/>Signals & rules</a>
+<a href=/v1.8.0/core-concepts/assertions/>Expected response</a>
+<a href=/v1.8.0/core-concepts/locations/>Locations</a>
+<a href=/v1.8.0/core-concepts/remote-workers/>Remote workers</a>
+<a href=/v1.8.0/core-concepts/workspaces/>Workspaces</a><div class=grp><a href=/v1.8.0/alerting/>Alerting</a></div><a href=/v1.8.0/alerting/destinations/>Destinations</a>
+<a href=/v1.8.0/alerting/alert-delivery/>Alert delivery</a>
+<a href=/v1.8.0/alerting/transformations/ class=on>Transformations</a>
+<a href=/v1.8.0/alerting/delivery-log/>Delivery log</a>
+<a href=/v1.8.0/alerting/slack-alerts/>Slack alerts</a>
+<a href=/v1.8.0/alerting/webhooks/>Webhooks</a><div class=grp><a href=/v1.8.0/operating/>Operating</a></div><a href=/v1.8.0/operating/configuration/>Configuration</a>
+<a href=/v1.8.0/operating/storage/>Persistent storage</a>
+<a href=/v1.8.0/operating/authentication/>Authentication</a>
+<a href=/v1.8.0/operating/production/>Production deployment</a><div class=grp><a href=/v1.8.0/reference/>Reference</a></div><a href=/v1.8.0/reference/rest-api/>REST API</a>
+<a href=/v1.8.0/reference/python-sdk/>Python SDK</a>
+<a href=/v1.8.0/reference/metrics/>Metrics</a>
+<a href=/v1.8.0/reference/changelog/>Changelog</a></nav><main class=content><div class=crumbs><a href=/v1.8.0/alerting/>Alerting</a> ›
+Transformations</div><h1>Transformations</h1><p class=lede>Name a template, and a destination receives that shape instead of Uptimer&rsquo;s own message.</p><p>A <strong>transformation</strong> is a named template for what a destination receives — a PagerDuty event, your
+own JSON, a line of text. Without one, a destination gets Uptimer&rsquo;s built-in Slack-shaped
+<a href=/v1.8.0/alerting/webhooks/>message</a>; attaching one replaces the body.</p><p>Transformations live in <strong>Workspace → Settings → Transformations</strong>, and a
+<a href=/v1.8.0/alerting/destinations/>destination</a> picks one in its own form. <strong>Default</strong> there means
+Uptimer&rsquo;s own message — the absence of a transformation, not a template called &ldquo;Default&rdquo;.</p><h2 id=writing-one>Writing one</h2><p>The editor is three steps, in the order you work through them.</p><p><strong>1 · What Uptimer sends.</strong> Three sample messages — <em>Problems and reminders</em>, <em>No data</em>,
+<em>Recoveries</em> — each showing every field with a real value. Copy the placeholder from the row whose
+value you want.</p><p><strong>2 · Template.</strong> Write the body and put <code>{{ field }}</code> where a value goes:</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;event&#34;</span>: <span style=color:#a5d6ff>&#34;{{ kind }}&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;summary&#34;</span>: <span style=color:#a5d6ff>&#34;{{ summary }}&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;source&#34;</span>: <span style=color:#a5d6ff>&#34;{{ subject }}&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;details&#34;</span>: <span style=color:#a5d6ff>&#34;{{ error }}&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;link&#34;</span>: <span style=color:#a5d6ff>&#34;{{ link }}&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><strong>3 · Result.</strong> Press <strong>Preview</strong> and see what came out for <strong>all three</strong> messages, not just the
+one on screen.</p><h2 id=the-fields>The fields</h2><table><thead><tr><th>Field</th><th>What it holds</th></tr></thead><tbody><tr><td><code>{{ kind }}</code></td><td><code>problem</code>, <code>no_data</code> or <code>recovery</code></td></tr><tr><td><code>{{ status }}</code></td><td>the subject&rsquo;s condition in one word: <code>down</code>, <code>unknown</code>, <code>up</code></td></tr><tr><td><code>{{ subject }}</code></td><td>the monitor or subject name</td></tr><tr><td><code>{{ url }}</code></td><td>the URL being checked, where there is one</td></tr><tr><td><code>{{ summary }}</code></td><td>the one-line summary the built-in message leads with</td></tr><tr><td><code>{{ error }}</code></td><td>the sender&rsquo;s own error text, quoted as received</td></tr><tr><td><code>{{ locations }}</code></td><td>the locations involved, comma-separated</td></tr><tr><td><code>{{ lasted }}</code></td><td>how long it had been that way</td></tr><tr><td><code>{{ link }}</code></td><td>the link back to the subject timeline</td></tr><tr><td><code>{{ workspace }}</code></td><td>the workspace&rsquo;s display name</td></tr><tr><td><code>{{ at }}</code></td><td>the moment, RFC 3339 in UTC</td></tr></tbody></table><p>A field that has no value for a given message renders empty — a recovery has no <code>error</code>, and a
+Custom subject has no <code>url</code>.</p><h2 id=json-is-escaped-for-you>JSON is escaped for you</h2><p>A template that starts with <code>{</code> or <code>[</code> is treated as <strong>JSON</strong>: values are escaped as they are
+substituted, and the result has to parse. That is what makes a quoted error safe —
+<code>dial tcp …: i/o timeout</code> arrives with its quotes intact and the document still valid. Anything
+else is sent as plain text.</p><p>The content type follows the same reading: <code>application/json</code> for a JSON template,
+<code>text/plain</code> otherwise. The Transformations list shows which one each will send.</p><h2 id=the-save-rule>The save rule</h2><p><strong>A transformation is stored only once it renders all three messages.</strong> There is no force, no
+override, and no &ldquo;save anyway&rdquo;:</p><ul><li>Save is unavailable until a preview succeeds for every sample.</li><li>A refusal names the sample that broke and why — <code>{"detail": {{ error }}}</code> fails on <em>Recoveries</em>,
+because a recovery has no error and the document stops parsing.</li><li>Editing an existing one is judged the same way. A broken edit is refused and <strong>the stored
+template is left exactly as it was</strong>, so a template that works today cannot be replaced by one
+that fails during an outage.</li></ul><p>Deleting a transformation is allowed while destinations use it: they fall back to Uptimer&rsquo;s
+built-in message.</p><h2 id=over-the-api>Over the API</h2><p><code>/v2/notifications/transformations</code> does the same, including <code>samples</code> (the vocabulary) and
+<code>preview</code> (the same answer without storing anything) — see the
+<a href=/v1.8.0/reference/rest-api/#list-transformations>REST reference</a>.</p><div class=pager><a href=/v1.8.0/alerting/alert-delivery/><span class=sm>Previous</span>← Alert delivery</a>
+<a class=next href=/v1.8.0/alerting/delivery-log/><span class=sm>Next</span>Delivery log →</a></div></main><aside class=toc><div class=h>On this page</div><nav id=TableOfContents><ul><li><a href=#writing-one>Writing one</a></li><li><a href=#the-fields>The fields</a></li><li><a href=#json-is-escaped-for-you>JSON is escaped for you</a></li><li><a href=#the-save-rule>The save rule</a></li><li><a href=#over-the-api>Over the API</a></li></ul></nav></aside></div><script src=/js/search.min.8f9e560dddad932cfa30c1e1f5d6b1f249b9cdc934773e1d111334f124355b62.js defer></script></body></html>

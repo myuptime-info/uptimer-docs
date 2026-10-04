@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Reference on Uptimer</title><link>https://uptimer.myuptime.info/v1.5.0/reference/</link><description>Recent content in Reference on Uptimer</description><generator>Hugo</generator><language>en</language><atom:link href="https://uptimer.myuptime.info/v1.5.0/reference/index.xml" rel="self" type="application/rss+xml"/><item><title>REST API</title><link>https://uptimer.myuptime.info/v1.5.0/reference/rest-api/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.5.0/reference/rest-api/</guid><description>&lt;p&gt;Base URL: &lt;strong&gt;&lt;code&gt;http://&amp;lt;host&amp;gt;:2517/api&lt;/code&gt;&lt;/strong&gt; — the API is served under &lt;code&gt;/api&lt;/code&gt; on the web UI port.&lt;/p&gt;
+&lt;h2 id="conventions"&gt;Conventions&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Every response is HTTP &lt;code&gt;200&lt;/code&gt;&lt;/strong&gt; with a &lt;code&gt;{ &amp;quot;result&amp;quot;, &amp;quot;error&amp;quot;, &amp;quot;meta&amp;quot; }&lt;/code&gt; envelope — check
+&lt;code&gt;error&lt;/code&gt;, not the status code.&lt;/li&gt;
+&lt;li&gt;On success &lt;code&gt;error&lt;/code&gt; is &lt;code&gt;null&lt;/code&gt; and &lt;code&gt;result&lt;/code&gt; holds the data; on failure &lt;code&gt;result&lt;/code&gt; is &lt;code&gt;null&lt;/code&gt; and
+&lt;code&gt;error&lt;/code&gt; is filled.&lt;/li&gt;
+&lt;li&gt;Objects carry a &lt;code&gt;kind&lt;/code&gt; field (&lt;code&gt;website_monitor&lt;/code&gt;, &lt;code&gt;workspace&lt;/code&gt;, &lt;code&gt;location&lt;/code&gt;, …).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="two-versions"&gt;Two versions&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;v2 is the current API&lt;/strong&gt; and uses the product&amp;rsquo;s language: &lt;em&gt;locations&lt;/em&gt;, &lt;em&gt;website
+monitoring&lt;/em&gt;, &lt;em&gt;incidents&lt;/em&gt;. It is self-contained — a v2 client never needs a v1 route.&lt;/p&gt;</description></item><item><title>Python SDK</title><link>https://uptimer.myuptime.info/v1.5.0/reference/python-sdk/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.5.0/reference/python-sdk/</guid><description>&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;pip install &lt;span style="color:#a5d6ff"&gt;&amp;#34;uptimer-python-sdk&amp;gt;=1.5.0&amp;#34;&lt;/span&gt; &lt;span style="color:#8b949e;font-style:italic"&gt;# or: uv add &amp;#34;uptimer-python-sdk&amp;gt;=1.5.0&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;The SDK version tracks the server it targets.&lt;/strong&gt; 1.5.x speaks to uptimer 1.5.0 and
+later; patch numbers move independently. So install the SDK whose major.minor matches
+your server — no compatibility table to look up.&lt;/p&gt;
+&lt;p&gt;Still on API v1? Pin &lt;code&gt;uptimer-python-sdk&amp;lt;1&lt;/code&gt;. The server&amp;rsquo;s v1 is unchanged and
+supported, so 0.4.x keeps working against a 1.5.0 server — it just cannot use anything
+new. There is no v1 surface left in 1.5.x: &lt;code&gt;client.v1&lt;/code&gt;, its models and its kinds are
+gone — &lt;code&gt;client.v2&lt;/code&gt; takes its place.&lt;/p&gt;</description></item><item><title>Metrics</title><link>https://uptimer.myuptime.info/v1.5.0/reference/metrics/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.5.0/reference/metrics/</guid><description>&lt;p&gt;Add &lt;code&gt;--metrics&lt;/code&gt; to any command (&lt;code&gt;server&lt;/code&gt;, &lt;code&gt;grpc&lt;/code&gt;, &lt;code&gt;worker&lt;/code&gt;, &lt;code&gt;dev&lt;/code&gt;) to expose a Prometheus
+endpoint at &lt;strong&gt;&lt;code&gt;/metrics&lt;/code&gt;&lt;/strong&gt; on &lt;code&gt;general.metrics_port&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#79c0ff"&gt;UPTIMER__GENERAL__METRICS_PORT&lt;/span&gt;&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;9100&lt;/span&gt; uptimer server --metrics
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl http://localhost:9100/metrics
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="series"&gt;Series&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;Metric&lt;/th&gt;
+					&lt;th&gt;Type&lt;/th&gt;
+					&lt;th&gt;Labels&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;http_request_duration_seconds&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;summary&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;route&lt;/code&gt;, &lt;code&gt;method&lt;/code&gt;, &lt;code&gt;status&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;grpc_request_duration_seconds&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;summary&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;grpc_method&lt;/code&gt;, &lt;code&gt;grpc_code&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;code&gt;grpc_request_duration_seconds&lt;/code&gt; is new in 1.4.0. Uptimer intentionally &lt;strong&gt;unregisters the default
+Go/process collectors&lt;/strong&gt;, so &lt;code&gt;go_*&lt;/code&gt; / &lt;code&gt;process_*&lt;/code&gt; series are absent and the endpoint stays small.&lt;/p&gt;
+&lt;h2 id="scrape-config"&gt;Scrape config&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#7ee787"&gt;scrape_configs&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#7ee787"&gt;job_name&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;uptimer&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;static_configs&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#7ee787"&gt;targets&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;[&lt;span style="color:#a5d6ff"&gt;&amp;#34;uptimer:9100&amp;#34;&lt;/span&gt;]&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Changelog</title><link>https://uptimer.myuptime.info/v1.5.0/reference/changelog/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.5.0/reference/changelog/</guid><description>&lt;h2 id="150"&gt;1.5.0&lt;/h2&gt;
+&lt;h3 id="monitoring-is-the-one-list"&gt;Monitoring is the one list&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Monitoring replaces the checks list&lt;/strong&gt; as the workspace home. Each row is a monitoring
+subject with the status of its rules, filtered by &lt;strong&gt;All&lt;/strong&gt; or &lt;strong&gt;With incidents&lt;/strong&gt;, and links
+straight into that subject&amp;rsquo;s &lt;strong&gt;Timeline&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The old checks list and the per-rule history page are gone.&lt;/strong&gt; &lt;code&gt;/checks&lt;/code&gt; redirects to
+Monitoring, so existing links still land. &lt;strong&gt;Removed with them, and not yet replaced:&lt;/strong&gt; the
+uptime history strip and sorting by name, status or up-since.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="adding-a-website"&gt;Adding a website&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;The form is now &lt;strong&gt;Website monitoring&lt;/strong&gt;. Saving it creates a &lt;strong&gt;monitoring subject&lt;/strong&gt; with one
+built-in HTTP &lt;strong&gt;signal&lt;/strong&gt; and one &lt;strong&gt;Reachability rule&lt;/strong&gt; — you no longer create those separately.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Locations Required to Fail gains &amp;ldquo;All locations&amp;rdquo;&lt;/strong&gt;, alongside &lt;em&gt;Majority of locations&lt;/em&gt; and
+&lt;em&gt;At least one location&lt;/em&gt;. Each location you select becomes one input on the rule. See
+&lt;a href="https://uptimer.myuptime.info/v1.5.0/core-concepts/monitors-and-incidents/#how-many-locations-must-fail"&gt;How many locations must fail&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Creating signals and rules by hand, and custom ingest, are not in this release.&lt;/strong&gt; The
+&lt;strong&gt;Add signal&lt;/strong&gt; and &lt;strong&gt;Add rule&lt;/strong&gt; actions are visible but marked coming soon.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="seeing-why"&gt;Seeing why&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Timeline&lt;/strong&gt; — what happened to a subject, newest first, with how long a closed incident lasted.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Observation log&lt;/strong&gt; — every report each location sent, with a day picker and paging. An
+&lt;strong&gt;Unaccepted&lt;/strong&gt; filter shows rows that were stored but not used for a verdict, and why. This is
+what answers &amp;ldquo;the workers are running but the rule says no data&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Rule page&lt;/strong&gt; — one input per selected location, what each is reporting, the agreement in
+force, and the confirm/close holds.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="alerts"&gt;Alerts&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Slack alerts now link to the &lt;strong&gt;subject timeline&lt;/strong&gt; instead of a rule&amp;rsquo;s history.&lt;/li&gt;
+&lt;li&gt;Monitoring warns when the workspace has &lt;strong&gt;no Slack webhook&lt;/strong&gt;: incidents are still detected and
+recorded, but nobody is notified until one is added.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="api-and-sdk"&gt;API and SDK&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="https://uptimer.myuptime.info/v1.5.0/reference/rest-api/"&gt;API v2&lt;/a&gt;&lt;/strong&gt; speaks the product&amp;rsquo;s language — &lt;em&gt;locations&lt;/em&gt;,
+&lt;em&gt;website monitoring&lt;/em&gt;, &lt;em&gt;incidents&lt;/em&gt; — and is self-contained: a v2 client never needs a v1 route.
+&lt;code&gt;GET /v2/incidents&lt;/code&gt; answers &amp;ldquo;what is wrong right now&amp;rdquo;. &lt;strong&gt;API v1 is unchanged and supported&lt;/strong&gt; —
+every v1 route, field and &lt;code&gt;kind&lt;/code&gt; still behaves exactly as it did.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A website monitor can now set its location agreement over the API&lt;/strong&gt; — the &lt;code&gt;agreement&lt;/code&gt; field
+(&lt;code&gt;any&lt;/code&gt;, &lt;code&gt;majority&lt;/code&gt;, &lt;code&gt;all&lt;/code&gt;). API v1 has no such field and keeps using &lt;code&gt;majority&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="https://uptimer.myuptime.info/v1.5.0/reference/python-sdk/"&gt;Python SDK 1.5.0&lt;/a&gt;&lt;/strong&gt; targets v2 only: &lt;code&gt;client.v2.workspaces&lt;/code&gt;,
+&lt;code&gt;client.v2.locations&lt;/code&gt;, &lt;code&gt;client.v2.incidents&lt;/code&gt; and &lt;code&gt;client.v2.monitoring.websites&lt;/code&gt; replace the
+&lt;code&gt;client.v1&lt;/code&gt; namespace — the version stays visible, as it did in 0.4.x. Its types are
+versioned with it: &lt;code&gt;from uptimer.models.v2 import …&lt;/code&gt;, not the flat &lt;code&gt;uptimer.models&lt;/code&gt;.
+Its version now tracks the server it talks to, and &lt;code&gt;client.check_compatibility()&lt;/code&gt; refuses a
+server that predates v2 with a message naming the fix. Staying on v1? Pin
+&lt;code&gt;uptimer-python-sdk&amp;lt;1&lt;/code&gt; — 0.4.x keeps working against a 1.5.0 server.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="api-keys"&gt;API keys&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;A token is shown once, when you create it&lt;/strong&gt;, and can be copied from that screen. It cannot be
+viewed again afterwards and there is no regenerate — if you lose it, delete the key and create
+another. Previously the key&amp;rsquo;s page re-issued and displayed a working token on every visit.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Keys take an optional description&lt;/strong&gt;, so you can tell them apart once the value is hidden.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The list shows when each token expires&lt;/strong&gt;, and badges a key &lt;strong&gt;Expired&lt;/strong&gt; once it is past.
+Keys created before 1.5.0 show no expiry: the page this replaces issued a fresh 180-day token
+every time it was opened, so the expiry of the token you hold is not recoverable.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Rotating without downtime is unchanged and still the way to do it:&lt;/strong&gt; create the new key,
+switch your client over, then delete the old one. Keys are independent, and deleting one stops
+its token immediately.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="identifiers"&gt;Identifiers&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The new Monitoring URLs use opaque ids&lt;/strong&gt;, and so does the &lt;code&gt;id&lt;/code&gt; on an API incident — a
+database number is never exposed. Identifiers on existing pages are unchanged. The ids are
+derived from &lt;a href="https://uptimer.myuptime.info/v1.5.0/operating/configuration/"&gt;&lt;code&gt;server.sqids_salt&lt;/code&gt;&lt;/a&gt;, so changing that value
+invalidates existing Monitoring links.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="fixed"&gt;Fixed&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Success and error notifications could disappear before they could be read.&lt;/li&gt;
+&lt;li&gt;Workspace notification help no longer implies a per-rule notification setting that does not
+exist: notifications are configured per workspace, and once a webhook is set everything in that
+workspace alerts.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Security:&lt;/strong&gt; a workspace member could read another workspace&amp;rsquo;s monitor configuration, or
+delete it, by using its identifier directly. Deleting it also removed its subject, signal, rule
+and history. All identifier-addressed routes are now scoped to the workspace in the URL.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="140"&gt;1.4.0&lt;/h2&gt;
+&lt;h3 id="incident-based-monitoring"&gt;Incident-based monitoring&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;A monitor&amp;rsquo;s status is now decided across all of its locations&lt;/strong&gt;, not by the newest check to
+arrive. The form gains &lt;strong&gt;Locations Required to Fail&lt;/strong&gt; — &lt;em&gt;Majority of locations&lt;/em&gt; (default) or
+&lt;em&gt;At least one location&lt;/em&gt;. A location that never reports counts as unknown and stays inside the
+decision, so a half-silent monitor reads &lt;strong&gt;No Data&lt;/strong&gt; instead of trusting whichever location
+answered. See &lt;a href="https://uptimer.myuptime.info/v1.5.0/core-concepts/monitors-and-incidents/#how-many-locations-must-fail"&gt;Monitors &amp;amp; incidents&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A problem must last 2 minutes before it is confirmed and alerted&lt;/strong&gt;, and a recovery must last
+2 minutes before the incident closes. Short blips no longer page you, though they do show up in
+the history.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;History is now a timeline of incidents&lt;/strong&gt; — pending, problem, no data, recovering, closed —
+with the failing and silent locations on each event and the error they reported, replacing the
+old list of individual check results.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The monitor list gains two badges&lt;/strong&gt; — &lt;strong&gt;Pending&lt;/strong&gt; and &lt;strong&gt;Recovering&lt;/strong&gt; — shown while a monitor is
+inside one of the 2-minute holds.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Slack alerts were rewritten.&lt;/strong&gt; Each one now says how many locations are failing and which,
+quotes the error the check returned, and says how long the problem ran before the alert or how
+long the outage lasted. The monitor&amp;rsquo;s URL left the title, and the no-data alert is amber.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="checks-identify-themselves"&gt;Checks identify themselves&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;HTTP(S) checks now send &lt;code&gt;Uptimer/&amp;lt;version&amp;gt; (+https://uptimer.myuptime.info)&lt;/code&gt; instead of
+&lt;code&gt;Go-http-client/1.1&lt;/code&gt;, so you can recognise and filter monitoring traffic in logs and analytics.
+The value carries no workspace, worker or location, and is not configurable.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="logging-out-ends-the-provider-session"&gt;Logging out ends the provider session&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Signing out now also ends the session at your OIDC provider, so the next login no longer signs
+the same person straight back in. Providers that advertise &lt;code&gt;end_session_endpoint&lt;/code&gt; need no
+configuration; for the rest, set &lt;code&gt;server.auth.oidc.end_session_endpoint&lt;/code&gt; and, if it renames the
+return-URL parameter, &lt;code&gt;server.auth.oidc.post_logout_redirect_param&lt;/code&gt;. See
+&lt;a href="https://uptimer.myuptime.info/v1.5.0/operating/authentication/#logging-out-of-the-provider"&gt;Authentication&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="workers-no-longer-need-a-database"&gt;Workers no longer need a database&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;A worker keeps its rules in memory and receives them over gRPC. &lt;code&gt;worker.db.dsn&lt;/code&gt; and
+&lt;code&gt;UPTIMER__WORKER__DB__DSN&lt;/code&gt; are no longer read — &lt;strong&gt;still accepted and ignored&lt;/strong&gt;, so existing
+configurations keep working. You can delete the setting and drop the second &lt;code&gt;uptimer_worker&lt;/code&gt;
+database. A worker still needs its &lt;code&gt;/data&lt;/code&gt; volume for &lt;code&gt;worker.uuid&lt;/code&gt; and &lt;code&gt;worker.pem&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="security--reliability"&gt;Security &amp;amp; reliability&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Patched vulnerable dependencies: &lt;code&gt;golang.org/x/text&lt;/code&gt; and &lt;code&gt;google.golang.org/grpc&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;The worker is now a stateless library shared by every build, which removes a class of
+drift between how self-hosted and hosted workers behave.&lt;/li&gt;
+&lt;li&gt;Fixed missing icons on the debug page.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="earlier-highlights-11--130"&gt;Earlier highlights (1.1 → 1.3.0)&lt;/h2&gt;
+&lt;h3 id="packaging"&gt;Packaging&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The image moved to GitHub Container Registry&lt;/strong&gt; —
+&lt;a href="https://github.com/users/myuptime-info/packages/container/package/uptimer"&gt;&lt;code&gt;ghcr.io/myuptime-info/uptimer&lt;/code&gt;&lt;/a&gt;.
+Pull a pinned &lt;code&gt;:X.Y.Z&lt;/code&gt; tag (or &lt;code&gt;:edge&lt;/code&gt; for pre-releases). The old Docker Hub image is retired.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="deployment--database"&gt;Deployment &amp;amp; database&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;New &lt;code&gt;uptimer migrate&lt;/code&gt; command&lt;/strong&gt; plus &lt;code&gt;server.db.boot_migrate&lt;/code&gt; — run schema migrations as a
+one-shot job and gate rollouts on a fully-migrated database.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;PostgreSQL migrations are now versioned&lt;/strong&gt; (with data backfills) and upgrade-safe; SQLite
+stays auto-migrated for dev. See
+&lt;a href="https://uptimer.myuptime.info/v1.5.0/operating/configuration/#choosing-a-database"&gt;Choosing a database&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="running-uptimer"&gt;Running Uptimer&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;server --services …&lt;/code&gt; replaces the old &lt;code&gt;run&lt;/code&gt; command&lt;/strong&gt; — select services with
+&lt;code&gt;--services api,ui,grpc,availabilities&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;New &lt;code&gt;server.sqids_salt&lt;/code&gt; setting (give it a unique value in production).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="monitoring"&gt;Monitoring&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Worker-regions management&lt;/strong&gt; in the dashboard (still being refined).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Assign regions when creating or updating a rule over the API&lt;/strong&gt; — the rule payload takes a
+&lt;code&gt;regions&lt;/code&gt; field (region names), so a headless/&lt;a href="https://uptimer.myuptime.info/v1.5.0/reference/python-sdk/"&gt;SDK&lt;/a&gt; workflow can
+create a rule that actually runs instead of sitting at &amp;ldquo;No Data&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;New &lt;strong&gt;&lt;code&gt;grpc_request_duration_seconds&lt;/code&gt;&lt;/strong&gt; metric on &lt;a href="https://uptimer.myuptime.info/v1.5.0/reference/metrics/"&gt;&lt;code&gt;/metrics&lt;/code&gt;&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="extensibility"&gt;Extensibility&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;A &lt;strong&gt;pluggable architecture&lt;/strong&gt; (job registry + route/gRPC extension seams) lets a build add
+services and routes without forking core.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="fixes--ui"&gt;Fixes &amp;amp; UI&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Smaller CSS payload and a faster dashboard.&lt;/li&gt;
+&lt;li&gt;Correct paging on the availability-history view.&lt;/li&gt;
+&lt;li&gt;UTF-8 characters render correctly in notifications.&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

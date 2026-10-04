@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 10 48 48" role="img" aria-labelledby="t">
+  <title id="t">Uptimer</title>
+  <defs>
+    <linearGradient id="uptimer-u" x1="9" y1="11" x2="55" y2="57" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#10B981"/>
+      <stop offset="0.5" stop-color="#06B6D4"/>
+      <stop offset="1" stop-color="#3B82F6"/>
+    </linearGradient>
+    <linearGradient id="uptimer-dot" x1="26" y1="26" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#06B6D4"/>
+      <stop offset="1" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+  <path d="M15 17v17a17 17 0 0 0 34 0v-17" fill="none" stroke="url(#uptimer-u)" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="32" cy="32" r="6" fill="url(#uptimer-dot)"/>
+</svg>

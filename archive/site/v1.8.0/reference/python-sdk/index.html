@@ -1,0 +1,376 @@
+<!doctype html><html lang=en data-theme=light><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Python SDK · Uptimer docs</title><meta name=description content="The uptimer-python-sdk package."><link rel=icon href=/favicon.svg type=image/svg+xml><link rel=manifest href=/manifest.json><meta name=theme-color content="#4f46e5"><link rel=preconnect href=https://fonts.bunny.net crossorigin><link rel=stylesheet href="https://fonts.bunny.net/css?family=inter:400,500,600,700|jetbrains-mono:400,600"><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css><link rel=stylesheet href=/css/tokens.min.23f9249a946a7e06300ef28528ef40b3d03b70d8ac458907427b1f42a0369162.css><link rel=stylesheet href=/css/docs.min.70ac0a09c8350e5e795f84a945a75c34c3241ff979eb6e4dff1e4d9798f9779f.css></head><body><header class=site-header><nav class=site-nav><a class=logo href=/v1.8.0/ aria-label="Uptimer docs home"><svg width="22" height="20" viewBox="0 0 50 44" fill="none" aria-hidden="true"><path d="M8 6V22a17 17 0 0034 0V6" stroke="#161a21" stroke-width="8" stroke-linecap="round"/><path d="M2 26h8l4-13 6 24 5-17h18" stroke="#0f9d58" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+Uptimer <span class=docs>/ docs</span></a><div class=site-search-wrap><input class=site-search type=search placeholder="Search  ⌘K" aria-label="Search docs" autocomplete=off spellcheck=false role=combobox aria-expanded=false aria-controls=site-search-results data-version=1.8.0><div class=site-search-results id=site-search-results role=listbox hidden></div></div><details class=verpill-wrap><summary class=verpill>v1.8.0 ▾</summary><ul class=verpill-menu><li><a href=/v1.8.0/ class=on>v1.8.0 · latest</a></li><li><a href=/v1.7.0/>v1.7.0</a></li><li><a href=/v1.6.0/>v1.6.0</a></li><li><a href=/v1.5.0/>v1.5.0</a></li><li><a href=/v1.4.0/>v1.4.0</a></li><li><a href=/v1.3.0/>v1.3.0</a></li><li><a href=/v1.0.0/>v1.0.0</a></li></ul></details><span class=spacer></span>
+<a class=navlink href=/v1.8.0/getting-started/quick-start/>Guides</a>
+<a class=navlink href=/v1.8.0/reference/rest-api/>API Reference</a>
+<a class=navlink href=/v1.8.0/reference/python-sdk/>SDK</a>
+<a class=navlink href=https://myuptime.info rel=noopener>myuptime.info</a></nav></header><div class=shell><nav class=side><div class=grp><a href=/v1.8.0/getting-started/>Getting started</a></div><a href=/v1.8.0/getting-started/quick-start/>Quick start</a>
+<a href=/v1.8.0/getting-started/self-hosting/>Self-hosting</a>
+<a href=/v1.8.0/getting-started/requirements/>Requirements</a><div class=grp><a href=/v1.8.0/core-concepts/>Core concepts</a></div><a href=/v1.8.0/core-concepts/monitors-and-incidents/>Monitors & incidents</a>
+<a href=/v1.8.0/core-concepts/signals-and-rules/>Signals & rules</a>
+<a href=/v1.8.0/core-concepts/assertions/>Expected response</a>
+<a href=/v1.8.0/core-concepts/locations/>Locations</a>
+<a href=/v1.8.0/core-concepts/remote-workers/>Remote workers</a>
+<a href=/v1.8.0/core-concepts/workspaces/>Workspaces</a><div class=grp><a href=/v1.8.0/alerting/>Alerting</a></div><a href=/v1.8.0/alerting/destinations/>Destinations</a>
+<a href=/v1.8.0/alerting/alert-delivery/>Alert delivery</a>
+<a href=/v1.8.0/alerting/transformations/>Transformations</a>
+<a href=/v1.8.0/alerting/delivery-log/>Delivery log</a>
+<a href=/v1.8.0/alerting/slack-alerts/>Slack alerts</a>
+<a href=/v1.8.0/alerting/webhooks/>Webhooks</a><div class=grp><a href=/v1.8.0/operating/>Operating</a></div><a href=/v1.8.0/operating/configuration/>Configuration</a>
+<a href=/v1.8.0/operating/storage/>Persistent storage</a>
+<a href=/v1.8.0/operating/authentication/>Authentication</a>
+<a href=/v1.8.0/operating/production/>Production deployment</a><div class=grp><a href=/v1.8.0/reference/>Reference</a></div><a href=/v1.8.0/reference/rest-api/>REST API</a>
+<a href=/v1.8.0/reference/python-sdk/ class=on>Python SDK</a>
+<a href=/v1.8.0/reference/metrics/>Metrics</a>
+<a href=/v1.8.0/reference/changelog/>Changelog</a></nav><main class=content><div class=crumbs><a href=/v1.8.0/reference/>Reference</a> ›
+Python SDK</div><h1>Python SDK</h1><p class=lede>A typed client for the REST API.</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-sh data-lang=sh><span style=display:flex><span>pip install <span style=color:#a5d6ff>&#34;uptimer-python-sdk&gt;=1.8.0&#34;</span>      <span style=color:#8b949e;font-style:italic># or: uv add &#34;uptimer-python-sdk&gt;=1.8.0&#34;</span>
+</span></span></code></pre></div><p><strong>The SDK version tracks the server it targets.</strong> 1.8.x speaks to uptimer 1.8.0 and
+later; patch numbers move independently. So install the SDK whose major.minor matches
+your server — no compatibility table to look up. <code>client.ensure_compatible()</code> checks it
+and fails with a message that names the fix.</p><p>Still on API v1? Pin <code>uptimer-python-sdk&lt;1</code>. The server&rsquo;s v1 is unchanged and
+supported, so 0.4.x keeps working against a current server — it just cannot use
+anything new. There is no v1 surface left in 1.x: <code>client.v1</code>, its models and its kinds are
+gone — <code>client.v2</code> takes its place.</p><h2 id=a-complete-example>A complete example</h2><p>One script, the whole surface: connect, check the server, list what is there, create
+website monitoring, read it back, change it, look for incidents, and clean up. Set
+<code>UPTIMER_API_KEY</code> and <code>UPTIMER_BASE_URL</code> and it runs as-is.</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#a5d6ff>&#34;&#34;&#34;An end-to-end tour of uptimer-python-sdk 1.6.x.&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>import</span> <span style=color:#ff7b72>os</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>from</span> <span style=color:#ff7b72>uptimer.client</span> <span style=color:#ff7b72>import</span> UptimerClient
+</span></span><span style=display:flex><span><span style=color:#ff7b72>from</span> <span style=color:#ff7b72>uptimer.errors</span> <span style=color:#ff7b72>import</span> DefaultUptimerApiError, IncompatibleServerError
+</span></span><span style=display:flex><span><span style=color:#ff7b72>from</span> <span style=color:#ff7b72>uptimer.models.v2</span> <span style=color:#ff7b72>import</span> (
+</span></span><span style=display:flex><span>    AGREEMENT_MAJORITY,
+</span></span><span style=display:flex><span>    STATUS_PENDING,
+</span></span><span style=display:flex><span>    CreateWebsiteMonitorRequest,
+</span></span><span style=display:flex><span>    UpdateWebsiteMonitorRequest,
+</span></span><span style=display:flex><span>    WebsiteMonitorRequest,
+</span></span><span style=display:flex><span>    WebsiteMonitorResponse,
+</span></span><span style=display:flex><span>    WebsiteMonitorResponseBody,
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>client <span style=color:#ff7b72;font-weight:700>=</span> UptimerClient(
+</span></span><span style=display:flex><span>    api_key<span style=color:#ff7b72;font-weight:700>=</span>os<span style=color:#ff7b72;font-weight:700>.</span>environ[<span style=color:#a5d6ff>&#34;UPTIMER_API_KEY&#34;</span>],
+</span></span><span style=display:flex><span>    base_url<span style=color:#ff7b72;font-weight:700>=</span>os<span style=color:#ff7b72;font-weight:700>.</span>environ<span style=color:#ff7b72;font-weight:700>.</span>get(<span style=color:#a5d6ff>&#34;UPTIMER_BASE_URL&#34;</span>, <span style=color:#a5d6ff>&#34;http://localhost:2517/api&#34;</span>),
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># For the hosted product, swap the two lines above for:</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic>#   from uptimer.client import UptimerCloudClient</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic>#   client = UptimerCloudClient(api_key=os.environ[&#34;UPTIMER_API_KEY&#34;])</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 1. Fail fast on a server that has no API v2, with a message that names the fix</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic>#    rather than a 404 on the first real call. Both this and client.version()</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic>#    read the shared, unversioned /version.</span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>try</span>:
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;server:&#34;</span>, client<span style=color:#ff7b72;font-weight:700>.</span>check_compatibility())
+</span></span><span style=display:flex><span><span style=color:#ff7b72>except</span> IncompatibleServerError <span style=color:#ff7b72>as</span> exc:
+</span></span><span style=display:flex><span>    <span style=color:#ff7b72>raise</span> <span style=color:#f0883e;font-weight:700>SystemExit</span>(str(exc)) <span style=color:#ff7b72>from</span> <span style=color:#ff7b72>exc</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>print(<span style=color:#a5d6ff>&#34;version:&#34;</span>, client<span style=color:#ff7b72;font-weight:700>.</span>version())   <span style=color:#8b949e;font-style:italic># same endpoint, no compatibility gate</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># client.ensure_compatible() is the same check, run at most once per client.</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 2. Everything the API versions is reached through client.v2.</span>
+</span></span><span style=display:flex><span>workspace <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>workspaces<span style=color:#ff7b72;font-weight:700>.</span>all()[<span style=color:#a5d6ff>0</span>]
+</span></span><span style=display:flex><span>print(<span style=color:#a5d6ff>&#34;workspace:&#34;</span>, workspace<span style=color:#ff7b72;font-weight:700>.</span>id, workspace<span style=color:#ff7b72;font-weight:700>.</span>name, <span style=color:#79c0ff>f</span><span style=color:#a5d6ff>&#34;(</span><span style=color:#a5d6ff>{</span>workspace<span style=color:#ff7b72;font-weight:700>.</span>role<span style=color:#a5d6ff>}</span><span style=color:#a5d6ff>)&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>locations <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>locations<span style=color:#ff7b72;font-weight:700>.</span>all()
+</span></span><span style=display:flex><span><span style=color:#ff7b72>for</span> location <span style=color:#ff7b72;font-weight:700>in</span> locations:
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;location:&#34;</span>, location<span style=color:#ff7b72;font-weight:700>.</span>name, location<span style=color:#ff7b72;font-weight:700>.</span>active_workers_count, <span style=color:#a5d6ff>&#34;worker(s)&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 3. Create website monitoring. This one call also creates the monitoring</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic>#    subject, its built-in HTTP signal and its Reachability rule.</span>
+</span></span><span style=display:flex><span>monitor <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>monitoring<span style=color:#ff7b72;font-weight:700>.</span>websites<span style=color:#ff7b72;font-weight:700>.</span>create(
+</span></span><span style=display:flex><span>    CreateWebsiteMonitorRequest(
+</span></span><span style=display:flex><span>        name<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;Checkout API&#34;</span>,
+</span></span><span style=display:flex><span>        interval<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>60</span>,                   <span style=color:#8b949e;font-style:italic># seconds, in whole minutes (&gt;= 60)</span>
+</span></span><span style=display:flex><span>        workspace_id<span style=color:#ff7b72;font-weight:700>=</span>workspace<span style=color:#ff7b72;font-weight:700>.</span>id,     <span style=color:#8b949e;font-style:italic># required on create; fixed afterwards</span>
+</span></span><span style=display:flex><span>        request<span style=color:#ff7b72;font-weight:700>=</span>WebsiteMonitorRequest(
+</span></span><span style=display:flex><span>            url<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;https://checkout.example/health&#34;</span>,
+</span></span><span style=display:flex><span>            method<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;GET&#34;</span>,              <span style=color:#8b949e;font-style:italic># GET, POST, PATCH or OPTIONS</span>
+</span></span><span style=display:flex><span>        ),
+</span></span><span style=display:flex><span>        response<span style=color:#ff7b72;font-weight:700>=</span>WebsiteMonitorResponse(
+</span></span><span style=display:flex><span>            statuses<span style=color:#ff7b72;font-weight:700>=</span>[<span style=color:#a5d6ff>200</span>],
+</span></span><span style=display:flex><span>            body<span style=color:#ff7b72;font-weight:700>=</span>WebsiteMonitorResponseBody(content<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;&#34;</span>),   <span style=color:#8b949e;font-style:italic># &#34;&#34; = don&#39;t check the body</span>
+</span></span><span style=display:flex><span>        ),
+</span></span><span style=display:flex><span>        locations<span style=color:#ff7b72;font-weight:700>=</span>[loc<span style=color:#ff7b72;font-weight:700>.</span>name <span style=color:#ff7b72>for</span> loc <span style=color:#ff7b72;font-weight:700>in</span> locations[:<span style=color:#a5d6ff>1</span>]],     <span style=color:#8b949e;font-style:italic># names, not ids</span>
+</span></span><span style=display:flex><span>        agreement<span style=color:#ff7b72;font-weight:700>=</span>AGREEMENT_MAJORITY,  <span style=color:#8b949e;font-style:italic># &#34;any&#34; | &#34;majority&#34; | &#34;all&#34;</span>
+</span></span><span style=display:flex><span>    ),
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>print(<span style=color:#a5d6ff>&#34;created:&#34;</span>, monitor<span style=color:#ff7b72;font-weight:700>.</span>id, monitor<span style=color:#ff7b72;font-weight:700>.</span>locations, monitor<span style=color:#ff7b72;font-weight:700>.</span>agreement)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>try</span>:
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># 4. Read it back, in the workspace listing and on its own.</span>
+</span></span><span style=display:flex><span>    listed <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>monitoring<span style=color:#ff7b72;font-weight:700>.</span>websites<span style=color:#ff7b72;font-weight:700>.</span>all(workspace<span style=color:#ff7b72;font-weight:700>.</span>id)
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;monitors here:&#34;</span>, [m<span style=color:#ff7b72;font-weight:700>.</span>name <span style=color:#ff7b72>for</span> m <span style=color:#ff7b72;font-weight:700>in</span> listed])
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    fetched <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>monitoring<span style=color:#ff7b72;font-weight:700>.</span>websites<span style=color:#ff7b72;font-weight:700>.</span>get(monitor<span style=color:#ff7b72;font-weight:700>.</span>id)
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;fetched:&#34;</span>, fetched<span style=color:#ff7b72;font-weight:700>.</span>name, fetched<span style=color:#ff7b72;font-weight:700>.</span>request<span style=color:#ff7b72;font-weight:700>.</span>url, fetched<span style=color:#ff7b72;font-weight:700>.</span>response<span style=color:#ff7b72;font-weight:700>.</span>statuses)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># 5. Update replaces the whole configuration — send every field you want to</span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic>#    keep. There is no workspace_id: a monitor cannot change workspace. An</span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic>#    omitted agreement keeps the stored one instead of resetting it.</span>
+</span></span><span style=display:flex><span>    updated <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>monitoring<span style=color:#ff7b72;font-weight:700>.</span>websites<span style=color:#ff7b72;font-weight:700>.</span>update(
+</span></span><span style=display:flex><span>        monitor<span style=color:#ff7b72;font-weight:700>.</span>id,
+</span></span><span style=display:flex><span>        UpdateWebsiteMonitorRequest(
+</span></span><span style=display:flex><span>            name<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;Checkout API (health)&#34;</span>,
+</span></span><span style=display:flex><span>            interval<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>120</span>,
+</span></span><span style=display:flex><span>            request<span style=color:#ff7b72;font-weight:700>=</span>WebsiteMonitorRequest(
+</span></span><span style=display:flex><span>                url<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;https://checkout.example/health&#34;</span>,
+</span></span><span style=display:flex><span>                method<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;GET&#34;</span>,
+</span></span><span style=display:flex><span>            ),
+</span></span><span style=display:flex><span>            response<span style=color:#ff7b72;font-weight:700>=</span>WebsiteMonitorResponse(
+</span></span><span style=display:flex><span>                statuses<span style=color:#ff7b72;font-weight:700>=</span>[<span style=color:#a5d6ff>200</span>, <span style=color:#a5d6ff>204</span>],
+</span></span><span style=display:flex><span>                body<span style=color:#ff7b72;font-weight:700>=</span>WebsiteMonitorResponseBody(content<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;ok&#34;</span>),
+</span></span><span style=display:flex><span>            ),
+</span></span><span style=display:flex><span>            locations<span style=color:#ff7b72;font-weight:700>=</span>fetched<span style=color:#ff7b72;font-weight:700>.</span>locations,   <span style=color:#8b949e;font-style:italic># replaces the stored list</span>
+</span></span><span style=display:flex><span>        ),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;updated:&#34;</span>, updated<span style=color:#ff7b72;font-weight:700>.</span>interval, updated<span style=color:#ff7b72;font-weight:700>.</span>agreement)   <span style=color:#8b949e;font-style:italic># agreement survived</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># 6. What is wrong right now. Only open incidents come back, newest trouble</span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic>#    first. A monitor created seconds ago has nothing open yet — this is the</span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic>#    loop you would run against a workspace that has been up for a while.</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff7b72>for</span> incident <span style=color:#ff7b72;font-weight:700>in</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>incidents<span style=color:#ff7b72;font-weight:700>.</span>all(workspace<span style=color:#ff7b72;font-weight:700>.</span>id):
+</span></span><span style=display:flex><span>        note <span style=color:#ff7b72;font-weight:700>=</span> <span style=color:#a5d6ff>&#34; (nobody notified yet)&#34;</span> <span style=color:#ff7b72>if</span> incident<span style=color:#ff7b72;font-weight:700>.</span>status <span style=color:#ff7b72;font-weight:700>==</span> STATUS_PENDING <span style=color:#ff7b72>else</span> <span style=color:#a5d6ff>&#34;&#34;</span>
+</span></span><span style=display:flex><span>        print(<span style=color:#79c0ff>f</span><span style=color:#a5d6ff>&#34;</span><span style=color:#a5d6ff>{</span>incident<span style=color:#ff7b72;font-weight:700>.</span>monitor_name<span style=color:#a5d6ff>}</span><span style=color:#a5d6ff>: </span><span style=color:#a5d6ff>{</span>incident<span style=color:#ff7b72;font-weight:700>.</span>status<span style=color:#a5d6ff>}{</span>note<span style=color:#a5d6ff>}</span><span style=color:#a5d6ff>&#34;</span>)
+</span></span><span style=display:flex><span>        print(<span style=color:#a5d6ff>&#34;  since   &#34;</span>, incident<span style=color:#ff7b72;font-weight:700>.</span>trouble_since)
+</span></span><span style=display:flex><span>        print(<span style=color:#a5d6ff>&#34;  failing:&#34;</span>, incident<span style=color:#ff7b72;font-weight:700>.</span>locations<span style=color:#ff7b72;font-weight:700>.</span>failing <span style=color:#ff7b72;font-weight:700>or</span> <span style=color:#a5d6ff>&#34;-&#34;</span>)
+</span></span><span style=display:flex><span>        print(<span style=color:#a5d6ff>&#34;  unknown:&#34;</span>, incident<span style=color:#ff7b72;font-weight:700>.</span>locations<span style=color:#ff7b72;font-weight:700>.</span>unknown <span style=color:#ff7b72;font-weight:700>or</span> <span style=color:#a5d6ff>&#34;-&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># Narrow it to one monitor:</span>
+</span></span><span style=display:flex><span>    mine <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>incidents<span style=color:#ff7b72;font-weight:700>.</span>all(workspace<span style=color:#ff7b72;font-weight:700>.</span>id, monitor_id<span style=color:#ff7b72;font-weight:700>=</span>monitor<span style=color:#ff7b72;font-weight:700>.</span>id)
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;open on this monitor:&#34;</span>, len(mine))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>except</span> DefaultUptimerApiError <span style=color:#ff7b72>as</span> exc:
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># The API answered with an error envelope. Branch on .code — see Errors below.</span>
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;api error:&#34;</span>, exc<span style=color:#ff7b72;font-weight:700>.</span>code, exc<span style=color:#ff7b72;font-weight:700>.</span>error_type, exc<span style=color:#ff7b72;font-weight:700>.</span>message, exc<span style=color:#ff7b72;font-weight:700>.</span>details)
+</span></span><span style=display:flex><span><span style=color:#ff7b72>finally</span>:
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># 7. Clean up whatever happened above. Deleting the monitor removes its</span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic>#    subject, signal, rule and history with it.</span>
+</span></span><span style=display:flex><span>    deleted <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>monitoring<span style=color:#ff7b72;font-weight:700>.</span>websites<span style=color:#ff7b72;font-weight:700>.</span>delete(monitor<span style=color:#ff7b72;font-weight:700>.</span>id)
+</span></span><span style=display:flex><span>    print(deleted<span style=color:#ff7b72;font-weight:700>.</span>message, deleted<span style=color:#ff7b72;font-weight:700>.</span>monitor_id)
+</span></span></code></pre></div><p>The rest of this page explains the pieces.</p><h2 id=what-is-available>What is available</h2><p><strong>Resources live under the API version that serves them.</strong> The REST API is
+<a href=/v1.8.0/reference/rest-api/#two-versions>versioned by path</a>, and the SDK keeps that
+version visible rather than hiding it: everything v2 offers is reached through
+<code>client.v2</code>, and there are no root-level aliases.</p><ul><li><code>client.v2.workspaces.all()</code></li><li><code>client.v2.locations.all()</code></li><li><code>client.v2.incidents.all(workspace_id, monitor_id=None)</code> — <strong>open</strong> incidents</li><li><code>client.v2.monitoring.websites.all(workspace_id)</code> · <code>.get(id)</code> · <code>.create(...)</code> ·
+<code>.update(id, ...)</code> · <code>.delete(id)</code></li><li><code>client.v2.subjects.all(workspace_id)</code> · <code>.get(slug, workspace_id=None)</code> ·
+<code>.create(...)</code> — <strong>new in 1.6.0</strong>, see <a href=#subjects>Subjects</a></li><li><code>client.v2.subjects(subject).signals(signal).observations.create(...)</code> — <strong>new in
+1.6.0</strong>, see <a href=#reporting-observations>Reporting observations</a></li><li><code>client.v2.subjects(subject).incidents.all()</code> ·
+<code>client.v2.subjects(subject).incidents(id).acknowledge()</code> — <strong>new in 1.7.0</strong>, see
+<a href=#acknowledging-an-incident>Acknowledging an incident</a></li><li><code>client.v1.rules(monitor_uid).incidents(id).acknowledge()</code> — <strong>new in 1.7.0</strong>, the
+website half of the same thing</li><li><code>client.v2.subjects(subject).maintenance.get()</code> · <code>.start(ends_at)</code> · <code>.update_end(ends_at)</code> ·
+<code>.cancel()</code> — <strong>new in 1.7.0</strong>, see <a href=#maintenance-windows>Maintenance windows</a></li></ul><p><code>subjects</code> is both a collection and a path: call the methods on it to list, fetch or
+create a subject, and call it <em>with a slug</em> to reach what is under one.</p><p>The types those calls take and return are versioned the same way — import them from
+<strong><code>uptimer.models.v2</code></strong>:</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff7b72>from</span> <span style=color:#ff7b72>uptimer.models.v2</span> <span style=color:#ff7b72>import</span> CreateWebsiteMonitorRequest, Incident, Location
+</span></span></code></pre></div><p>They are not exported from <code>uptimer.models</code>, and there are no flat aliases, so a stale
+import fails loudly rather than binding to something else.</p><p>Two things stay off the version namespaces, because
+<a href=/v1.8.0/reference/rest-api/#get-the-server-version><code>GET /version</code></a> is shared by both
+API versions rather than belonging to either:</p><ul><li><code>client.version()</code> — the server version</li><li><code>client.check_compatibility()</code> / <code>client.ensure_compatible()</code></li></ul><p>The deserialization exceptions (<code>ModelError</code>, <code>TypeMismatchError</code>, …) stay on
+<code>uptimer.models</code> for the same reason: the same error is raised whichever API version
+produced the payload.</p><p>Website monitoring sits under <code>client.v2.monitoring</code> because it is a built-in template,
+not the general monitor model.</p><p><strong><code>client.v1</code> holds exactly one thing</strong>: website incident acknowledgement, which the
+API serves under <code>/v1/rules/{uid}/incidents/{id}/acknowledge</code> because website
+monitoring is v1&rsquo;s resource. This is still a v2 client — there is no rule listing,
+create, update or delete under <code>client.v1</code>, and monitors are read and written through
+<code>client.v2.monitoring.websites</code>.</p><p>Every model carries the API&rsquo;s <code>kind</code>, and the SDK strips <code>kind</code> out of anything it
+sends: it is the server telling you what an object is, not a field you set.</p><h2 id=checking-the-server-first>Checking the server first</h2><p><code>check_compatibility()</code> reads <code>/version</code> — the one unversioned endpoint, so it works
+against a server too old for the rest of the SDK — and raises <code>IncompatibleServerError</code>
+if that server predates API v2. The bar is the SDK&rsquo;s own major.minor: <strong>1.6.x needs
+uptimer 1.6.0+</strong>. A server reporting something that is not a release number, such as a
+<code>dev</code> build from source, is treated as usable rather than locked out.</p><p>The hosted service at <a href=https://myuptime.info>myuptime.info</a> versions on its own line
+(15.x), far above that number, so the check always passes there. A <code>/v2</code> route a hosted
+release does not serve yet raises <code>IncompatibleServerError</code> when you call it, rather than
+a bare 404.</p><h2 id=subjects>Subjects</h2><p><strong>New in 1.6.0.</strong> A <a href=/v1.8.0/core-concepts/signals-and-rules/>subject</a> is one thing a
+workspace watches. <code>client.v2.subjects</code> is the <strong>Custom</strong> half of the API: website
+monitoring stays on <code>client.v2.monitoring.websites</code>, and the two never serve each
+other&rsquo;s subjects.</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff7b72>from</span> <span style=color:#ff7b72>uptimer.models.v2</span> <span style=color:#ff7b72>import</span> CreateSubjectRequest
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>subjects <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>subjects
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># The workspace&#39;s Custom subjects. Website checks are not here.</span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>for</span> subject <span style=color:#ff7b72;font-weight:700>in</span> subjects<span style=color:#ff7b72;font-weight:700>.</span>all(workspace<span style=color:#ff7b72;font-weight:700>.</span>id):
+</span></span><span style=display:flex><span>    print(subject<span style=color:#ff7b72;font-weight:700>.</span>id, subject<span style=color:#ff7b72;font-weight:700>.</span>subject_kind, subject<span style=color:#ff7b72;font-weight:700>.</span>signal_count, subject<span style=color:#ff7b72;font-weight:700>.</span>rule_count)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># A Custom subject of your own. It arrives empty: no signal, no rule, no probe.</span>
+</span></span><span style=display:flex><span>created <span style=color:#ff7b72;font-weight:700>=</span> subjects<span style=color:#ff7b72;font-weight:700>.</span>create(
+</span></span><span style=display:flex><span>    CreateSubjectRequest(name<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;Payments worker&#34;</span>, workspace_id<span style=color:#ff7b72;font-weight:700>=</span>workspace<span style=color:#ff7b72;font-weight:700>.</span>id),
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span><span style=color:#ff7b72>assert</span> created<span style=color:#ff7b72;font-weight:700>.</span>is_custom <span style=color:#ff7b72;font-weight:700>and</span> created<span style=color:#ff7b72;font-weight:700>.</span>signal_count <span style=color:#ff7b72;font-weight:700>==</span> <span style=color:#a5d6ff>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># One by its slug. workspace_id settles the case where the same slug exists in two</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># of your workspaces; without it the server searches your memberships.</span>
+</span></span><span style=display:flex><span>fetched <span style=color:#ff7b72;font-weight:700>=</span> subjects<span style=color:#ff7b72;font-weight:700>.</span>get(created<span style=color:#ff7b72;font-weight:700>.</span>id, workspace_id<span style=color:#ff7b72;font-weight:700>=</span>workspace<span style=color:#ff7b72;font-weight:700>.</span>id)
+</span></span></code></pre></div><p><code>subject.id</code> is the <strong>slug</strong>, which is what the API addresses a subject by and the first
+half of the observation route. <code>subject_kind</code> reads <code>SUBJECT_KIND_CUSTOM</code> on everything
+these calls return — <code>is_custom</code> is the typed way to read it, and <code>SUBJECT_KIND_WEBSITE</code>
+stays in the model for a payload from an older server. That is separate from <code>kind</code>,
+which is always <code>"subject"</code>.</p><p>Website monitoring is <strong>not</strong> created here — <code>client.v2.monitoring.websites.create(...)</code>
+is, and asking for <code>subject_kind="website"</code> raises a <code>DefaultUptimerApiError</code> saying so.
+Passing a website subject&rsquo;s slug to any <code>subjects</code> call raises the same error. There is
+no update and no delete: deleting a subject takes its whole history with it.</p><p><strong>New in SDK 1.8.0: signals and rules are authored here too.</strong>
+<code>client.v2.subjects(slug).signals</code> and <code>.rules</code> each list, create, get, update and
+delete, with typed policy models for a rule&rsquo;s document — and reporting observations to
+an existing signal is unchanged. One spelling to know: a rule input that cites another
+rule is <code>from_rule</code> in Python, because <code>from</code> is a keyword, and it is sent and received
+as <code>from</code>. The routes underneath are <a href=/v1.8.0/reference/rest-api/#custom-signals>Custom signals</a>
+and <a href=/v1.8.0/reference/rest-api/#custom-rules>Custom rules</a>.</p><h2 id=alert-destinations-transformations-and-delivery>Alert destinations, transformations and delivery</h2><p><strong>New in 1.8.0</strong>, and wrapped by <strong>SDK 1.8.0</strong>. Where a workspace&rsquo;s alerts go, what they
+look like, which destinations one subject tells, and what was actually sent:</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span>notifications <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>notifications
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Destinations: list/create/get/update/delete, plus the three that are not CRUD.</span>
+</span></span><span style=display:flex><span>notifications<span style=color:#ff7b72;font-weight:700>.</span>destinations<span style=color:#ff7b72;font-weight:700>.</span>all(<span style=color:#a5d6ff>&#34;your-workspace-id&#34;</span>)
+</span></span><span style=display:flex><span>notifications<span style=color:#ff7b72;font-weight:700>.</span>destinations<span style=color:#ff7b72;font-weight:700>.</span>set_enabled(<span style=color:#a5d6ff>1</span>, enabled<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#79c0ff>False</span>, workspace_id<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;your-workspace-id&#34;</span>)
+</span></span><span style=display:flex><span>notifications<span style=color:#ff7b72;font-weight:700>.</span>destinations<span style=color:#ff7b72;font-weight:700>.</span>make_default(<span style=color:#a5d6ff>1</span>, workspace_id<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;your-workspace-id&#34;</span>)
+</span></span><span style=display:flex><span>notifications<span style=color:#ff7b72;font-weight:700>.</span>destinations<span style=color:#ff7b72;font-weight:700>.</span>send_test(<span style=color:#a5d6ff>1</span>, workspace_id<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;your-workspace-id&#34;</span>)   <span style=color:#8b949e;font-style:italic># a real send</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Transformations: the same five, plus the vocabulary and a dry run.</span>
+</span></span><span style=display:flex><span>notifications<span style=color:#ff7b72;font-weight:700>.</span>transformations<span style=color:#ff7b72;font-weight:700>.</span>samples()
+</span></span><span style=display:flex><span>notifications<span style=color:#ff7b72;font-weight:700>.</span>transformations<span style=color:#ff7b72;font-weight:700>.</span>preview(<span style=color:#a5d6ff>&#39;{&#34;event&#34;: &#34;{{ kind }}&#34;}&#39;</span>, workspace_id<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;your-workspace-id&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># What was actually sent, kept 30 days.</span>
+</span></span><span style=display:flex><span>notifications<span style=color:#ff7b72;font-weight:700>.</span>deliveries<span style=color:#ff7b72;font-weight:700>.</span>all(workspace_id<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;your-workspace-id&#34;</span>, undelivered<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#79c0ff>True</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Which destinations one subject tells. The table IS the resource: a save replaces it.</span>
+</span></span><span style=display:flex><span>delivery <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>subjects(<span style=color:#a5d6ff>&#34;payments-worker&#34;</span>, <span style=color:#a5d6ff>&#34;your-workspace-id&#34;</span>)<span style=color:#ff7b72;font-weight:700>.</span>delivery
+</span></span><span style=display:flex><span>delivery<span style=color:#ff7b72;font-weight:700>.</span>get()
+</span></span><span style=display:flex><span>delivery<span style=color:#ff7b72;font-weight:700>.</span>clear()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># A website monitor carries the same table on its own collection.</span>
+</span></span><span style=display:flex><span>client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>monitoring<span style=color:#ff7b72;font-weight:700>.</span>websites(<span style=color:#a5d6ff>&#34;monitor-id&#34;</span>)<span style=color:#ff7b72;font-weight:700>.</span>delivery<span style=color:#ff7b72;font-weight:700>.</span>get()
+</span></span></code></pre></div><p>The models are typed the way the rest of the SDK is — <code>Destination</code>, <code>Transformation</code>,
+<code>TransformationPreview</code>, <code>SubjectAlertDelivery</code>, <code>DeliveryRecord</code> — and the rules the
+screens enforce are the server&rsquo;s, so they apply here unchanged: a transformation is
+stored only once it renders all three sample messages, <code>transformation_id=None</code> means
+Uptimer&rsquo;s built-in body, and a test send is a real send with a real delivery record.</p><p>Reading a destination or the delivery log needs the <strong>editor</strong> role, not just
+membership: a destination holds a webhook URL. The routes underneath are
+<a href=/v1.8.0/reference/rest-api/#notifications>Notifications</a>.</p><h2 id=reporting-observations>Reporting observations</h2><p><strong>New in 1.6.0.</strong> Send your own readings to a custom heartbeat or event
+<a href=/v1.8.0/core-concepts/signals-and-rules/>signal</a> of a Custom subject. The two slugs are
+the address, and both are shown on the signal&rsquo;s page in the dashboard.</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff7b72>from</span> <span style=color:#ff7b72>uptimer.client</span> <span style=color:#ff7b72>import</span> UptimerClient
+</span></span><span style=display:flex><span><span style=color:#ff7b72>from</span> <span style=color:#ff7b72>uptimer.models.v2</span> <span style=color:#ff7b72>import</span> (
+</span></span><span style=display:flex><span>    OBSERVATION_STATUS_OK,
+</span></span><span style=display:flex><span>    OBSERVATION_STATUS_PROBLEM,
+</span></span><span style=display:flex><span>    CreateObservationRequest,
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>client <span style=color:#ff7b72;font-weight:700>=</span> UptimerClient(api_key<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;...&#34;</span>, base_url<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;http://127.0.0.1:2517/api&#34;</span>)
+</span></span><span style=display:flex><span>observations <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>subjects(<span style=color:#a5d6ff>&#34;payments-worker&#34;</span>)<span style=color:#ff7b72;font-weight:700>.</span>signals(<span style=color:#a5d6ff>&#34;worker-pulse&#34;</span>)<span style=color:#ff7b72;font-weight:700>.</span>observations
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># A heartbeat: &#34;I ran, and I am fine.&#34;</span>
+</span></span><span style=display:flex><span>observations<span style=color:#ff7b72;font-weight:700>.</span>create(CreateObservationRequest(status<span style=color:#ff7b72;font-weight:700>=</span>OBSERVATION_STATUS_OK))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Everything except status is optional.</span>
+</span></span><span style=display:flex><span>stored <span style=color:#ff7b72;font-weight:700>=</span> observations<span style=color:#ff7b72;font-weight:700>.</span>create(
+</span></span><span style=display:flex><span>    CreateObservationRequest(
+</span></span><span style=display:flex><span>        status<span style=color:#ff7b72;font-weight:700>=</span>OBSERVATION_STATUS_PROBLEM,
+</span></span><span style=display:flex><span>        observed_at<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;2026-09-01T12:00:00Z&#34;</span>,   <span style=color:#8b949e;font-style:italic># RFC 3339; omit to mean now</span>
+</span></span><span style=display:flex><span>        value<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>0.0</span>,                             <span style=color:#8b949e;font-style:italic># a rule can compare this with &lt; or &gt;</span>
+</span></span><span style=display:flex><span>        error<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;queue backlog over threshold&#34;</span>,
+</span></span><span style=display:flex><span>        labels<span style=color:#ff7b72;font-weight:700>=</span>{<span style=color:#a5d6ff>&#34;instance&#34;</span>: <span style=color:#a5d6ff>&#34;worker-3&#34;</span>, <span style=color:#a5d6ff>&#34;env&#34;</span>: <span style=color:#a5d6ff>&#34;prod&#34;</span>},
+</span></span><span style=display:flex><span>    ),
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>print(stored<span style=color:#ff7b72;font-weight:700>.</span>accepted, stored<span style=color:#ff7b72;font-weight:700>.</span>reject_reason)
+</span></span></code></pre></div><p><code>accepted</code> reports <strong>acceptance, not health</strong>: it says the observation was stored and may
+be evaluated, not that anything is wrong or fine. An observation Uptimer keeps but will not
+evaluate — one stamped too far ahead, say — comes back with <code>accepted=False</code> and a
+<code>reject_reason</code> such as <code>clock_skew</code>. It is <strong>returned, not raised</strong>: it was received. An
+exception means nothing was stored.</p><p>Retries are safe. An observation is identified by its signal, its <code>observed_at</code> and its
+labels, so re-sending the same one replaces it rather than counting twice.</p><p>Posting to the <strong>platform HTTP</strong> signal is refused with <code>DefaultUptimerApiError</code> — that
+stream belongs to Uptimer&rsquo;s own probe. There is no SDK path for creating signals or rules;
+those are dashboard work.</p><h2 id=locations-and-agreement>Locations and agreement</h2><p>Assign <a href=/v1.8.0/core-concepts/locations/>locations</a> with the <code>locations</code> field. It takes
+location <strong>names</strong>, as listed by <code>client.v2.locations.all()</code> — not ids. A monitor with
+none is never checked and stays at no data.</p><p><code>agreement</code> is how many of those locations must report a problem before the monitor
+does: <code>AGREEMENT_ANY</code>, <code>AGREEMENT_MAJORITY</code> or <code>AGREEMENT_ALL</code> from <code>uptimer.models.v2</code>
+(the wire values are <code>"any"</code>, <code>"majority"</code> and <code>"all"</code>).</p><p>Two things behave differently between <code>CreateWebsiteMonitorRequest</code> and
+<code>UpdateWebsiteMonitorRequest</code>:</p><ul><li><code>workspace_id</code> exists only on create. A monitor cannot change workspace, so the
+update request has no such field.</li><li>On update, <code>locations</code> <strong>replaces</strong> the stored list — include the ones you want to
+keep — while an omitted <code>agreement</code> <strong>keeps</strong> the stored value rather than resetting
+it to the default.</li></ul><h2 id=incident-status>Incident status</h2><p><code>client.v2.incidents.all()</code> returns only <strong>open</strong> incidents, newest trouble first. Pass
+<code>monitor_id=</code> to narrow it to one monitor. Closed incidents are history and live on the
+subject timeline in the dashboard; there is no incident-history endpoint in this release.</p><p><code>status</code> carries the same words the dashboard shows — <code>STATUS_OK</code>, <code>STATUS_PENDING</code>,
+<code>STATUS_PROBLEM</code>, <code>STATUS_NO_DATA</code>, <code>STATUS_RECOVERING</code>. <code>pending</code> is the one to watch:
+the monitor is failing but still inside the confirm hold, so <strong>nobody has been notified
+yet</strong>.</p><p><code>incident.locations</code> splits the evidence into <code>.failing</code>, <code>.unknown</code> and <code>.ok</code>. A
+location that has never reported stays in <code>unknown</code> and still counts toward the
+agreement — that is a real state, not a missing one.</p><h2 id=acknowledging-an-incident>Acknowledging an incident</h2><p><strong>New in 1.7.0.</strong> Acknowledging says a <strong>person has seen</strong> an open incident. It changes nothing the engine decided — the verdict, the
+evidence and the close hold all carry on — and it is recorded once, with
+who and when. Its one effect on alerting is that the four-hour
+<a href=/v1.8.0/core-concepts/monitors-and-incidents/#reminders-a-problem-nobody-has-answered-says-so-again>reminders</a>
+for that incident stop. See
+<a href=/v1.8.0/core-concepts/monitors-and-incidents/#acknowledging-an-incident>Acknowledging an incident</a>
+for what it means, and
+<a href=/v1.8.0/reference/rest-api/#acknowledging-an-incident>the REST reference</a> for the
+routes underneath.</p><p>Each kind of monitoring acknowledges through <strong>its own family</strong>, the same split
+subjects follow. There is deliberately no kind-agnostic method: acknowledging is a
+claim about one specific incident, and a call that guessed the family could claim the
+wrong one.</p><p><strong>What you need.</strong> These methods are in the published <strong>1.7.0</strong> package
+(<code>pip install "uptimer-python-sdk>=1.7.0"</code>). They also need this server: the routes
+arrive with <strong>uptimer 1.7.0</strong>, so a 1.6.x server answers nothing useful.</p><p><strong>Custom monitoring</strong> — list the subject&rsquo;s open incidents, choose one, acknowledge it
+by id:</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span>subject <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>subjects(<span style=color:#a5d6ff>&#34;payments-worker&#34;</span>, <span style=color:#a5d6ff>&#34;your-workspace-id&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>open_incidents <span style=color:#ff7b72;font-weight:700>=</span> subject<span style=color:#ff7b72;font-weight:700>.</span>incidents<span style=color:#ff7b72;font-weight:700>.</span>all()
+</span></span><span style=display:flex><span><span style=color:#ff7b72>for</span> incident <span style=color:#ff7b72;font-weight:700>in</span> open_incidents:
+</span></span><span style=display:flex><span>    print(incident<span style=color:#ff7b72;font-weight:700>.</span>id, incident<span style=color:#ff7b72;font-weight:700>.</span>rule_name, incident<span style=color:#ff7b72;font-weight:700>.</span>status, incident<span style=color:#ff7b72;font-weight:700>.</span>acknowledged)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Nothing open is an ordinary answer, not an error.</span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>if</span> open_incidents:
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># Acknowledge by the id the listing gave you — never a guessed or stored one.</span>
+</span></span><span style=display:flex><span>    target <span style=color:#ff7b72;font-weight:700>=</span> open_incidents[<span style=color:#a5d6ff>0</span>]
+</span></span><span style=display:flex><span>    record <span style=color:#ff7b72;font-weight:700>=</span> subject<span style=color:#ff7b72;font-weight:700>.</span>incidents(target<span style=color:#ff7b72;font-weight:700>.</span>id)<span style=color:#ff7b72;font-weight:700>.</span>acknowledge()
+</span></span><span style=display:flex><span>    print(record<span style=color:#ff7b72;font-weight:700>.</span>acknowledged_by, record<span style=color:#ff7b72;font-weight:700>.</span>acknowledged_at, record<span style=color:#ff7b72;font-weight:700>.</span>recorded)
+</span></span></code></pre></div><p><code>subject.incidents.all()</code> lists every <strong>open</strong> incident of that subject, newest trouble
+first — pending, recovering and no-data included, and already-acknowledged ones too.
+A subject has one open incident per rule, so each carries <code>rule_id</code> and <code>rule_name</code>;
+nothing open returns <code>[]</code>. The second argument to <code>subjects(...)</code> is the workspace, and
+it settles an ambiguity rather than being required: pass it when the same slug exists in
+two of your workspaces, and both the listing and the acknowledgement carry it.</p><p><strong>Website monitoring</strong> — the ids come from the workspace incident list, which has named
+each incident&rsquo;s monitor since 1.5.0:</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#8b949e;font-style:italic># An empty list means nothing is wrong: the loop simply does not run.</span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>for</span> incident <span style=color:#ff7b72;font-weight:700>in</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>incidents<span style=color:#ff7b72;font-weight:700>.</span>all(<span style=color:#a5d6ff>&#34;your-workspace-id&#34;</span>):
+</span></span><span style=display:flex><span>    record <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v1<span style=color:#ff7b72;font-weight:700>.</span>rules(incident<span style=color:#ff7b72;font-weight:700>.</span>monitor_id)<span style=color:#ff7b72;font-weight:700>.</span>incidents(incident<span style=color:#ff7b72;font-weight:700>.</span>id)<span style=color:#ff7b72;font-weight:700>.</span>acknowledge()
+</span></span><span style=display:flex><span>    print(record<span style=color:#ff7b72;font-weight:700>.</span>incident_id, record<span style=color:#ff7b72;font-weight:700>.</span>acknowledged_by, record<span style=color:#ff7b72;font-weight:700>.</span>recorded)
+</span></span></code></pre></div><p>There is no body and no actor argument either way: the person recorded is the owner of
+the API key, at the time of the call.</p><p>What <code>IncidentAcknowledgement</code> says:</p><table><thead><tr><th>field</th><th>meaning</th></tr></thead><tbody><tr><td><code>recorded</code></td><td>whether <strong>this call</strong> wrote it. <code>False</code> means it was already acknowledged and nothing changed</td></tr><tr><td><code>acknowledged_by</code> / <code>acknowledged_at</code></td><td>the record — on a repeat, the <strong>first</strong> person&rsquo;s name and time</td></tr><tr><td><code>status</code></td><td>the incident&rsquo;s condition, unchanged by acknowledging it</td></tr><tr><td><code>monitor_id</code></td><td>set for a website incident, <code>None</code> for a custom one</td></tr><tr><td><code>subject_id</code> / <code>rule_id</code></td><td>set for a custom incident, <code>None</code> for a website one</td></tr><tr><td><code>closed_at</code></td><td>set if the incident had already closed</td></tr></tbody></table><p><strong>Repeating is safe</strong>: no second history entry, and the original name and time come
+back with <code>recorded=False</code>, so a retry after a timeout is not a second claim.</p><p><strong>Refusals are raised, not worked around.</strong> <code>DefaultUptimerApiError</code> means the incident
+is not this parent&rsquo;s — another monitor&rsquo;s, another subject&rsquo;s, another workspace&rsquo;s, or the
+other kind of monitoring. Neither method retries through the other family.</p><p><strong>Closing cuts both ways.</strong> A <strong>first</strong> acknowledgement of an incident that has already
+closed is refused (<code>Incident is closed</code>) — there is nothing left to be on, and anything
+open now is a different incident. An incident acknowledged <strong>while it was open</strong> keeps
+that record after closing, so asking again is not an error: it answers the original name
+and time with <code>recorded=False</code> and <code>closed_at</code> set.</p><h2 id=maintenance-windows>Maintenance windows</h2><p><strong>New in 1.7.0</strong>, and it needs an uptimer 1.7.0+ server (same availability note as
+<a href=#acknowledging-an-incident>acknowledgement</a>: the SDK methods are the 1.7.0 release, not the
+published 1.6.0 package). A window holds back one subject&rsquo;s <strong>problem</strong> notifications until a
+time you choose. Monitoring, incidents and the timeline are untouched, and <strong>recoveries are
+never held back</strong>.</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span>maintenance <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>subjects(<span style=color:#a5d6ff>&#34;payments-worker&#34;</span>, <span style=color:#a5d6ff>&#34;your-workspace-id&#34;</span>)<span style=color:#ff7b72;font-weight:700>.</span>maintenance
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Is it silenced right now? None means nothing is scheduled — an answer, not an error.</span>
+</span></span><span style=display:flex><span>window <span style=color:#ff7b72;font-weight:700>=</span> maintenance<span style=color:#ff7b72;font-weight:700>.</span>get()
+</span></span><span style=display:flex><span><span style=color:#ff7b72>if</span> window <span style=color:#ff7b72;font-weight:700>is</span> <span style=color:#79c0ff>None</span>:
+</span></span><span style=display:flex><span>    window <span style=color:#ff7b72;font-weight:700>=</span> maintenance<span style=color:#ff7b72;font-weight:700>.</span>start(<span style=color:#a5d6ff>&#34;2026-09-13T18:00:00Z&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>print(window<span style=color:#ff7b72;font-weight:700>.</span>active, window<span style=color:#ff7b72;font-weight:700>.</span>ends_at, window<span style=color:#ff7b72;font-weight:700>.</span>muted)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># The work is taking longer: move the end of the SAME window.</span>
+</span></span><span style=display:flex><span>maintenance<span style=color:#ff7b72;font-weight:700>.</span>update_end(<span style=color:#a5d6ff>&#34;2026-09-13T20:00:00Z&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># When it is done.</span>
+</span></span><span style=display:flex><span>maintenance<span style=color:#ff7b72;font-weight:700>.</span>cancel()
+</span></span></code></pre></div><p><code>ends_at</code> is RFC 3339 and carries its own zone, so there is nothing to guess. The window starts
+<strong>immediately</strong>; there is no future start and no recurring schedule.</p><p><code>update_end</code> is a real update rather than a cancel and a new window: it keeps the window&rsquo;s
+identity and its start, nothing sees the subject briefly leave maintenance, and nobody is
+notified. Moving the end into the past raises rather than stopping the window — to stop it now,
+<code>cancel()</code>.</p><p><code>MaintenanceWindow</code> tells its three states apart by its fields: <code>active</code> true is running,
+<code>cancelled_at</code> set is ended early, and neither is a window that ran out. <code>muted</code> is what waits,
+in the server&rsquo;s own words — a recovery is never in it.</p><p>Refusals are raised as <code>DefaultUptimerApiError</code>: a time that has already passed, a window
+already running (cancel it first), a website subject — those are managed from the dashboard —
+or a caller who is not an editor. Reading takes the viewer role.</p><h2 id=errors>Errors</h2><p>All of these subclass <code>UptimerError</code>, in <code>uptimer.errors</code>:</p><ul><li><code>DefaultUptimerApiError</code> — the API returned an <code>error</code> envelope. Carries <code>.code</code>,
+<code>.error_type</code>, <code>.message</code> and <code>.details</code>; branch on <code>.code</code>, which is finer-grained
+than <code>.error_type</code> (see <a href=/v1.8.0/reference/rest-api/#errors>Errors</a>).</li><li><code>IncompatibleServerError</code> — the server does not provide API v2. Carries
+<code>.server_version</code>. Upgrade the server, or use <code>uptimer-python-sdk&lt;1</code>.</li><li><code>UptimerInvalidHttpCodeError</code> — a genuine non-200 transport error. Carries <code>.url</code> and
+<code>.status_code</code>.</li><li><code>UptimerInvalidResponseError</code> — the body was not the expected envelope.</li></ul><h2 id=migrating-from-04x>Migrating from 0.4.x</h2><p>Coming from <strong>1.5.x</strong>? There is nothing to change. 1.6.x is the same v2 surface plus
+<a href=#reporting-observations>observations</a>; upgrade the SDK when you upgrade the server.</p><table><thead><tr><th>0.4.x (API v1)</th><th>1.x (API v2)</th></tr></thead><tbody><tr><td><code>client.v1.workspaces</code></td><td><code>client.v2.workspaces</code></td></tr><tr><td><code>client.v1.regions</code></td><td><code>client.v2.locations</code></td></tr><tr><td><code>client.v1.rules</code></td><td><code>client.v2.monitoring.websites</code></td></tr><tr><td><code>Region</code></td><td><code>Location</code></td></tr><tr><td><code>Rule</code> / <code>CreateRuleRequest</code></td><td><code>WebsiteMonitor</code> / <code>CreateWebsiteMonitorRequest</code></td></tr><tr><td><code>regions=[...]</code></td><td><code>locations=[...]</code></td></tr><tr><td>—</td><td><code>agreement=...</code>, <code>client.v2.incidents</code></td></tr><tr><td>—</td><td><code>client.check_compatibility()</code></td></tr><tr><td><code>from uptimer.models import …</code></td><td><code>from uptimer.models.v2 import …</code></td></tr></tbody></table><p><strong>The version namespace is the shape you already know.</strong> 0.4.x reached API v1 through
+<code>client.v1</code>; 1.6.x reaches API v2 through <code>client.v2</code>. What moves is the version, not
+the pattern — and the types moved with it: <code>uptimer.models</code> becomes
+<code>uptimer.models.v2</code>.</p><p><code>client.version()</code> is unchanged and still sits on the client, not under <code>client.v2</code> —
+<code>/version</code> is a shared global endpoint, not a versioned one.
+<code>UptimerClient(api_key=…, base_url=…)</code> and <code>UptimerCloudClient(api_key=…)</code> are
+constructed exactly as before, and both expose the same <code>client.v2</code>.</p><p>The rename is not only the namespace: <code>regions=[...]</code> becomes <code>locations=[...]</code>, and
+what 0.4.x called a rule is a <strong>website monitor</strong>. What the server stores is the same
+object, so a monitor created with 0.4.x is the one 1.6.x reads back.</p><p>Releases and release notes on
+<a href=https://pypi.org/project/uptimer-python-sdk/>PyPI</a>.</p><div class=pager><a href=/v1.8.0/reference/rest-api/><span class=sm>Previous</span>← REST API</a>
+<a class=next href=/v1.8.0/reference/metrics/><span class=sm>Next</span>Metrics →</a></div></main><aside class=toc><div class=h>On this page</div><nav id=TableOfContents><ul><li><a href=#a-complete-example>A complete example</a></li><li><a href=#what-is-available>What is available</a></li><li><a href=#checking-the-server-first>Checking the server first</a></li><li><a href=#subjects>Subjects</a></li><li><a href=#alert-destinations-transformations-and-delivery>Alert destinations, transformations and delivery</a></li><li><a href=#reporting-observations>Reporting observations</a></li><li><a href=#locations-and-agreement>Locations and agreement</a></li><li><a href=#incident-status>Incident status</a></li><li><a href=#acknowledging-an-incident>Acknowledging an incident</a></li><li><a href=#maintenance-windows>Maintenance windows</a></li><li><a href=#errors>Errors</a></li><li><a href=#migrating-from-04x>Migrating from 0.4.x</a></li></ul></nav></aside></div><script src=/js/search.min.8f9e560dddad932cfa30c1e1f5d6b1f249b9cdc934773e1d111334f124355b62.js defer></script></body></html>

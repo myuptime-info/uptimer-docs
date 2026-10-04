@@ -1,7 +1,9 @@
 # Uptimer documentation
 
-Public documentation for self-hosted [Uptimer](https://uptimer.myuptime.info),
-developer-friendly website monitoring software. The site is built with Hugo.
+Public documentation for self-hosted [Uptimer](https://uptimer.myuptime.info).
+The 2.0 documentation (`docs/`) is built with Mintlify and published as
+**2.0.0-preview**. The 1.x documentation is a frozen, compiled archive in
+`archive/site/`. See `VERSIONING.md`.
 
 
 ## Resources
@@ -15,30 +17,13 @@ developer-friendly website monitoring software. The site is built with Hugo.
 - [Documentation issues](https://github.com/myuptime-info/uptimer-docs/issues)
 
 
-## Versions
-
-The site keeps versioned documentation. `/latest/` redirects to the newest
-published stable version.
-
-## Local Development
-
-To run the documentation site locally:
+## Local development
 
 ```bash
-hugo server -D -p 1314
+cd docs
+npx mint dev
+npx mint broken-links
 ```
-
-This will start a local server at http://127.0.0.1:1314/, where you can preview the documentation.
-
-## Building
-
-To build the static site:
-
-```bash
-hugo --gc --minify
-```
-
-This will generate the static site in the `public/` directory.
 
 ## Contributing
 
@@ -46,4 +31,4 @@ When making changes to the documentation:
 
 1. Keep each version accurate for the matching Uptimer release.
 2. Use appropriate front matter in each content file.
-3. Build the site before submitting the change.
+3. Run `npx mint broken-links` in `docs/` before submitting the change.

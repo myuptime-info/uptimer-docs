@@ -1,11 +1,16 @@
 # AGENTS.md — uptimer-docs
 
 The **public** documentation site for OSS **uptimer**, served at <https://uptimer.myuptime.info>.
-Hugo, no external theme. Read this before editing; it's the design + content contract for the
-site. Fleet-wide rules still apply (see the workspace `AGENTS.md`): trunk-based on `main`, no
+Fleet-wide rules still apply (see the workspace `AGENTS.md`): trunk-based on `main`, no
 agent attribution, Commitizen subjects.
 
-Build: `hugo --gc --minify` (toolchain via `ai-fleet-meta/setup.sh --tools`).
+**2.0 (current):** Mintlify, source in `docs/` (`docs/docs.json`), published as
+**2.0.0-preview**. Check with `cd docs && npx mint broken-links`; preview with `npx mint dev`.
+`/latest/` stays on the 1.8.0 archive until the final 2.0 release. See `VERSIONING.md`.
+
+**1.x:** frozen, compiled archive in `archive/site/` — never rebuild or edit it
+(`archive/README.md`). The Hugo sections below describe that legacy source only; it is removed at
+the Mintlify cutover. The content rules in §2 still apply to 2.0 pages.
 
 ## 1. Design
 

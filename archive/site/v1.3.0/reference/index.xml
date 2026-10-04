@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Reference on Uptimer</title><link>https://uptimer.myuptime.info/v1.3.0/reference/</link><description>Recent content in Reference on Uptimer</description><generator>Hugo</generator><language>en</language><atom:link href="https://uptimer.myuptime.info/v1.3.0/reference/index.xml" rel="self" type="application/rss+xml"/><item><title>REST API</title><link>https://uptimer.myuptime.info/v1.3.0/reference/rest-api/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.3.0/reference/rest-api/</guid><description>&lt;p&gt;Base URL: &lt;strong&gt;&lt;code&gt;http://&amp;lt;host&amp;gt;:2517/api&lt;/code&gt;&lt;/strong&gt; — the API is served under &lt;code&gt;/api&lt;/code&gt; on the web UI port.&lt;/p&gt;
+&lt;h2 id="conventions"&gt;Conventions&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Every response is HTTP &lt;code&gt;200&lt;/code&gt;&lt;/strong&gt; with a &lt;code&gt;{ &amp;quot;result&amp;quot;, &amp;quot;error&amp;quot;, &amp;quot;meta&amp;quot; }&lt;/code&gt; envelope — check
+&lt;code&gt;error&lt;/code&gt;, not the status code.&lt;/li&gt;
+&lt;li&gt;On success &lt;code&gt;error&lt;/code&gt; is &lt;code&gt;null&lt;/code&gt; and &lt;code&gt;result&lt;/code&gt; holds the data; on failure &lt;code&gt;result&lt;/code&gt; is &lt;code&gt;null&lt;/code&gt; and
+&lt;code&gt;error&lt;/code&gt; is filled.&lt;/li&gt;
+&lt;li&gt;Objects carry a &lt;code&gt;kind&lt;/code&gt; field (&lt;code&gt;rule&lt;/code&gt;, &lt;code&gt;workspace&lt;/code&gt;, &lt;code&gt;region&lt;/code&gt;, …).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="auth"&gt;Auth&lt;/h2&gt;
+&lt;p&gt;Every endpoint needs a Bearer &lt;strong&gt;API key&lt;/strong&gt; — a long-lived token minted in the
+dashboard (&lt;strong&gt;User → API Keys&lt;/strong&gt;):&lt;/p&gt;</description></item><item><title>Python SDK</title><link>https://uptimer.myuptime.info/v1.3.0/reference/python-sdk/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.3.0/reference/python-sdk/</guid><description>&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;pip install &lt;span style="color:#a5d6ff"&gt;&amp;#34;uptimer-python-sdk&amp;gt;=0.4.0&amp;#34;&lt;/span&gt; &lt;span style="color:#8b949e;font-style:italic"&gt;# or: uv add &amp;#34;uptimer-python-sdk&amp;gt;=0.4.0&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Assigning regions when creating a rule needs &lt;strong&gt;0.4.0 or newer&lt;/strong&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff7b72"&gt;from&lt;/span&gt; &lt;span style="color:#ff7b72"&gt;uptimer.client&lt;/span&gt; &lt;span style="color:#ff7b72"&gt;import&lt;/span&gt; UptimerClient
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client &lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt; UptimerClient(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; api_key&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;&amp;lt;your-api-key&amp;gt;&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; base_url&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;http://localhost:2517/api&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(client&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;version()) &lt;span style="color:#8b949e;font-style:italic"&gt;# &amp;#34;1.3.0&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ws &lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt; client&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;v1&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;workspaces&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;all()[&lt;span style="color:#a5d6ff"&gt;0&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(client&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;v1&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;rules&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;all(ws&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;id))
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For the hosted service use &lt;code&gt;UptimerCloudClient(api_key=...)&lt;/code&gt; — it targets
+&lt;code&gt;https://api.myuptime.info&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id="coverage"&gt;Coverage&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;client.v1&lt;/code&gt; mirrors the REST API:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;client.v1.workspaces.all()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;client.v1.regions.all()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;client.v1.rules.all(workspace_id)&lt;/code&gt; · &lt;code&gt;.create(...)&lt;/code&gt; · &lt;code&gt;.update(id, ...)&lt;/code&gt; · &lt;code&gt;.delete(id)&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Assign &lt;a href="https://uptimer.myuptime.info/v1.3.0/core-concepts/regions/"&gt;regions&lt;/a&gt; on a rule with its &lt;code&gt;regions&lt;/code&gt; field (region names,
+matched by name). A rule with no region stays at &amp;ldquo;No Data&amp;rdquo;, so assign at least one:&lt;/p&gt;</description></item><item><title>Metrics</title><link>https://uptimer.myuptime.info/v1.3.0/reference/metrics/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.3.0/reference/metrics/</guid><description>&lt;p&gt;Add &lt;code&gt;--metrics&lt;/code&gt; to any command (&lt;code&gt;server&lt;/code&gt;, &lt;code&gt;grpc&lt;/code&gt;, &lt;code&gt;worker&lt;/code&gt;, &lt;code&gt;dev&lt;/code&gt;) to expose a Prometheus
+endpoint at &lt;strong&gt;&lt;code&gt;/metrics&lt;/code&gt;&lt;/strong&gt; on &lt;code&gt;general.metrics_port&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#79c0ff"&gt;UPTIMER__GENERAL__METRICS_PORT&lt;/span&gt;&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;9100&lt;/span&gt; uptimer server --metrics
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl http://localhost:9100/metrics
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="series"&gt;Series&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;Metric&lt;/th&gt;
+					&lt;th&gt;Type&lt;/th&gt;
+					&lt;th&gt;Labels&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;http_request_duration_seconds&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;summary&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;route&lt;/code&gt;, &lt;code&gt;method&lt;/code&gt;, &lt;code&gt;status&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;grpc_request_duration_seconds&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;summary&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;grpc_method&lt;/code&gt;, &lt;code&gt;grpc_code&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;code&gt;grpc_request_duration_seconds&lt;/code&gt; is new in 1.3.0. Uptimer intentionally &lt;strong&gt;unregisters the default
+Go/process collectors&lt;/strong&gt;, so &lt;code&gt;go_*&lt;/code&gt; / &lt;code&gt;process_*&lt;/code&gt; series are absent and the endpoint stays small.&lt;/p&gt;
+&lt;h2 id="scrape-config"&gt;Scrape config&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#7ee787"&gt;scrape_configs&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#7ee787"&gt;job_name&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;uptimer&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;static_configs&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#7ee787"&gt;targets&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;[&lt;span style="color:#a5d6ff"&gt;&amp;#34;uptimer:9100&amp;#34;&lt;/span&gt;]&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Changelog</title><link>https://uptimer.myuptime.info/v1.3.0/reference/changelog/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.3.0/reference/changelog/</guid><description>&lt;p&gt;Highlights since 1.1, grouped by theme.&lt;/p&gt;
+&lt;h2 id="packaging"&gt;Packaging&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The image moved to GitHub Container Registry&lt;/strong&gt; —
+&lt;a href="https://github.com/users/myuptime-info/packages/container/package/uptimer"&gt;&lt;code&gt;ghcr.io/myuptime-info/uptimer&lt;/code&gt;&lt;/a&gt;.
+Pull a pinned &lt;code&gt;:X.Y.Z&lt;/code&gt; tag (or &lt;code&gt;:edge&lt;/code&gt; for pre-releases). The old Docker Hub image is retired.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="deployment--database"&gt;Deployment &amp;amp; database&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;New &lt;code&gt;uptimer migrate&lt;/code&gt; command&lt;/strong&gt; plus &lt;code&gt;server.db.boot_migrate&lt;/code&gt; — run schema migrations as a
+one-shot job and gate rollouts on a fully-migrated database.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;PostgreSQL migrations are now versioned&lt;/strong&gt; (with data backfills) and upgrade-safe; SQLite
+stays auto-migrated for dev. See
+&lt;a href="https://uptimer.myuptime.info/v1.3.0/operating/configuration/#choosing-a-database"&gt;Choosing a database&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="running-uptimer"&gt;Running Uptimer&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;server --services …&lt;/code&gt; replaces the old &lt;code&gt;run&lt;/code&gt; command&lt;/strong&gt; — select services with
+&lt;code&gt;--services api,ui,grpc,availabilities&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;New &lt;code&gt;server.sqids_salt&lt;/code&gt; setting (give it a unique value in production).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="monitoring"&gt;Monitoring&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Worker-regions management&lt;/strong&gt; in the dashboard (still being refined).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Assign regions when creating or updating a rule over the API&lt;/strong&gt; — the rule payload takes a
+&lt;code&gt;regions&lt;/code&gt; field (region names), so a headless/&lt;a href="https://uptimer.myuptime.info/v1.3.0/reference/python-sdk/"&gt;SDK&lt;/a&gt; workflow can
+create a rule that actually runs instead of sitting at &amp;ldquo;No Data&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;New &lt;strong&gt;&lt;code&gt;grpc_request_duration_seconds&lt;/code&gt;&lt;/strong&gt; metric on &lt;a href="https://uptimer.myuptime.info/v1.3.0/reference/metrics/"&gt;&lt;code&gt;/metrics&lt;/code&gt;&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="extensibility"&gt;Extensibility&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;A &lt;strong&gt;pluggable architecture&lt;/strong&gt; (job registry + route/gRPC extension seams) lets a build add
+services and routes without forking core.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="fixes--ui"&gt;Fixes &amp;amp; UI&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Smaller CSS payload and a faster dashboard.&lt;/li&gt;
+&lt;li&gt;Correct paging on the availability-history view.&lt;/li&gt;
+&lt;li&gt;UTF-8 characters render correctly in notifications.&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

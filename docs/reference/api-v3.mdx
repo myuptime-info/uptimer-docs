@@ -1,0 +1,109 @@
+---
+title: "API v3"
+description: "Authentication, the error model, paging and every route of the Uptimer 2.0 API."
+---
+
+<Note>
+Preview build: API v3 ships with Uptimer 2.0.0-preview.
+</Note>
+
+The public API of Uptimer 2.0: Resources, Templates, Observations, Incidents,
+maintenance and acknowledgement. The [Python SDK 2.0](/reference/python-sdk) wraps every route here.
+
+## Calling it
+
+Base path `/api/v3`. Send a person's API key (User → API keys):
+
+```text
+Authorization: Bearer <api key>
+```
+
+The key reads and writes what its owner may in each Workspace: every member
+reads; creating, changing, sending Observations and maintenance need editor or
+owner; any member may acknowledge. An Observation address is not a key and
+reads nothing here.
+
+Identifiers are public ids (short strings). A Resource is also addressed by
+its `key`.
+
+## Answers and errors
+
+Every answer is one envelope:
+
+```json
+{"result": …, "error": null, "meta": null}
+{"result": null, "error": {"code": 1422, "error_type": "validation", "message": "…", "details": {"field": "url"}}, "meta": null}
+```
+
+| HTTP | `code` | `error_type` | Meaning |
+|---|---|---|---|
+| 400 | 1400 | `bad_request` | The body is not JSON this route reads (unknown fields are refused). |
+| 401 | 1401 | `auth` | No key, or one this installation does not accept. |
+| 403 | 1403 | `forbidden` | A member whose role does not allow this write. |
+| 404 | 1404 | `not_found` | No such route, Workspace, Resource or Incident — including one in a Workspace you do not belong to. |
+| 409 | 1409 | `conflict` | Not in a state the action applies to (acknowledging a closed or acknowledged Incident). |
+| 422 | 1422 | `validation` | A field was refused; `details.field` names it. |
+| 500 | 1500 | `server` | This installation failed. |
+
+The 1.x API families (`/api/v1/*`, `/api/v2/workspaces`, …) answer `410` with
+code 1410.
+
+Lists that page put the next cursor in `meta.next_cursor` (null on the last
+page). Pass it back as `cursor`. `limit` is 1–200, default 50.
+
+## Routes
+
+| Method and path | Result |
+|---|---|
+| `GET /version` (no key) | `{version, api: "v3"}` |
+| `GET /workspaces` | your Workspaces: `[{id, name, role}]` |
+| `GET /templates` | published Templates with `fields`, `signals`, `rules` |
+| `GET /locations` | `[{id, name}]` |
+| `GET /workspaces/{ws}/resources` | `[Resource]` with `open_incident` |
+| `POST /workspaces/{ws}/resources` | create from a Template: `{template, key?, name, meta}` → 201, Resource detail |
+| `GET /workspaces/{ws}/resources/{id or key}` | Resource detail: `signals`, `rules` (each with `status`, `explanation`, `since`, `open_incident`), `maintenance` |
+| `PATCH /workspaces/{ws}/resources/{id or key}` | `{name?, meta?}`; unsent answers stay; key and Template never change |
+| `POST /workspaces/{ws}/resources/{r}/observations` | `{signal, state, kind?, value?, labels?, body?, at?, id?}` → 202 `{resource, signal, observation, created_signal}`; the same `id` twice is stored once |
+| `GET /workspaces/{ws}/resources/{r}/observations?signal&limit` | newest logged Observations — context, not a decision record |
+| `PUT /workspaces/{ws}/resources/{r}/maintenance` | `{minutes}`: hold notifications; judging and history go on |
+| `DELETE /workspaces/{ws}/resources/{r}/maintenance` | end it |
+| `GET /workspaces/{ws}/incidents` | page of Incidents, newest first; filters `resource`, `rule`, `lifecycle` (open, closed), `confirmation` (confirmed, unconfirmed) |
+| `GET /workspaces/{ws}/resources/{r}/incidents` | the same, for one Resource |
+| `GET /workspaces/{ws}/incidents/{id}` | Incident with `history`, oldest first |
+| `POST /workspaces/{ws}/incidents/{id}/acknowledge` | take it on; 409 if closed or already taken |
+
+An Incident: `id`, `resource {id, key, name}`, `rule`
+(the Rule identity recorded when it opened), `lifecycle`, `confirmation`,
+`condition` (ok, problem, no_data), `verdict`, `explanation`, `closed_reason`
+(recovered, rule_removed), `opened_at`, `confirmed_at`, `closed_at`,
+`effective_at` (when its latest recorded transition took effect: opened,
+confirmed, a verdict change or closed; an acknowledgement does not move it),
+`acknowledgement {by, at, via}`. History is
+`[{at, kind, condition, verdict, explanation}]`, kinds `opened`, `confirmed`,
+`verdict_changed`, `closed`. It is kept after the Rule is edited or removed.
+
+## From a key to an Incident
+
+See [From an API key to an Incident](/first-incident-api) for the shortest path with curl and the SDK.
+
+## A fleet from one Template
+
+Create a Resource per host from the same Template, then read every open
+Incident:
+
+```bash
+for n in $(seq -w 1 50); do
+  curl -s -H "$H" -X POST $API/workspaces/$WS/resources -d @- <<EOF >/dev/null
+{"template": "website-check", "key": "shop-$n", "name": "shop-$n.example.com",
+ "meta": {"url": "https://shop-$n.example.com/health", "locations": ["$LOC"],
+          "interval_value": 1, "interval_unit": "MINUTE",
+          "failure_mode": "majority", "confirm_after": 120, "recover_after": 120}}
+EOF
+done
+curl -s -H "$H" "$API/workspaces/$WS/incidents?lifecycle=open&limit=200" | jq '.result[] | {resource: .resource.key, explanation}'
+```
+
+A sender without a person's key can bring a fleet into being from the
+Observation address instead: its first report names the Template
+(`template_id` and `meta`) and creates the Resource. See the Observation
+address in Settings → Observation endpoints.

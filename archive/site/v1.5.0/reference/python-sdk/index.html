@@ -1,0 +1,192 @@
+<!doctype html><html lang=en data-theme=light><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Python SDK · Uptimer docs</title><meta name=description content="The uptimer-python-sdk package."><link rel=icon href=/favicon.svg type=image/svg+xml><link rel=manifest href=/manifest.json><meta name=theme-color content="#4f46e5"><link rel=preconnect href=https://fonts.bunny.net crossorigin><link rel=stylesheet href="https://fonts.bunny.net/css?family=inter:400,500,600,700|jetbrains-mono:400,600"><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css><link rel=stylesheet href=/css/tokens.min.23f9249a946a7e06300ef28528ef40b3d03b70d8ac458907427b1f42a0369162.css><link rel=stylesheet href=/css/docs.min.70ac0a09c8350e5e795f84a945a75c34c3241ff979eb6e4dff1e4d9798f9779f.css></head><body><div class=verbanner role=note id=verbanner><span>You're viewing <strong>v1.5.0</strong> — an older version.</span>
+<a href=/v1.8.0/reference/python-sdk/>Go to the latest (v1.8.0) →</a>
+<button type=button aria-label=Dismiss onclick='this.closest(".verbanner").remove();try{sessionStorage.setItem("u-verbanner-hidden","1")}catch{}'>×</button></div><script>try{if(sessionStorage.getItem("u-verbanner-hidden")){var b=document.getElementById("verbanner");b&&b.remove()}}catch{}</script><header class=site-header><nav class=site-nav><a class=logo href=/v1.5.0/ aria-label="Uptimer docs home"><svg width="22" height="20" viewBox="0 0 50 44" fill="none" aria-hidden="true"><path d="M8 6V22a17 17 0 0034 0V6" stroke="#161a21" stroke-width="8" stroke-linecap="round"/><path d="M2 26h8l4-13 6 24 5-17h18" stroke="#0f9d58" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+Uptimer <span class=docs>/ docs</span></a><div class=site-search-wrap><input class=site-search type=search placeholder="Search  ⌘K" aria-label="Search docs" autocomplete=off spellcheck=false role=combobox aria-expanded=false aria-controls=site-search-results data-version=1.5.0><div class=site-search-results id=site-search-results role=listbox hidden></div></div><details class=verpill-wrap><summary class=verpill>v1.5.0 ▾</summary><ul class=verpill-menu><li><a href=/v1.8.0/>v1.8.0 · latest</a></li><li><a href=/v1.7.0/>v1.7.0</a></li><li><a href=/v1.6.0/>v1.6.0</a></li><li><a href=/v1.5.0/ class=on>v1.5.0</a></li><li><a href=/v1.4.0/>v1.4.0</a></li><li><a href=/v1.3.0/>v1.3.0</a></li><li><a href=/v1.0.0/>v1.0.0</a></li></ul></details><span class=spacer></span>
+<a class=navlink href=/v1.5.0/getting-started/quick-start/>Guides</a>
+<a class=navlink href=/v1.5.0/reference/rest-api/>API Reference</a>
+<a class=navlink href=/v1.5.0/reference/python-sdk/>SDK</a>
+<a class=navlink href=https://myuptime.info rel=noopener>myuptime.info</a></nav></header><div class=shell><nav class=side><div class=grp><a href=/v1.5.0/getting-started/>Getting started</a></div><a href=/v1.5.0/getting-started/quick-start/>Quick start</a>
+<a href=/v1.5.0/getting-started/self-hosting/>Self-hosting</a>
+<a href=/v1.5.0/getting-started/requirements/>Requirements</a><div class=grp><a href=/v1.5.0/core-concepts/>Core concepts</a></div><a href=/v1.5.0/core-concepts/monitors-and-incidents/>Monitors & incidents</a>
+<a href=/v1.5.0/core-concepts/assertions/>Expected response</a>
+<a href=/v1.5.0/core-concepts/locations/>Locations</a>
+<a href=/v1.5.0/core-concepts/remote-workers/>Remote workers</a>
+<a href=/v1.5.0/core-concepts/workspaces/>Workspaces</a><div class=grp><a href=/v1.5.0/alerting/>Alerting</a></div><a href=/v1.5.0/alerting/slack-alerts/>Slack alerts</a>
+<a href=/v1.5.0/alerting/webhooks/>Webhooks</a><div class=grp><a href=/v1.5.0/operating/>Operating</a></div><a href=/v1.5.0/operating/configuration/>Configuration</a>
+<a href=/v1.5.0/operating/storage/>Persistent storage</a>
+<a href=/v1.5.0/operating/authentication/>Authentication</a>
+<a href=/v1.5.0/operating/production/>Production deployment</a><div class=grp><a href=/v1.5.0/reference/>Reference</a></div><a href=/v1.5.0/reference/rest-api/>REST API</a>
+<a href=/v1.5.0/reference/python-sdk/ class=on>Python SDK</a>
+<a href=/v1.5.0/reference/metrics/>Metrics</a>
+<a href=/v1.5.0/reference/changelog/>Changelog</a></nav><main class=content><div class=crumbs><a href=/v1.5.0/reference/>Reference</a> ›
+Python SDK</div><h1>Python SDK</h1><p class=lede>A typed client for the REST API.</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-sh data-lang=sh><span style=display:flex><span>pip install <span style=color:#a5d6ff>&#34;uptimer-python-sdk&gt;=1.5.0&#34;</span>      <span style=color:#8b949e;font-style:italic># or: uv add &#34;uptimer-python-sdk&gt;=1.5.0&#34;</span>
+</span></span></code></pre></div><p><strong>The SDK version tracks the server it targets.</strong> 1.5.x speaks to uptimer 1.5.0 and
+later; patch numbers move independently. So install the SDK whose major.minor matches
+your server — no compatibility table to look up.</p><p>Still on API v1? Pin <code>uptimer-python-sdk&lt;1</code>. The server&rsquo;s v1 is unchanged and
+supported, so 0.4.x keeps working against a 1.5.0 server — it just cannot use anything
+new. There is no v1 surface left in 1.5.x: <code>client.v1</code>, its models and its kinds are
+gone — <code>client.v2</code> takes its place.</p><h2 id=a-complete-example>A complete example</h2><p>One script, the whole surface: connect, check the server, list what is there, create
+website monitoring, read it back, change it, look for incidents, and clean up. Set
+<code>UPTIMER_API_KEY</code> and <code>UPTIMER_BASE_URL</code> and it runs as-is.</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#a5d6ff>&#34;&#34;&#34;An end-to-end tour of uptimer-python-sdk 1.5.x.&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>import</span> <span style=color:#ff7b72>os</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>from</span> <span style=color:#ff7b72>uptimer.client</span> <span style=color:#ff7b72>import</span> UptimerClient
+</span></span><span style=display:flex><span><span style=color:#ff7b72>from</span> <span style=color:#ff7b72>uptimer.errors</span> <span style=color:#ff7b72>import</span> DefaultUptimerApiError, IncompatibleServerError
+</span></span><span style=display:flex><span><span style=color:#ff7b72>from</span> <span style=color:#ff7b72>uptimer.models.v2</span> <span style=color:#ff7b72>import</span> (
+</span></span><span style=display:flex><span>    AGREEMENT_MAJORITY,
+</span></span><span style=display:flex><span>    STATUS_PENDING,
+</span></span><span style=display:flex><span>    CreateWebsiteMonitorRequest,
+</span></span><span style=display:flex><span>    UpdateWebsiteMonitorRequest,
+</span></span><span style=display:flex><span>    WebsiteMonitorRequest,
+</span></span><span style=display:flex><span>    WebsiteMonitorResponse,
+</span></span><span style=display:flex><span>    WebsiteMonitorResponseBody,
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>client <span style=color:#ff7b72;font-weight:700>=</span> UptimerClient(
+</span></span><span style=display:flex><span>    api_key<span style=color:#ff7b72;font-weight:700>=</span>os<span style=color:#ff7b72;font-weight:700>.</span>environ[<span style=color:#a5d6ff>&#34;UPTIMER_API_KEY&#34;</span>],
+</span></span><span style=display:flex><span>    base_url<span style=color:#ff7b72;font-weight:700>=</span>os<span style=color:#ff7b72;font-weight:700>.</span>environ<span style=color:#ff7b72;font-weight:700>.</span>get(<span style=color:#a5d6ff>&#34;UPTIMER_BASE_URL&#34;</span>, <span style=color:#a5d6ff>&#34;http://localhost:2517/api&#34;</span>),
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># For the hosted product, swap the two lines above for:</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic>#   from uptimer.client import UptimerCloudClient</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic>#   client = UptimerCloudClient(api_key=os.environ[&#34;UPTIMER_API_KEY&#34;])</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 1. Fail fast on a server that has no API v2, with a message that names the fix</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic>#    rather than a 404 on the first real call. Both this and client.version()</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic>#    read the shared, unversioned /version.</span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>try</span>:
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;server:&#34;</span>, client<span style=color:#ff7b72;font-weight:700>.</span>check_compatibility())
+</span></span><span style=display:flex><span><span style=color:#ff7b72>except</span> IncompatibleServerError <span style=color:#ff7b72>as</span> exc:
+</span></span><span style=display:flex><span>    <span style=color:#ff7b72>raise</span> <span style=color:#f0883e;font-weight:700>SystemExit</span>(str(exc)) <span style=color:#ff7b72>from</span> <span style=color:#ff7b72>exc</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>print(<span style=color:#a5d6ff>&#34;version:&#34;</span>, client<span style=color:#ff7b72;font-weight:700>.</span>version())   <span style=color:#8b949e;font-style:italic># same endpoint, no compatibility gate</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># client.ensure_compatible() is the same check, run at most once per client.</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 2. Everything the API versions is reached through client.v2.</span>
+</span></span><span style=display:flex><span>workspace <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>workspaces<span style=color:#ff7b72;font-weight:700>.</span>all()[<span style=color:#a5d6ff>0</span>]
+</span></span><span style=display:flex><span>print(<span style=color:#a5d6ff>&#34;workspace:&#34;</span>, workspace<span style=color:#ff7b72;font-weight:700>.</span>id, workspace<span style=color:#ff7b72;font-weight:700>.</span>name, <span style=color:#79c0ff>f</span><span style=color:#a5d6ff>&#34;(</span><span style=color:#a5d6ff>{</span>workspace<span style=color:#ff7b72;font-weight:700>.</span>role<span style=color:#a5d6ff>}</span><span style=color:#a5d6ff>)&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>locations <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>locations<span style=color:#ff7b72;font-weight:700>.</span>all()
+</span></span><span style=display:flex><span><span style=color:#ff7b72>for</span> location <span style=color:#ff7b72;font-weight:700>in</span> locations:
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;location:&#34;</span>, location<span style=color:#ff7b72;font-weight:700>.</span>name, location<span style=color:#ff7b72;font-weight:700>.</span>active_workers_count, <span style=color:#a5d6ff>&#34;worker(s)&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># 3. Create website monitoring. This one call also creates the monitoring</span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic>#    subject, its built-in HTTP signal and its Reachability rule.</span>
+</span></span><span style=display:flex><span>monitor <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>monitoring<span style=color:#ff7b72;font-weight:700>.</span>websites<span style=color:#ff7b72;font-weight:700>.</span>create(
+</span></span><span style=display:flex><span>    CreateWebsiteMonitorRequest(
+</span></span><span style=display:flex><span>        name<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;Checkout API&#34;</span>,
+</span></span><span style=display:flex><span>        interval<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>60</span>,                   <span style=color:#8b949e;font-style:italic># seconds, in whole minutes (&gt;= 60)</span>
+</span></span><span style=display:flex><span>        workspace_id<span style=color:#ff7b72;font-weight:700>=</span>workspace<span style=color:#ff7b72;font-weight:700>.</span>id,     <span style=color:#8b949e;font-style:italic># required on create; fixed afterwards</span>
+</span></span><span style=display:flex><span>        request<span style=color:#ff7b72;font-weight:700>=</span>WebsiteMonitorRequest(
+</span></span><span style=display:flex><span>            url<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;https://checkout.example/health&#34;</span>,
+</span></span><span style=display:flex><span>            method<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;GET&#34;</span>,              <span style=color:#8b949e;font-style:italic># GET, POST, PATCH or OPTIONS</span>
+</span></span><span style=display:flex><span>        ),
+</span></span><span style=display:flex><span>        response<span style=color:#ff7b72;font-weight:700>=</span>WebsiteMonitorResponse(
+</span></span><span style=display:flex><span>            statuses<span style=color:#ff7b72;font-weight:700>=</span>[<span style=color:#a5d6ff>200</span>],
+</span></span><span style=display:flex><span>            body<span style=color:#ff7b72;font-weight:700>=</span>WebsiteMonitorResponseBody(content<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;&#34;</span>),   <span style=color:#8b949e;font-style:italic># &#34;&#34; = don&#39;t check the body</span>
+</span></span><span style=display:flex><span>        ),
+</span></span><span style=display:flex><span>        locations<span style=color:#ff7b72;font-weight:700>=</span>[loc<span style=color:#ff7b72;font-weight:700>.</span>name <span style=color:#ff7b72>for</span> loc <span style=color:#ff7b72;font-weight:700>in</span> locations[:<span style=color:#a5d6ff>1</span>]],     <span style=color:#8b949e;font-style:italic># names, not ids</span>
+</span></span><span style=display:flex><span>        agreement<span style=color:#ff7b72;font-weight:700>=</span>AGREEMENT_MAJORITY,  <span style=color:#8b949e;font-style:italic># &#34;any&#34; | &#34;majority&#34; | &#34;all&#34;</span>
+</span></span><span style=display:flex><span>    ),
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>print(<span style=color:#a5d6ff>&#34;created:&#34;</span>, monitor<span style=color:#ff7b72;font-weight:700>.</span>id, monitor<span style=color:#ff7b72;font-weight:700>.</span>locations, monitor<span style=color:#ff7b72;font-weight:700>.</span>agreement)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>try</span>:
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># 4. Read it back, in the workspace listing and on its own.</span>
+</span></span><span style=display:flex><span>    listed <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>monitoring<span style=color:#ff7b72;font-weight:700>.</span>websites<span style=color:#ff7b72;font-weight:700>.</span>all(workspace<span style=color:#ff7b72;font-weight:700>.</span>id)
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;monitors here:&#34;</span>, [m<span style=color:#ff7b72;font-weight:700>.</span>name <span style=color:#ff7b72>for</span> m <span style=color:#ff7b72;font-weight:700>in</span> listed])
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    fetched <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>monitoring<span style=color:#ff7b72;font-weight:700>.</span>websites<span style=color:#ff7b72;font-weight:700>.</span>get(monitor<span style=color:#ff7b72;font-weight:700>.</span>id)
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;fetched:&#34;</span>, fetched<span style=color:#ff7b72;font-weight:700>.</span>name, fetched<span style=color:#ff7b72;font-weight:700>.</span>request<span style=color:#ff7b72;font-weight:700>.</span>url, fetched<span style=color:#ff7b72;font-weight:700>.</span>response<span style=color:#ff7b72;font-weight:700>.</span>statuses)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># 5. Update replaces the whole configuration — send every field you want to</span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic>#    keep. There is no workspace_id: a monitor cannot change workspace. An</span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic>#    omitted agreement keeps the stored one instead of resetting it.</span>
+</span></span><span style=display:flex><span>    updated <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>monitoring<span style=color:#ff7b72;font-weight:700>.</span>websites<span style=color:#ff7b72;font-weight:700>.</span>update(
+</span></span><span style=display:flex><span>        monitor<span style=color:#ff7b72;font-weight:700>.</span>id,
+</span></span><span style=display:flex><span>        UpdateWebsiteMonitorRequest(
+</span></span><span style=display:flex><span>            name<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;Checkout API (health)&#34;</span>,
+</span></span><span style=display:flex><span>            interval<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>120</span>,
+</span></span><span style=display:flex><span>            request<span style=color:#ff7b72;font-weight:700>=</span>WebsiteMonitorRequest(
+</span></span><span style=display:flex><span>                url<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;https://checkout.example/health&#34;</span>,
+</span></span><span style=display:flex><span>                method<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;GET&#34;</span>,
+</span></span><span style=display:flex><span>            ),
+</span></span><span style=display:flex><span>            response<span style=color:#ff7b72;font-weight:700>=</span>WebsiteMonitorResponse(
+</span></span><span style=display:flex><span>                statuses<span style=color:#ff7b72;font-weight:700>=</span>[<span style=color:#a5d6ff>200</span>, <span style=color:#a5d6ff>204</span>],
+</span></span><span style=display:flex><span>                body<span style=color:#ff7b72;font-weight:700>=</span>WebsiteMonitorResponseBody(content<span style=color:#ff7b72;font-weight:700>=</span><span style=color:#a5d6ff>&#34;ok&#34;</span>),
+</span></span><span style=display:flex><span>            ),
+</span></span><span style=display:flex><span>            locations<span style=color:#ff7b72;font-weight:700>=</span>fetched<span style=color:#ff7b72;font-weight:700>.</span>locations,   <span style=color:#8b949e;font-style:italic># replaces the stored list</span>
+</span></span><span style=display:flex><span>        ),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;updated:&#34;</span>, updated<span style=color:#ff7b72;font-weight:700>.</span>interval, updated<span style=color:#ff7b72;font-weight:700>.</span>agreement)   <span style=color:#8b949e;font-style:italic># agreement survived</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># 6. What is wrong right now. Only open incidents come back, newest trouble</span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic>#    first. A monitor created seconds ago has nothing open yet — this is the</span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic>#    loop you would run against a workspace that has been up for a while.</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff7b72>for</span> incident <span style=color:#ff7b72;font-weight:700>in</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>incidents<span style=color:#ff7b72;font-weight:700>.</span>all(workspace<span style=color:#ff7b72;font-weight:700>.</span>id):
+</span></span><span style=display:flex><span>        note <span style=color:#ff7b72;font-weight:700>=</span> <span style=color:#a5d6ff>&#34; (nobody notified yet)&#34;</span> <span style=color:#ff7b72>if</span> incident<span style=color:#ff7b72;font-weight:700>.</span>status <span style=color:#ff7b72;font-weight:700>==</span> STATUS_PENDING <span style=color:#ff7b72>else</span> <span style=color:#a5d6ff>&#34;&#34;</span>
+</span></span><span style=display:flex><span>        print(<span style=color:#79c0ff>f</span><span style=color:#a5d6ff>&#34;</span><span style=color:#a5d6ff>{</span>incident<span style=color:#ff7b72;font-weight:700>.</span>monitor_name<span style=color:#a5d6ff>}</span><span style=color:#a5d6ff>: </span><span style=color:#a5d6ff>{</span>incident<span style=color:#ff7b72;font-weight:700>.</span>status<span style=color:#a5d6ff>}{</span>note<span style=color:#a5d6ff>}</span><span style=color:#a5d6ff>&#34;</span>)
+</span></span><span style=display:flex><span>        print(<span style=color:#a5d6ff>&#34;  since   &#34;</span>, incident<span style=color:#ff7b72;font-weight:700>.</span>trouble_since)
+</span></span><span style=display:flex><span>        print(<span style=color:#a5d6ff>&#34;  failing:&#34;</span>, incident<span style=color:#ff7b72;font-weight:700>.</span>locations<span style=color:#ff7b72;font-weight:700>.</span>failing <span style=color:#ff7b72;font-weight:700>or</span> <span style=color:#a5d6ff>&#34;-&#34;</span>)
+</span></span><span style=display:flex><span>        print(<span style=color:#a5d6ff>&#34;  unknown:&#34;</span>, incident<span style=color:#ff7b72;font-weight:700>.</span>locations<span style=color:#ff7b72;font-weight:700>.</span>unknown <span style=color:#ff7b72;font-weight:700>or</span> <span style=color:#a5d6ff>&#34;-&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># Narrow it to one monitor:</span>
+</span></span><span style=display:flex><span>    mine <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>incidents<span style=color:#ff7b72;font-weight:700>.</span>all(workspace<span style=color:#ff7b72;font-weight:700>.</span>id, monitor_id<span style=color:#ff7b72;font-weight:700>=</span>monitor<span style=color:#ff7b72;font-weight:700>.</span>id)
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;open on this monitor:&#34;</span>, len(mine))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>except</span> DefaultUptimerApiError <span style=color:#ff7b72>as</span> exc:
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># The API answered with an error envelope. Branch on .code — see Errors below.</span>
+</span></span><span style=display:flex><span>    print(<span style=color:#a5d6ff>&#34;api error:&#34;</span>, exc<span style=color:#ff7b72;font-weight:700>.</span>code, exc<span style=color:#ff7b72;font-weight:700>.</span>error_type, exc<span style=color:#ff7b72;font-weight:700>.</span>message, exc<span style=color:#ff7b72;font-weight:700>.</span>details)
+</span></span><span style=display:flex><span><span style=color:#ff7b72>finally</span>:
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic># 7. Clean up whatever happened above. Deleting the monitor removes its</span>
+</span></span><span style=display:flex><span>    <span style=color:#8b949e;font-style:italic>#    subject, signal, rule and history with it.</span>
+</span></span><span style=display:flex><span>    deleted <span style=color:#ff7b72;font-weight:700>=</span> client<span style=color:#ff7b72;font-weight:700>.</span>v2<span style=color:#ff7b72;font-weight:700>.</span>monitoring<span style=color:#ff7b72;font-weight:700>.</span>websites<span style=color:#ff7b72;font-weight:700>.</span>delete(monitor<span style=color:#ff7b72;font-weight:700>.</span>id)
+</span></span><span style=display:flex><span>    print(deleted<span style=color:#ff7b72;font-weight:700>.</span>message, deleted<span style=color:#ff7b72;font-weight:700>.</span>monitor_id)
+</span></span></code></pre></div><p>The rest of this page explains the pieces.</p><h2 id=what-is-available>What is available</h2><p><strong>Resources live under the API version that serves them.</strong> The REST API is
+<a href=/v1.5.0/reference/rest-api/#two-versions>versioned by path</a>, and the SDK keeps that
+version visible rather than hiding it: everything v2 offers is reached through
+<code>client.v2</code>, and there are no root-level aliases.</p><ul><li><code>client.v2.workspaces.all()</code></li><li><code>client.v2.locations.all()</code></li><li><code>client.v2.incidents.all(workspace_id, monitor_id=None)</code> — <strong>open</strong> incidents</li><li><code>client.v2.monitoring.websites.all(workspace_id)</code> · <code>.get(id)</code> · <code>.create(...)</code> ·
+<code>.update(id, ...)</code> · <code>.delete(id)</code></li></ul><p>The types those calls take and return are versioned the same way — import them from
+<strong><code>uptimer.models.v2</code></strong>:</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ff7b72>from</span> <span style=color:#ff7b72>uptimer.models.v2</span> <span style=color:#ff7b72>import</span> CreateWebsiteMonitorRequest, Incident, Location
+</span></span></code></pre></div><p>They are not exported from <code>uptimer.models</code>, and there are no flat aliases, so a stale
+import fails loudly rather than binding to something else.</p><p>Two things stay off the version namespaces, because
+<a href=/v1.5.0/reference/rest-api/#get-the-server-version><code>GET /version</code></a> is shared by both
+API versions rather than belonging to either:</p><ul><li><code>client.version()</code> — the server version</li><li><code>client.check_compatibility()</code> / <code>client.ensure_compatible()</code></li></ul><p>The deserialization exceptions (<code>ModelError</code>, <code>TypeMismatchError</code>, …) stay on
+<code>uptimer.models</code> for the same reason: the same error is raised whichever API version
+produced the payload.</p><p>Website monitoring sits under <code>client.v2.monitoring</code> because it is a built-in template,
+not the general monitor model.</p><p>Every model carries the API&rsquo;s <code>kind</code>, and the SDK strips <code>kind</code> out of anything it
+sends: it is the server telling you what an object is, not a field you set.</p><h2 id=checking-the-server-first>Checking the server first</h2><p><code>check_compatibility()</code> reads <code>/version</code> — the one unversioned endpoint, so it works
+against a server too old for the rest of the SDK — and raises <code>IncompatibleServerError</code>
+if that server predates API v2. The bar is the SDK&rsquo;s own major.minor: <strong>1.5.x needs
+uptimer 1.5.0+ (or myuptime.info 15.1.0+)</strong>. A server reporting something that is not a
+release number, such as a <code>dev</code> build from source, is treated as usable rather than
+locked out.</p><h2 id=locations-and-agreement>Locations and agreement</h2><p>Assign <a href=/v1.5.0/core-concepts/locations/>locations</a> with the <code>locations</code> field. It takes
+location <strong>names</strong>, as listed by <code>client.v2.locations.all()</code> — not ids. A monitor with
+none is never checked and stays at no data.</p><p><code>agreement</code> is how many of those locations must report a problem before the monitor
+does: <code>AGREEMENT_ANY</code>, <code>AGREEMENT_MAJORITY</code> or <code>AGREEMENT_ALL</code> from <code>uptimer.models.v2</code>
+(the wire values are <code>"any"</code>, <code>"majority"</code> and <code>"all"</code>).</p><p>Two things behave differently between <code>CreateWebsiteMonitorRequest</code> and
+<code>UpdateWebsiteMonitorRequest</code>:</p><ul><li><code>workspace_id</code> exists only on create. A monitor cannot change workspace, so the
+update request has no such field.</li><li>On update, <code>locations</code> <strong>replaces</strong> the stored list — include the ones you want to
+keep — while an omitted <code>agreement</code> <strong>keeps</strong> the stored value rather than resetting
+it to the default.</li></ul><h2 id=incident-status>Incident status</h2><p><code>client.v2.incidents.all()</code> returns only <strong>open</strong> incidents, newest trouble first. Pass
+<code>monitor_id=</code> to narrow it to one monitor. Closed incidents are history and live on the
+subject timeline in the dashboard; there is no incident-history endpoint in this release.</p><p><code>status</code> carries the same words the dashboard shows — <code>STATUS_OK</code>, <code>STATUS_PENDING</code>,
+<code>STATUS_PROBLEM</code>, <code>STATUS_NO_DATA</code>, <code>STATUS_RECOVERING</code>. <code>pending</code> is the one to watch:
+the monitor is failing but still inside the confirm hold, so <strong>nobody has been notified
+yet</strong>.</p><p><code>incident.locations</code> splits the evidence into <code>.failing</code>, <code>.unknown</code> and <code>.ok</code>. A
+location that has never reported stays in <code>unknown</code> and still counts toward the
+agreement — that is a real state, not a missing one.</p><h2 id=errors>Errors</h2><p>All of these subclass <code>UptimerError</code>, in <code>uptimer.errors</code>:</p><ul><li><code>DefaultUptimerApiError</code> — the API returned an <code>error</code> envelope. Carries <code>.code</code>,
+<code>.error_type</code>, <code>.message</code> and <code>.details</code>; branch on <code>.code</code>, which is finer-grained
+than <code>.error_type</code> (see <a href=/v1.5.0/reference/rest-api/#errors>Errors</a>).</li><li><code>IncompatibleServerError</code> — the server does not provide API v2. Carries
+<code>.server_version</code>. Upgrade the server, or use <code>uptimer-python-sdk&lt;1</code>.</li><li><code>UptimerInvalidHttpCodeError</code> — a genuine non-200 transport error. Carries <code>.url</code> and
+<code>.status_code</code>.</li><li><code>UptimerInvalidResponseError</code> — the body was not the expected envelope.</li></ul><h2 id=migrating-from-04x>Migrating from 0.4.x</h2><table><thead><tr><th>0.4.x (API v1)</th><th>1.5.0 (API v2)</th></tr></thead><tbody><tr><td><code>client.v1.workspaces</code></td><td><code>client.v2.workspaces</code></td></tr><tr><td><code>client.v1.regions</code></td><td><code>client.v2.locations</code></td></tr><tr><td><code>client.v1.rules</code></td><td><code>client.v2.monitoring.websites</code></td></tr><tr><td><code>Region</code></td><td><code>Location</code></td></tr><tr><td><code>Rule</code> / <code>CreateRuleRequest</code></td><td><code>WebsiteMonitor</code> / <code>CreateWebsiteMonitorRequest</code></td></tr><tr><td><code>regions=[...]</code></td><td><code>locations=[...]</code></td></tr><tr><td>—</td><td><code>agreement=...</code>, <code>client.v2.incidents</code></td></tr><tr><td>—</td><td><code>client.check_compatibility()</code></td></tr><tr><td><code>from uptimer.models import …</code></td><td><code>from uptimer.models.v2 import …</code></td></tr></tbody></table><p><strong>The version namespace is the shape you already know.</strong> 0.4.x reached API v1 through
+<code>client.v1</code>; 1.5.x reaches API v2 through <code>client.v2</code>. What moves is the version, not
+the pattern — and the types moved with it: <code>uptimer.models</code> becomes
+<code>uptimer.models.v2</code>.</p><p><code>client.version()</code> is unchanged and still sits on the client, not under <code>client.v2</code> —
+<code>/version</code> is a shared global endpoint, not a versioned one.
+<code>UptimerClient(api_key=…, base_url=…)</code> and <code>UptimerCloudClient(api_key=…)</code> are
+constructed exactly as before, and both expose the same <code>client.v2</code>.</p><p>The rename is not only the namespace: <code>regions=[...]</code> becomes <code>locations=[...]</code>, and
+what 0.4.x called a rule is a <strong>website monitor</strong>. What the server stores is the same
+object, so a monitor created with 0.4.x is the one 1.5.x reads back.</p><p>Source and releases on <a href=https://pypi.org/project/uptimer-python-sdk/>PyPI</a> and
+<a href=https://github.com/myuptime-info/uptimer-python-sdk>GitHub</a>.</p><div class=pager><a href=/v1.5.0/reference/rest-api/><span class=sm>Previous</span>← REST API</a>
+<a class=next href=/v1.5.0/reference/metrics/><span class=sm>Next</span>Metrics →</a></div></main><aside class=toc><div class=h>On this page</div><nav id=TableOfContents><ul><li><a href=#a-complete-example>A complete example</a></li><li><a href=#what-is-available>What is available</a></li><li><a href=#checking-the-server-first>Checking the server first</a></li><li><a href=#locations-and-agreement>Locations and agreement</a></li><li><a href=#incident-status>Incident status</a></li><li><a href=#errors>Errors</a></li><li><a href=#migrating-from-04x>Migrating from 0.4.x</a></li></ul></nav></aside></div><script src=/js/search.min.8f9e560dddad932cfa30c1e1f5d6b1f249b9cdc934773e1d111334f124355b62.js defer></script></body></html>

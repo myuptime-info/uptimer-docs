@@ -1,0 +1,59 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Uptimer 2.0.0-preview",
+  "colors": {
+    "primary": "#0F766E",
+    "light": "#06B6D4",
+    "dark": "#3B82F6"
+  },
+  "logo": {
+    "light": "/images/logo-light.svg",
+    "dark": "/images/logo-dark.svg",
+    "href": "/"
+  },
+  "favicon": "/favicon.svg",
+  "banner": {
+    "content": "**2.0.0-preview.** These pages describe the Uptimer 2.0 preview under field test. Running 1.x? Use the [1.x documentation](/legacy).",
+    "dismissible": false
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get started",
+        "pages": ["index", "quickstart", "first-incident-api", "legacy"]
+      },
+      {
+        "group": "Operating",
+        "pages": [
+          "operating/running",
+          "operating/database",
+          "operating/sign-in",
+          "operating/workers",
+          "operating/logging",
+          "operating/upgrading-from-1.8"
+        ]
+      },
+      {
+        "group": "Reference",
+        "pages": ["reference/api-v3", "reference/python-sdk", "reference/docs-mcp"]
+      }
+    ]
+  },
+  "redirects": [
+    { "source": "/latest", "destination": "https://archive.uptimer.myuptime.info/v1.8.0/" },
+    { "source": "/latest/:slug*", "destination": "https://archive.uptimer.myuptime.info/v1.8.0/:slug*" },
+    { "source": "/v1.8.0/:slug*", "destination": "https://archive.uptimer.myuptime.info/v1.8.0/:slug*" },
+    { "source": "/v1.7.0/:slug*", "destination": "https://archive.uptimer.myuptime.info/v1.7.0/:slug*" },
+    { "source": "/v1.6.0/:slug*", "destination": "https://archive.uptimer.myuptime.info/v1.6.0/:slug*" },
+    { "source": "/v1.5.0/:slug*", "destination": "https://archive.uptimer.myuptime.info/v1.5.0/:slug*" },
+    { "source": "/v1.4.0/:slug*", "destination": "https://archive.uptimer.myuptime.info/v1.4.0/:slug*" },
+    { "source": "/v1.3.0/:slug*", "destination": "https://archive.uptimer.myuptime.info/v1.3.0/:slug*" },
+    { "source": "/v1.0.0/:slug*", "destination": "https://archive.uptimer.myuptime.info/v1.0.0/:slug*" }
+  ],
+  "footer": {
+    "socials": {
+      "website": "https://myuptime.info"
+    }
+  }
+}

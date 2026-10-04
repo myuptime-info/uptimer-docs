@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Authentication on Uptimer</title><link>https://uptimer.myuptime.info/v1.0.0/configuration/authentication/</link><description>Recent content in Authentication on Uptimer</description><generator>Hugo</generator><language>en</language><atom:link href="https://uptimer.myuptime.info/v1.0.0/configuration/authentication/index.xml" rel="self" type="application/rss+xml"/><item><title>HTTP Basic Authentication</title><link>https://uptimer.myuptime.info/v1.0.0/configuration/authentication/http-auth/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.0.0/configuration/authentication/http-auth/</guid><description>&lt;h1 id="http-basic-authentication"&gt;HTTP Basic Authentication&lt;/h1&gt;
+&lt;p&gt;Simple username/password authentication using nginx and htpasswd.&lt;/p&gt;
+&lt;h2 id="quick-start"&gt;Quick Start&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# nginx example&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git clone https://github.com/myuptime-info/uptimer-docs.git
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd uptimer-docs/examples/dev-http-auth
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker-compose up -d
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# Access: http://localhost (admin/password)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="explanation"&gt;Explanation&lt;/h2&gt;
+&lt;h3 id="docker-composeyml"&gt;docker-compose.yml&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#7ee787"&gt;services&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;uptimer&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;image&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;myuptime/uptimer&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;volumes&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#a5d6ff"&gt;./data:/data&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;nginx&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;image&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;nginx:alpine&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;ports&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#a5d6ff"&gt;&amp;#34;80:80&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;volumes&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#a5d6ff"&gt;./nginx.conf:/etc/nginx/nginx.conf:ro&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#a5d6ff"&gt;./.htpasswd:/etc/nginx/.htpasswd:ro&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;depends_on&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#a5d6ff"&gt;uptimer &lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Runs Uptimer in dev mode and uses nginx to handle HTTP auth and proxying.&lt;/p&gt;</description></item><item><title>Keycloak OIDC Authentication</title><link>https://uptimer.myuptime.info/v1.0.0/configuration/authentication/keycloak/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.0.0/configuration/authentication/keycloak/</guid><description>&lt;h1 id="keycloak-oidc-authentication"&gt;Keycloak OIDC Authentication&lt;/h1&gt;
+&lt;p&gt;OpenID Connect authentication using Keycloak with custom claims support.&lt;/p&gt;
+&lt;h2 id="quick-start"&gt;Quick Start&lt;/h2&gt;
+&lt;p&gt;To run examples you need the following domain name resolving config:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;keycloak -&amp;gt; 127.0.0.1&lt;/li&gt;
+&lt;li&gt;uptimer-dev -&amp;gt; 127.0.0.1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# 1. Add to /etc/hosts&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;echo &lt;span style="color:#a5d6ff"&gt;&amp;#34;127.0.0.1 keycloak uptimer-dev&amp;#34;&lt;/span&gt; | sudo tee -a /etc/hosts
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# 2. Start services&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git clone https://github.com/myuptime-info/uptimer-docs.git
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd uptimer-docs/examples/dev-keycloak
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker-compose up -d
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# 3. Access services&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# Keycloak: http://localhost:8080 (admin/admin)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# Uptimer: http://localhost:2517 (test/test)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;http://keycloak:8080&lt;/code&gt; - localhost Keycloak address, credentials &lt;code&gt;admin/admin&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;http://uptimer-dev&lt;/code&gt; - Uptimer local address, credentials &lt;code&gt;test/test&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="explanation"&gt;Explanation&lt;/h2&gt;
+&lt;h3 id="docker-composeyml"&gt;docker-compose.yml&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#7ee787"&gt;version&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#39;3.8&amp;#39;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#7ee787"&gt;services&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;keycloak&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;image&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;quay.io/keycloak/keycloak:latest&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;ports&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#a5d6ff"&gt;&amp;#34;8080:8080&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;environment&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;KC_BOOTSTRAP_ADMIN_USERNAME&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;admin&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;KC_BOOTSTRAP_ADMIN_PASSWORD&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;admin&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;KC_IMPORT&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;/opt/keycloak/data/import/realm-config.json&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;volumes&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#a5d6ff"&gt;./realm-config.json:/opt/keycloak/data/import/realm-config.json:ro&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;command&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;[&lt;span style="color:#a5d6ff"&gt;&amp;#34;start-dev&amp;#34;&lt;/span&gt;,&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;--import-realm&amp;#34;&lt;/span&gt;]&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;uptimer-dev&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;image&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;myuptime/uptimer&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;ports&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#a5d6ff"&gt;&amp;#34;2517:2517&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;volumes&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#a5d6ff"&gt;./data:/data&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;environment&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;UPTIMER__SERVER__AUTH__DEV&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;false&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;UPTIMER__SERVER__AUTH__OIDC__CLIENT_ID&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;uptimer-dev&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;UPTIMER__SERVER__AUTH__OIDC__CLIENT_SECRET&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;1234567890&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;UPTIMER__SERVER__AUTH__OIDC__ISSUER_URL&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;http://keycloak:8080/realms/uptimer-dev-keycloak-example&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;UPTIMER__SERVER__AUTH__OIDC__REDIRECT_URL&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;http://uptimer-dev:2517/ui/auth/oauth/callback&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;command&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;[&lt;span style="color:#a5d6ff"&gt;&amp;#34;--delay&amp;#34;&lt;/span&gt;,&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;20&amp;#34;&lt;/span&gt;,&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;dev&amp;#34;&lt;/span&gt;]&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="realm-configjson"&gt;realm-config.json&lt;/h3&gt;
+&lt;p&gt;In short, it:&lt;/p&gt;</description></item><item><title>Auth0 OIDC Authentication</title><link>https://uptimer.myuptime.info/v1.0.0/configuration/authentication/auth0/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.0.0/configuration/authentication/auth0/</guid><description>&lt;h1 id="auth0-oidc-authentication"&gt;Auth0 OIDC Authentication&lt;/h1&gt;
+&lt;p&gt;OpenID Connect authentication using Auth0 cloud service.&lt;/p&gt;
+&lt;h2 id="auth0-configuration"&gt;Auth0 Configuration&lt;/h2&gt;
+&lt;h3 id="1-create-application"&gt;1. Create Application&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;Login to &lt;a href="https://manage.auth0.com"&gt;Auth0 Dashboard&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Create Application:
+&lt;ul&gt;
+&lt;li&gt;Name: &lt;code&gt;Uptimer&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Type: &lt;code&gt;Single Page Application&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="2-application-settings"&gt;2. Application Settings&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Application Type: Single Page Application
+Token Endpoint Authentication Method: None
+Allowed Callback URLs: http://localhost:2517/ui/auth/oauth/callback
+Allowed Logout URLs: http://localhost:2517
+Allowed Web Origins: http://localhost:2517
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Production:&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Allowed Callback URLs: https://your-domain.com/ui/auth/oauth/callback
+Allowed Logout URLs: https://your-domain.com
+Allowed Web Origins: https://your-domain.com
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="configuration-files"&gt;Configuration Files&lt;/h2&gt;
+&lt;h3 id="docker-composeyml"&gt;docker-compose.yml&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#7ee787"&gt;version&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#39;3.8&amp;#39;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#7ee787"&gt;services&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;uptimer&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;image&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;myuptime/uptimer&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;ports&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#a5d6ff"&gt;&amp;#34;2517:2517&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;volumes&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;- &lt;span style="color:#a5d6ff"&gt;./data:/data&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;environment&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;UPTIMER__SERVER__AUTH__DEV&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;false&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;UPTIMER__SERVER__AUTH__OIDC__CLIENT_ID&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;your-auth0-client-id&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;UPTIMER__SERVER__AUTH__OIDC__CLIENT_SECRET&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;your-auth0-client-secret&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;UPTIMER__SERVER__AUTH__OIDC__ISSUER_URL&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;https://your-tenant.auth0.com&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;UPTIMER__SERVER__AUTH__OIDC__REDIRECT_URL&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;http://localhost:2517/ui/auth/oauth/callback&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="environment-variables"&gt;Environment Variables&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;Variable&lt;/th&gt;
+					&lt;th&gt;Description&lt;/th&gt;
+					&lt;th&gt;Example&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;UPTIMER__SERVER__AUTH__OIDC__CLIENT_ID&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Auth0 client ID&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;abc123def456&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;UPTIMER__SERVER__AUTH__OIDC__CLIENT_SECRET&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Auth0 client secret (empty for SPA)&lt;/td&gt;
+					&lt;td&gt;``&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;UPTIMER__SERVER__AUTH__OIDC__ISSUER_URL&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Auth0 domain&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;https://your-tenant.auth0.com&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;UPTIMER__SERVER__AUTH__OIDC__REDIRECT_URL&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;OAuth callback URL&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;http://localhost:2517/ui/auth/oauth/callback&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="config-file-example-for-auth0"&gt;Config file example for auth0&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#7ee787"&gt;server&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;auth&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;dev&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#79c0ff"&gt;false&lt;/span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# should be false when OIDC is used&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;oidc&lt;/span&gt;:&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;client_id&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;your-auth0-client-id&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# UPTIMER__SERVER__AUTH__OIDC__CLIENT_ID&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;client_secret&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;your-auth0-client-secret&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# UPTIMER__SERVER__AUTH__OIDC__CLIENT_SECRET&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;issuer_url&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;https://your-tenant.auth0.com&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# UPTIMER__SERVER__AUTH__OIDC__ISSUER_URL (Auth0 domain)&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#7ee787"&gt;redirect_url&lt;/span&gt;:&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;http://uptimer-domain:port/ui/auth/oauth/callback&amp;#34;&lt;/span&gt;&lt;span style="color:#6e7681"&gt; &lt;/span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# UPTIMER__SERVER__AUTH__OIDC__REDIRECT_URL (domain for your Uptimer instance)&lt;/span&gt;&lt;span style="color:#6e7681"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item></channel></rss>

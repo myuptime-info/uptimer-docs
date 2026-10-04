@@ -1,0 +1,43 @@
+---
+title: "Sign-in (OIDC)"
+description: "Production sign-in with an OIDC provider, admins, and development sign-in."
+---
+
+<Note>
+Preview build: this page describes Uptimer 2.0.0-preview.
+</Note>
+
+Production sign-in is OIDC (authorization code with PKCE). Set:
+
+| Setting | What it does |
+|---|---|
+| `UPTIMER__AUTH__OIDC__ISSUER_URL` | the provider's issuer, exactly as its discovery document states it, trailing slash included |
+| `UPTIMER__AUTH__OIDC__CLIENT_ID` | this installation's client at the provider |
+| `UPTIMER__AUTH__OIDC__CLIENT_SECRET` | its secret |
+| `UPTIMER__AUTH__OIDC__REDIRECT_URL` | the callback. Defaults to `UPTIMER__GENERAL__SITE_URL` + `/ui/auth/oidc/callback` |
+| `UPTIMER__AUTH__OIDC__ADMIN_SUBJECTS` | comma-separated provider subjects (`sub`) that are server admins |
+| `UPTIMER__AUTH__OIDC__END_SESSION_ENDPOINT` | logout endpoint, when discovery names none |
+| `UPTIMER__AUTH__OIDC__POST_LOGOUT_REDIRECT_PARAM` | the provider's return-address parameter. Default `post_logout_redirect_uri` |
+
+The first three go together: setting only some of them refuses startup.
+Register the callback URL with the provider, and register
+`<site>/ui/auth/login-required` as an allowed logout return address.
+
+When the callback URL is `https://`, the session and sign-in cookies are
+HTTPS-only. This holds behind a proxy that ends TLS, because it follows the
+configured address rather than the request.
+
+- A person is identified by issuer, client and subject. A name changed at the
+  provider is the same account. Two people with the same name get two
+  accounts.
+- The first sign-in creates the account and a personal Workspace. Workspace
+  access then follows membership, as for every account.
+- New accounts are ordinary users. Only a subject listed in
+  `UPTIMER__AUTH__OIDC__ADMIN_SUBJECTS` becomes a server admin. Removing it
+  from the list does not demote the account.
+- Logout ends the Uptimer session and sends the browser to the provider's
+  logout endpoint when it has one.
+
+Development sign-in (`UPTIMER__AUTH__DEV=true`) signs every visitor in as the
+shared Admin. It is off by default. `uptimer dev` turns it on unless
+`UPTIMER__AUTH__DEV=false` is set. Do not turn it on in production.

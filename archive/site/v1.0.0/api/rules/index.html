@@ -1,0 +1,231 @@
+<!doctype html><html lang=en data-theme=light><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Rules · Uptimer docs</title><link rel=icon href=/favicon.svg type=image/svg+xml><link rel=manifest href=/manifest.json><meta name=theme-color content="#4f46e5"><link rel=preconnect href=https://fonts.bunny.net crossorigin><link rel=stylesheet href="https://fonts.bunny.net/css?family=inter:400,500,600,700|jetbrains-mono:400,600"><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css><link rel=stylesheet href=/css/tokens.min.23f9249a946a7e06300ef28528ef40b3d03b70d8ac458907427b1f42a0369162.css><link rel=stylesheet href=/css/docs.min.70ac0a09c8350e5e795f84a945a75c34c3241ff979eb6e4dff1e4d9798f9779f.css></head><body><div class=verbanner role=note id=verbanner><span>You're viewing <strong>v1.0.0</strong> — an older version.</span>
+<a href=/v1.8.0/>Go to the latest (v1.8.0) →</a>
+<button type=button aria-label=Dismiss onclick='this.closest(".verbanner").remove();try{sessionStorage.setItem("u-verbanner-hidden","1")}catch{}'>×</button></div><script>try{if(sessionStorage.getItem("u-verbanner-hidden")){var b=document.getElementById("verbanner");b&&b.remove()}}catch{}</script><header class=site-header><nav class=site-nav><a class=logo href=/v1.0.0/ aria-label="Uptimer docs home"><svg width="22" height="20" viewBox="0 0 50 44" fill="none" aria-hidden="true"><path d="M8 6V22a17 17 0 0034 0V6" stroke="#161a21" stroke-width="8" stroke-linecap="round"/><path d="M2 26h8l4-13 6 24 5-17h18" stroke="#0f9d58" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+Uptimer <span class=docs>/ docs</span></a><div class=site-search-wrap><input class=site-search type=search placeholder="Search  ⌘K" aria-label="Search docs" autocomplete=off spellcheck=false role=combobox aria-expanded=false aria-controls=site-search-results data-version=1.0.0><div class=site-search-results id=site-search-results role=listbox hidden></div></div><details class=verpill-wrap><summary class=verpill>v1.0.0 ▾</summary><ul class=verpill-menu><li><a href=/v1.8.0/>v1.8.0 · latest</a></li><li><a href=/v1.7.0/>v1.7.0</a></li><li><a href=/v1.6.0/>v1.6.0</a></li><li><a href=/v1.5.0/>v1.5.0</a></li><li><a href=/v1.4.0/>v1.4.0</a></li><li><a href=/v1.3.0/>v1.3.0</a></li><li><a href=/v1.0.0/ class=on>v1.0.0</a></li></ul></details><span class=spacer></span>
+<a class=navlink href=/v1.0.0/getting-started/quick-start/>Guides</a>
+<a class=navlink href=/v1.0.0/reference/rest-api/>API Reference</a>
+<a class=navlink href=/v1.0.0/reference/python-sdk/>SDK</a>
+<a class=navlink href=https://myuptime.info rel=noopener>myuptime.info</a></nav></header><div class=shell><nav class=side><div class=grp><a href=/v1.0.0/quick-start/>Quick Start</a></div><div class=grp><a href=/v1.0.0/requirements/>Requirements</a></div><div class=grp><a href=/v1.0.0/configuration/>Configuration</a></div><div class=grp><a href=/v1.0.0/api/>API Reference</a></div><a href=/v1.0.0/api/version/>Version</a>
+<a href=/v1.0.0/api/workspaces/>Workspaces</a>
+<a href=/v1.0.0/api/rules/ class=on>Rules</a>
+<a href=/v1.0.0/api/regions/>Regions</a>
+<a href=/v1.0.0/api/examples/>API Examples</a>
+<a href=/v1.0.0/api/sdks/>SDKs & Libraries</a></nav><main class=content><div class=crumbs><a href=/v1.0.0/api/>API Reference</a> ›
+Rules</div><h1>Rules</h1><h1 id=rules-endpoints>Rules Endpoints</h1><p>Manage monitoring rules within workspaces.</p><h2 id=get-v1rules>GET /v1/rules</h2><p>Get all rules for workspace.</p><h3 id=request>Request</h3><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-text data-lang=text><span style=display:flex><span>GET /api/v1/rules?workspace_id=ws_123456
+</span></span><span style=display:flex><span>Authorization: Bearer YOUR_JWT_TOKEN
+</span></span></code></pre></div><h3 id=query-parameters>Query Parameters</h3><table><thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody><tr><td><code>workspace_id</code></td><td>string</td><td>Yes</td><td>The workspace UID</td></tr></tbody></table><h3 id=response>Response</h3><h4 id=success-response>Success Response</h4><p><strong>Status:</strong> 200 OK</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;result&#34;</span>: [
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;id&#34;</span>: <span style=color:#a5d6ff>&#34;rule_123456&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;name&#34;</span>: <span style=color:#a5d6ff>&#34;Website Health Check&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;interval&#34;</span>: <span style=color:#a5d6ff>300</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;workspace_id&#34;</span>: <span style=color:#a5d6ff>&#34;ws_123456&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;request&#34;</span>: {
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;url&#34;</span>: <span style=color:#a5d6ff>&#34;https://example.com&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;method&#34;</span>: <span style=color:#a5d6ff>&#34;GET&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;content_type&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;data&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule_request&#34;</span>
+</span></span><span style=display:flex><span>      },
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;response&#34;</span>: {
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;statuses&#34;</span>: [<span style=color:#a5d6ff>200</span>],
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;body&#34;</span>: {
+</span></span><span style=display:flex><span>          <span style=color:#7ee787>&#34;content&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>          <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule_response_body&#34;</span>
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule_response&#34;</span>
+</span></span><span style=display:flex><span>      },
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  ],
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;error&#34;</span>: <span style=color:#79c0ff>null</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;meta&#34;</span>: <span style=color:#79c0ff>null</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h4 id=response-fields>Response Fields</h4><table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>result</code></td><td>array</td><td>Array of rule objects</td></tr><tr><td><code>result[].id</code></td><td>string</td><td>Unique rule identifier</td></tr><tr><td><code>result[].name</code></td><td>string</td><td>Human-readable rule name</td></tr><tr><td><code>result[].interval</code></td><td>integer</td><td>Check interval in seconds</td></tr><tr><td><code>result[].workspace_id</code></td><td>string</td><td>Workspace UID this rule belongs to</td></tr><tr><td><code>result[].request</code></td><td>object</td><td>HTTP request configuration</td></tr><tr><td><code>result[].request.url</code></td><td>string</td><td>Target URL to monitor</td></tr><tr><td><code>result[].request.method</code></td><td>string</td><td>HTTP method (<code>GET</code>, <code>POST</code>, <code>PUT</code>, etc.)</td></tr><tr><td><code>result[].request.content_type</code></td><td>string</td><td>Content-Type header (optional)</td></tr><tr><td><code>result[].request.data</code></td><td>string</td><td>Request body data (optional)</td></tr><tr><td><code>result[].response</code></td><td>object</td><td>Expected response configuration</td></tr><tr><td><code>result[].response.statuses</code></td><td>array</td><td>Expected HTTP status codes</td></tr><tr><td><code>result[].response.body.content</code></td><td>string</td><td>Expected response body content (optional)</td></tr><tr><td><code>result[].kind</code></td><td>string</td><td>Object type identifier (<code>rule</code>)</td></tr></tbody></table><h3 id=error-responses>Error Responses</h3><h4 id=2004---missing-workspace-id>2004 - Missing Workspace ID</h4><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;result&#34;</span>: <span style=color:#79c0ff>null</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;error&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;code&#34;</span>: <span style=color:#a5d6ff>2004</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;error_type&#34;</span>: <span style=color:#a5d6ff>&#34;validation_error&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;message&#34;</span>: <span style=color:#a5d6ff>&#34;Missing workspace ID&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;details&#34;</span>: <span style=color:#a5d6ff>&#34;workspace_id query parameter is required&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;meta&#34;</span>: <span style=color:#79c0ff>null</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h4 id=2005---access-denied>2005 - Access Denied</h4><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;result&#34;</span>: <span style=color:#79c0ff>null</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;error&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;code&#34;</span>: <span style=color:#a5d6ff>2005</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;error_type&#34;</span>: <span style=color:#a5d6ff>&#34;access_denied&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;message&#34;</span>: <span style=color:#a5d6ff>&#34;Access denied&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;details&#34;</span>: <span style=color:#a5d6ff>&#34;User does not have access to this workspace&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;meta&#34;</span>: <span style=color:#79c0ff>null</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=get-v1rulesuid>GET /v1/rules/{uid}</h2><p>Get rule by UID.</p><h3 id=request-1>Request</h3><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-text data-lang=text><span style=display:flex><span>GET /api/v1/rules/rule_123456
+</span></span><span style=display:flex><span>Authorization: Bearer YOUR_JWT_TOKEN
+</span></span></code></pre></div><h3 id=path-parameters>Path Parameters</h3><table><thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody><tr><td><code>uid</code></td><td>string</td><td>Yes</td><td>The rule UID</td></tr></tbody></table><h3 id=response-1>Response</h3><h4 id=success-response-1>Success Response</h4><p><strong>Status:</strong> 200 OK</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;result&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;id&#34;</span>: <span style=color:#a5d6ff>&#34;rule_123456&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;name&#34;</span>: <span style=color:#a5d6ff>&#34;Website Health Check&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;interval&#34;</span>: <span style=color:#a5d6ff>300</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;workspace_id&#34;</span>: <span style=color:#a5d6ff>&#34;ws_123456&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;request&#34;</span>: {
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;url&#34;</span>: <span style=color:#a5d6ff>&#34;https://example.com&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;method&#34;</span>: <span style=color:#a5d6ff>&#34;GET&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;content_type&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;data&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule_request&#34;</span>
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;response&#34;</span>: {
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;statuses&#34;</span>: [<span style=color:#a5d6ff>200</span>],
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;body&#34;</span>: {
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;content&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule_response_body&#34;</span>
+</span></span><span style=display:flex><span>      },
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule_response&#34;</span>
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;error&#34;</span>: <span style=color:#79c0ff>null</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;meta&#34;</span>: <span style=color:#79c0ff>null</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=error-responses-1>Error Responses</h3><h4 id=2002---rule-not-found>2002 - Rule Not Found</h4><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;result&#34;</span>: <span style=color:#79c0ff>null</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;error&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;code&#34;</span>: <span style=color:#a5d6ff>2002</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;error_type&#34;</span>: <span style=color:#a5d6ff>&#34;not_found&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;message&#34;</span>: <span style=color:#a5d6ff>&#34;Rule not found&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;details&#34;</span>: <span style=color:#a5d6ff>&#34;Rule does not exist or access denied&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;meta&#34;</span>: <span style=color:#79c0ff>null</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=post-v1rules>POST /v1/rules</h2><p>Create new rule.</p><h3 id=request-2>Request</h3><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-text data-lang=text><span style=display:flex><span>POST /api/v1/rules
+</span></span><span style=display:flex><span>Authorization: Bearer YOUR_JWT_TOKEN
+</span></span><span style=display:flex><span>Content-Type: application/json
+</span></span></code></pre></div><h3 id=request-body>Request Body</h3><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;name&#34;</span>: <span style=color:#a5d6ff>&#34;Website Health Check&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;interval&#34;</span>: <span style=color:#a5d6ff>300</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;workspace_id&#34;</span>: <span style=color:#a5d6ff>&#34;ws_123456&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;request&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;url&#34;</span>: <span style=color:#a5d6ff>&#34;https://example.com&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;method&#34;</span>: <span style=color:#a5d6ff>&#34;GET&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;content_type&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;data&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;response&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;statuses&#34;</span>: [<span style=color:#a5d6ff>200</span>],
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;body&#34;</span>: {
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;content&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=request-fields>Request Fields</h3><table><thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody><tr><td><code>name</code></td><td>string</td><td>Yes</td><td>Human-readable rule name (1-100 characters)</td></tr><tr><td><code>interval</code></td><td>integer</td><td>Yes</td><td>Check interval in seconds (60-86400)</td></tr><tr><td><code>workspace_id</code></td><td>string</td><td>Yes</td><td>Workspace UID this rule belongs to</td></tr><tr><td><code>request</code></td><td>object</td><td>Yes</td><td>HTTP request configuration</td></tr><tr><td><code>request.url</code></td><td>string</td><td>Yes</td><td>Target URL to monitor (must be valid URL)</td></tr><tr><td><code>request.method</code></td><td>string</td><td>Yes</td><td>HTTP method (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>, <code>HEAD</code>, <code>OPTIONS</code>)</td></tr><tr><td><code>request.content_type</code></td><td>string</td><td>No</td><td>Content-Type header</td></tr><tr><td><code>request.data</code></td><td>string</td><td>No</td><td>Request body data</td></tr><tr><td><code>response</code></td><td>object</td><td>Yes</td><td>Expected response configuration</td></tr><tr><td><code>response.statuses</code></td><td>array</td><td>Yes</td><td>Expected HTTP status codes (1-10 status codes)</td></tr><tr><td><code>response.body.content</code></td><td>string</td><td>No</td><td>Expected response body content</td></tr></tbody></table><h3 id=response-2>Response</h3><h4 id=success-response-2>Success Response</h4><p><strong>Status:</strong> 200 OK</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;result&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;id&#34;</span>: <span style=color:#a5d6ff>&#34;rule_123456&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;name&#34;</span>: <span style=color:#a5d6ff>&#34;Website Health Check&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;interval&#34;</span>: <span style=color:#a5d6ff>300</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;workspace_id&#34;</span>: <span style=color:#a5d6ff>&#34;ws_123456&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;request&#34;</span>: {
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;url&#34;</span>: <span style=color:#a5d6ff>&#34;https://example.com&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;method&#34;</span>: <span style=color:#a5d6ff>&#34;GET&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;content_type&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;data&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule_request&#34;</span>
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;response&#34;</span>: {
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;statuses&#34;</span>: [<span style=color:#a5d6ff>200</span>],
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;body&#34;</span>: {
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;content&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule_response_body&#34;</span>
+</span></span><span style=display:flex><span>      },
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule_response&#34;</span>
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;error&#34;</span>: <span style=color:#79c0ff>null</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;meta&#34;</span>: <span style=color:#79c0ff>null</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=error-responses-2>Error Responses</h3><h4 id=2001---validation-error>2001 - Validation Error</h4><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;result&#34;</span>: <span style=color:#79c0ff>null</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;error&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;code&#34;</span>: <span style=color:#a5d6ff>2001</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;error_type&#34;</span>: <span style=color:#a5d6ff>&#34;validation_error&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;message&#34;</span>: <span style=color:#a5d6ff>&#34;Validation failed&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;details&#34;</span>: <span style=color:#a5d6ff>&#34;Field &#39;name&#39; is required&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;meta&#34;</span>: <span style=color:#79c0ff>null</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h4 id=2005---access-denied-1>2005 - Access Denied</h4><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;result&#34;</span>: <span style=color:#79c0ff>null</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;error&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;code&#34;</span>: <span style=color:#a5d6ff>2005</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;error_type&#34;</span>: <span style=color:#a5d6ff>&#34;access_denied&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;message&#34;</span>: <span style=color:#a5d6ff>&#34;Access denied&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;details&#34;</span>: <span style=color:#a5d6ff>&#34;User does not have access to this workspace&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;meta&#34;</span>: <span style=color:#79c0ff>null</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=post-v1rulesuid>POST /v1/rules/{uid}</h2><p>Update rule.</p><h3 id=request-3>Request</h3><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-text data-lang=text><span style=display:flex><span>POST /api/v1/rules/rule_123456
+</span></span><span style=display:flex><span>Authorization: Bearer YOUR_JWT_TOKEN
+</span></span><span style=display:flex><span>Content-Type: application/json
+</span></span></code></pre></div><h3 id=path-parameters-1>Path Parameters</h3><table><thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody><tr><td><code>uid</code></td><td>string</td><td>Yes</td><td>The rule UID</td></tr></tbody></table><h3 id=request-body-1>Request Body</h3><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;name&#34;</span>: <span style=color:#a5d6ff>&#34;Updated Website Health Check&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;interval&#34;</span>: <span style=color:#a5d6ff>600</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;request&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;url&#34;</span>: <span style=color:#a5d6ff>&#34;https://example.com/health&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;method&#34;</span>: <span style=color:#a5d6ff>&#34;GET&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;content_type&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;data&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;response&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;statuses&#34;</span>: [<span style=color:#a5d6ff>200</span>, <span style=color:#a5d6ff>201</span>],
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;body&#34;</span>: {
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;content&#34;</span>: <span style=color:#a5d6ff>&#34;healthy&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=request-fields-1>Request Fields</h3><table><thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody><tr><td><code>name</code></td><td>string</td><td>Yes</td><td>Human-readable rule name (1-100 characters)</td></tr><tr><td><code>interval</code></td><td>integer</td><td>Yes</td><td>Check interval in seconds (60-86400)</td></tr><tr><td><code>request</code></td><td>object</td><td>Yes</td><td>HTTP request configuration</td></tr><tr><td><code>request.url</code></td><td>string</td><td>Yes</td><td>Target URL to monitor (must be valid URL)</td></tr><tr><td><code>request.method</code></td><td>string</td><td>Yes</td><td>HTTP method (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>, <code>HEAD</code>, <code>OPTIONS</code>)</td></tr><tr><td><code>request.content_type</code></td><td>string</td><td>No</td><td>Content-Type header</td></tr><tr><td><code>request.data</code></td><td>string</td><td>No</td><td>Request body data</td></tr><tr><td><code>response</code></td><td>object</td><td>Yes</td><td>Expected response configuration</td></tr><tr><td><code>response.statuses</code></td><td>array</td><td>Yes</td><td>Expected HTTP status codes (1-10 status codes)</td></tr><tr><td><code>response.body.content</code></td><td>string</td><td>No</td><td>Expected response body content</td></tr></tbody></table><h3 id=response-3>Response</h3><h4 id=success-response-3>Success Response</h4><p><strong>Status:</strong> 200 OK</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;result&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;id&#34;</span>: <span style=color:#a5d6ff>&#34;rule_123456&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;name&#34;</span>: <span style=color:#a5d6ff>&#34;Updated Website Health Check&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;interval&#34;</span>: <span style=color:#a5d6ff>600</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;workspace_id&#34;</span>: <span style=color:#a5d6ff>&#34;ws_123456&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;request&#34;</span>: {
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;url&#34;</span>: <span style=color:#a5d6ff>&#34;https://example.com/health&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;method&#34;</span>: <span style=color:#a5d6ff>&#34;GET&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;content_type&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;data&#34;</span>: <span style=color:#a5d6ff>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule_request&#34;</span>
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;response&#34;</span>: {
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;statuses&#34;</span>: [<span style=color:#a5d6ff>200</span>, <span style=color:#a5d6ff>201</span>],
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;body&#34;</span>: {
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;content&#34;</span>: <span style=color:#a5d6ff>&#34;healthy&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule_response_body&#34;</span>
+</span></span><span style=display:flex><span>      },
+</span></span><span style=display:flex><span>      <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule_response&#34;</span>
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;kind&#34;</span>: <span style=color:#a5d6ff>&#34;rule&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;error&#34;</span>: <span style=color:#79c0ff>null</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;meta&#34;</span>: <span style=color:#79c0ff>null</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=delete-v1rulesuid>DELETE /v1/rules/{uid}</h2><p>Delete rule.</p><h3 id=request-4>Request</h3><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-text data-lang=text><span style=display:flex><span>DELETE /api/v1/rules/rule_123456
+</span></span><span style=display:flex><span>Authorization: Bearer YOUR_JWT_TOKEN
+</span></span></code></pre></div><h3 id=path-parameters-2>Path Parameters</h3><table><thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody><tr><td><code>uid</code></td><td>string</td><td>Yes</td><td>The rule UID</td></tr></tbody></table><h3 id=response-4>Response</h3><h4 id=success-response-4>Success Response</h4><p><strong>Status:</strong> 200 OK</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;result&#34;</span>: <span style=color:#79c0ff>null</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;error&#34;</span>: <span style=color:#79c0ff>null</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;meta&#34;</span>: <span style=color:#79c0ff>null</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=error-responses-3>Error Responses</h3><h4 id=2002---rule-not-found-1>2002 - Rule Not Found</h4><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;result&#34;</span>: <span style=color:#79c0ff>null</span>,
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;error&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;code&#34;</span>: <span style=color:#a5d6ff>2002</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;error_type&#34;</span>: <span style=color:#a5d6ff>&#34;not_found&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;message&#34;</span>: <span style=color:#a5d6ff>&#34;Rule not found&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#7ee787>&#34;details&#34;</span>: <span style=color:#a5d6ff>&#34;Rule does not exist or access denied&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#7ee787>&#34;meta&#34;</span>: <span style=color:#79c0ff>null</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=validation-rules>Validation Rules</h2><h3 id=name>Name</h3><ul><li>Required, 1-100 characters</li></ul><h3 id=interval>Interval</h3><ul><li>Required, 60-86400 seconds</li></ul><h3 id=url>URL</h3><ul><li>Required, valid HTTP/HTTPS URL</li></ul><h3 id=method>Method</h3><ul><li>Required: <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>, <code>HEAD</code>, <code>OPTIONS</code></li></ul><h3 id=status-codes>Status Codes</h3><ul><li>Required, 1-10 codes, 100-599 range</li></ul><h3 id=content-type>Content Type</h3><ul><li>Optional, valid MIME type</li></ul><h2 id=notes>Notes</h2><ul><li>Rules are workspace-specific</li><li><code>interval</code> determines check frequency</li><li>Response body validation is optional</li><li>Rules auto-assign to available workers</li></ul><div class=pager><a href=/v1.0.0/api/workspaces/><span class=sm>Previous</span>← Workspaces</a>
+<a class=next href=/v1.0.0/api/regions/><span class=sm>Next</span>Regions →</a></div></main><aside class=toc><div class=h>On this page</div><nav id=TableOfContents><ul><li><a href=#get-v1rules>GET /v1/rules</a><ul><li><a href=#request>Request</a></li><li><a href=#query-parameters>Query Parameters</a></li><li><a href=#response>Response</a></li><li><a href=#error-responses>Error Responses</a></li></ul></li><li><a href=#get-v1rulesuid>GET /v1/rules/{uid}</a><ul><li><a href=#request-1>Request</a></li><li><a href=#path-parameters>Path Parameters</a></li><li><a href=#response-1>Response</a></li><li><a href=#error-responses-1>Error Responses</a></li></ul></li><li><a href=#post-v1rules>POST /v1/rules</a><ul><li><a href=#request-2>Request</a></li><li><a href=#request-body>Request Body</a></li><li><a href=#request-fields>Request Fields</a></li><li><a href=#response-2>Response</a></li><li><a href=#error-responses-2>Error Responses</a></li></ul></li><li><a href=#post-v1rulesuid>POST /v1/rules/{uid}</a><ul><li><a href=#request-3>Request</a></li><li><a href=#path-parameters-1>Path Parameters</a></li><li><a href=#request-body-1>Request Body</a></li><li><a href=#request-fields-1>Request Fields</a></li><li><a href=#response-3>Response</a></li></ul></li><li><a href=#delete-v1rulesuid>DELETE /v1/rules/{uid}</a><ul><li><a href=#request-4>Request</a></li><li><a href=#path-parameters-2>Path Parameters</a></li><li><a href=#response-4>Response</a></li><li><a href=#error-responses-3>Error Responses</a></li></ul></li><li><a href=#validation-rules>Validation Rules</a><ul><li><a href=#name>Name</a></li><li><a href=#interval>Interval</a></li><li><a href=#url>URL</a></li><li><a href=#method>Method</a></li><li><a href=#status-codes>Status Codes</a></li><li><a href=#content-type>Content Type</a></li></ul></li><li><a href=#notes>Notes</a></li></ul></nav></aside></div><script src=/js/search.min.8f9e560dddad932cfa30c1e1f5d6b1f249b9cdc934773e1d111334f124355b62.js defer></script></body></html>

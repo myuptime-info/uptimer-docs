@@ -1,0 +1,40 @@
+<!doctype html><html lang=en data-theme=light><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Slack alerts · Uptimer docs</title><meta name=description content="Send alerts to Slack via the workspace webhook."><link rel=icon href=/favicon.svg type=image/svg+xml><link rel=manifest href=/manifest.json><meta name=theme-color content="#4f46e5"><link rel=preconnect href=https://fonts.bunny.net crossorigin><link rel=stylesheet href="https://fonts.bunny.net/css?family=inter:400,500,600,700|jetbrains-mono:400,600"><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css><link rel=stylesheet href=/css/tokens.min.23f9249a946a7e06300ef28528ef40b3d03b70d8ac458907427b1f42a0369162.css><link rel=stylesheet href=/css/docs.min.70ac0a09c8350e5e795f84a945a75c34c3241ff979eb6e4dff1e4d9798f9779f.css></head><body><div class=verbanner role=note id=verbanner><span>You're viewing <strong>v1.3.0</strong> — an older version.</span>
+<a href=/v1.8.0/alerting/slack-alerts/>Go to the latest (v1.8.0) →</a>
+<button type=button aria-label=Dismiss onclick='this.closest(".verbanner").remove();try{sessionStorage.setItem("u-verbanner-hidden","1")}catch{}'>×</button></div><script>try{if(sessionStorage.getItem("u-verbanner-hidden")){var b=document.getElementById("verbanner");b&&b.remove()}}catch{}</script><header class=site-header><nav class=site-nav><a class=logo href=/v1.3.0/ aria-label="Uptimer docs home"><svg width="22" height="20" viewBox="0 0 50 44" fill="none" aria-hidden="true"><path d="M8 6V22a17 17 0 0034 0V6" stroke="#161a21" stroke-width="8" stroke-linecap="round"/><path d="M2 26h8l4-13 6 24 5-17h18" stroke="#0f9d58" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+Uptimer <span class=docs>/ docs</span></a><div class=site-search-wrap><input class=site-search type=search placeholder="Search  ⌘K" aria-label="Search docs" autocomplete=off spellcheck=false role=combobox aria-expanded=false aria-controls=site-search-results data-version=1.3.0><div class=site-search-results id=site-search-results role=listbox hidden></div></div><details class=verpill-wrap><summary class=verpill>v1.3.0 ▾</summary><ul class=verpill-menu><li><a href=/v1.8.0/>v1.8.0 · latest</a></li><li><a href=/v1.7.0/>v1.7.0</a></li><li><a href=/v1.6.0/>v1.6.0</a></li><li><a href=/v1.5.0/>v1.5.0</a></li><li><a href=/v1.4.0/>v1.4.0</a></li><li><a href=/v1.3.0/ class=on>v1.3.0</a></li><li><a href=/v1.0.0/>v1.0.0</a></li></ul></details><span class=spacer></span>
+<a class=navlink href=/v1.3.0/getting-started/quick-start/>Guides</a>
+<a class=navlink href=/v1.3.0/reference/rest-api/>API Reference</a>
+<a class=navlink href=/v1.3.0/reference/python-sdk/>SDK</a>
+<a class=navlink href=https://myuptime.info rel=noopener>myuptime.info</a></nav></header><div class=shell><nav class=side><div class=grp><a href=/v1.3.0/getting-started/>Getting started</a></div><a href=/v1.3.0/getting-started/quick-start/>Quick start</a>
+<a href=/v1.3.0/getting-started/self-hosting/>Self-hosting</a>
+<a href=/v1.3.0/getting-started/requirements/>Requirements</a><div class=grp><a href=/v1.3.0/core-concepts/>Core concepts</a></div><a href=/v1.3.0/core-concepts/rules-and-checks/>Rules & checks</a>
+<a href=/v1.3.0/core-concepts/assertions/>Expected response</a>
+<a href=/v1.3.0/core-concepts/regions/>Regions</a>
+<a href=/v1.3.0/core-concepts/remote-workers/>Remote workers</a>
+<a href=/v1.3.0/core-concepts/workspaces/>Workspaces</a><div class=grp><a href=/v1.3.0/alerting/>Alerting</a></div><a href=/v1.3.0/alerting/slack-alerts/ class=on>Slack alerts</a>
+<a href=/v1.3.0/alerting/webhooks/>Webhooks</a><div class=grp><a href=/v1.3.0/operating/>Operating</a></div><a href=/v1.3.0/operating/configuration/>Configuration</a>
+<a href=/v1.3.0/operating/storage/>Persistent storage</a>
+<a href=/v1.3.0/operating/authentication/>Authentication</a>
+<a href=/v1.3.0/operating/production/>Production deployment</a><div class=grp><a href=/v1.3.0/reference/>Reference</a></div><a href=/v1.3.0/reference/rest-api/>REST API</a>
+<a href=/v1.3.0/reference/python-sdk/>Python SDK</a>
+<a href=/v1.3.0/reference/metrics/>Metrics</a>
+<a href=/v1.3.0/reference/changelog/>Changelog</a></nav><main class=content><div class=crumbs><a href=/v1.3.0/alerting/>Alerting</a> ›
+Slack alerts</div><h1>Slack alerts</h1><p class=lede>Post a message to Slack when a rule changes state.</p><p>Uptimer sends alerts through <strong>one webhook per workspace</strong>. Point it at a Slack
+<a href=https://api.slack.com/messaging/webhooks>incoming webhook</a> and you get a message in your
+channel whenever a rule flips <strong>up → down</strong> (or recovers).</p><h2 id=set-it-up>Set it up</h2><ol><li>In Slack, create an <strong>Incoming Webhook</strong> and copy its URL.</li><li>In Uptimer, open <strong>Workspace → Settings → Webhook URL</strong>, paste it, and save.</li></ol><p>On the next status change, Uptimer POSTs a Slack-formatted message — green when a rule recovers,
+red when it goes down — with a link back to the rule&rsquo;s history.</p><blockquote><p>Alerts fire on <strong>state transitions</strong>, not on every check: one message when a rule goes down,
+one when it recovers — not one per interval.</p></blockquote><p>The webhook is configured in the dashboard (not the REST API), and there is <strong>one URL per
+workspace</strong>. It covers <strong>every rule</strong> in that workspace — there is no per-rule switch: set the
+URL and all rules alert. To send somewhere other than Slack, see
+<a href=/v1.3.0/alerting/webhooks/>Webhooks</a>.</p><h2 id=when-an-alert-actually-fires>When an alert actually fires</h2><p>An alert is sent on a status <strong>transition</strong>, so Uptimer must already have a status to change
+<em>from</em>. That has a few consequences worth knowing when you&rsquo;re testing:</p><ul><li>A brand-new rule&rsquo;s <strong>first</strong> check only records its starting status — no alert is sent for it.</li><li>So a rule that is <strong>down from the moment you create it never alerts</strong> — it has no healthy
+baseline to fall from. Point a new rule at a <strong>healthy</strong> URL first, let it go <strong>Up</strong>, and it
+will then alert on the next real outage.</li><li>Give it at least <strong>two check intervals</strong> (≥ 2 minutes at the default one-minute cadence) to
+produce the first transition.</li><li>A rule stuck at <strong>No Data</strong> (no <a href=/v1.3.0/core-concepts/regions/>region</a> assigned) never alerts
+— it isn&rsquo;t being checked at all.</li></ul><p>The webhook is called <strong>from the Uptimer server</strong> (or its container), so the URL must be
+reachable from there — a <code>localhost</code> receiver on your laptop is <strong>not</strong> reachable from inside the
+container. If nothing arrives, check the server logs for the outgoing webhook POST.</p><blockquote><p><strong>Delivery is best-effort.</strong> Uptimer sends the webhook once, in the background — there is no
+delivery-status indicator, retry, or &ldquo;send test&rdquo; button yet, and a failed POST is recorded only
+in the <strong>server logs</strong>, not the dashboard. If alerts don&rsquo;t arrive and the URL is reachable, the
+logs are the place to look.</p></blockquote><div class=pager><a href=/v1.3.0/core-concepts/workspaces/><span class=sm>Previous</span>← Workspaces</a>
+<a class=next href=/v1.3.0/alerting/webhooks/><span class=sm>Next</span>Webhooks →</a></div></main><aside class=toc><div class=h>On this page</div><nav id=TableOfContents><ul><li><a href=#set-it-up>Set it up</a></li><li><a href=#when-an-alert-actually-fires>When an alert actually fires</a></li></ul></nav></aside></div><script src=/js/search.min.8f9e560dddad932cfa30c1e1f5d6b1f249b9cdc934773e1d111334f124355b62.js defer></script></body></html>

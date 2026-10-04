@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Getting started on Uptimer</title><link>https://uptimer.myuptime.info/v1.8.0/getting-started/</link><description>Recent content in Getting started on Uptimer</description><generator>Hugo</generator><language>en</language><atom:link href="https://uptimer.myuptime.info/v1.8.0/getting-started/index.xml" rel="self" type="application/rss+xml"/><item><title>Quick start</title><link>https://uptimer.myuptime.info/v1.8.0/getting-started/quick-start/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.8.0/getting-started/quick-start/</guid><description>&lt;p&gt;Uptimer is a self-hosted uptime &amp;amp; synthetic monitor: it checks your HTTP(S) endpoints on a
+schedule and alerts you when they break. The &lt;strong&gt;same engine&lt;/strong&gt; runs hosted at
+&lt;a href="https://myuptime.info"&gt;myuptime.info&lt;/a&gt; — and you can &lt;strong&gt;export&lt;/strong&gt; your data as YAML and import it
+into your own instance (or the other way round) at any time, so neither choice locks you in.&lt;/p&gt;
+&lt;p&gt;Below is the one-command run, explained.&lt;/p&gt;
+&lt;h2 id="run-it"&gt;Run it&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker run -p 2517:2517 ghcr.io/myuptime-info/uptimer:1.8.0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;2517&lt;/code&gt; serves the &lt;strong&gt;web UI and the REST API&lt;/strong&gt; (the API lives under &lt;code&gt;/api&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;The default command is &lt;code&gt;dev&lt;/code&gt;: every service in one process, an &lt;strong&gt;in-memory database&lt;/strong&gt; that
+resets on restart, and &lt;strong&gt;fake auth — any visitor is an admin&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Open &lt;strong&gt;http://127.0.0.1:2517&lt;/strong&gt;. You land on &lt;strong&gt;Monitoring&lt;/strong&gt; — the one list of everything you
+watch. Choose &lt;strong&gt;Add website monitoring&lt;/strong&gt;, give it a URL, an interval and at least one location,
+and Uptimer starts checking it.&lt;/p&gt;</description></item><item><title>Self-hosting</title><link>https://uptimer.myuptime.info/v1.8.0/getting-started/self-hosting/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.8.0/getting-started/self-hosting/</guid><description>&lt;p&gt;Uptimer scales from one command to a split, migrated, Postgres-backed cluster. Each step below is
+a &lt;strong&gt;complete, runnable &lt;code&gt;docker-compose.yml&lt;/code&gt;&lt;/strong&gt; plus the reason for it — add only the steps you
+need; each hardens the one before.&lt;/p&gt;
+&lt;h2 id="1--dev--one-command"&gt;1 · Dev — one command&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker run -p 2517:2517 ghcr.io/myuptime-info/uptimer:1.8.0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The default &lt;code&gt;dev&lt;/code&gt; command runs every service in one process, with fake auth (any visitor is an
+admin) and an in-memory database. Nothing survives a restart — fine for a look. Everything below
+makes it real.&lt;/p&gt;</description></item><item><title>Requirements</title><link>https://uptimer.myuptime.info/v1.8.0/getting-started/requirements/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.8.0/getting-started/requirements/</guid><description>&lt;h2 id="software"&gt;Software&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Docker 19.03+&lt;/strong&gt; (or any OCI runtime). The image is multi-arch — &lt;code&gt;amd64&lt;/code&gt; and &lt;code&gt;arm64&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A database&lt;/strong&gt; — SQLite needs nothing extra; PostgreSQL is recommended for production.
+See &lt;a href="https://uptimer.myuptime.info/v1.8.0/operating/configuration/#choosing-a-database"&gt;Choosing a database&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Uptimer is a single &lt;strong&gt;static Go binary&lt;/strong&gt; — no runtime, no build step, and you don&amp;rsquo;t need Go
+installed. Prefer not to run Docker? Copy the binary straight out of the image and run it:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker create --name tmp ghcr.io/myuptime-info/uptimer:1.8.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker cp tmp:/app/uptimer ./uptimer &lt;span style="color:#ff7b72;font-weight:bold"&gt;&amp;amp;&amp;amp;&lt;/span&gt; docker rm tmp
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;./uptimer dev
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The image ships a &lt;strong&gt;Linux&lt;/strong&gt; binary (&lt;code&gt;amd64&lt;/code&gt;/&lt;code&gt;arm64&lt;/code&gt;), so copy it out only on a Linux host — on
+macOS or Windows it&amp;rsquo;s an &lt;code&gt;exec format error&lt;/code&gt;; run it inside the container there instead.&lt;/p&gt;</description></item></channel></rss>

@@ -1,0 +1,32 @@
+---
+title: "Docs search for AI tools (MCP)"
+description: "Search these docs from an AI assistant through the Model Context Protocol endpoint at /mcp."
+---
+
+This site serves a Model Context Protocol (MCP) server at `/mcp`. An AI assistant connected to it can search these 2.0.0-preview pages and read them. It searches documentation only: it cannot reach your Uptimer installation.
+
+## Connect
+
+Add the server to your MCP client:
+
+```json
+{
+  "mcpServers": {
+    "uptimer-docs": {
+      "url": "https://uptimer.myuptime.info/mcp"
+    }
+  }
+}
+```
+
+With Claude Code:
+
+```bash
+claude mcp add --transport http uptimer-docs https://uptimer.myuptime.info/mcp
+```
+
+The server lists one search tool. Ask it, for example, "How do I rotate a worker certificate?".
+
+## What it covers
+
+It searches the pages on this site: the 2.0.0-preview guides and references. It does not search the [1.x archive](/legacy).

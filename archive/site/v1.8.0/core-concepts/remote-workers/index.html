@@ -1,0 +1,48 @@
+<!doctype html><html lang=en data-theme=light><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Remote workers · Uptimer docs</title><meta name=description content="Add a remote worker: init, register, connect over gRPC."><link rel=icon href=/favicon.svg type=image/svg+xml><link rel=manifest href=/manifest.json><meta name=theme-color content="#4f46e5"><link rel=preconnect href=https://fonts.bunny.net crossorigin><link rel=stylesheet href="https://fonts.bunny.net/css?family=inter:400,500,600,700|jetbrains-mono:400,600"><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css><link rel=stylesheet href=/css/tokens.min.23f9249a946a7e06300ef28528ef40b3d03b70d8ac458907427b1f42a0369162.css><link rel=stylesheet href=/css/docs.min.70ac0a09c8350e5e795f84a945a75c34c3241ff979eb6e4dff1e4d9798f9779f.css></head><body><header class=site-header><nav class=site-nav><a class=logo href=/v1.8.0/ aria-label="Uptimer docs home"><svg width="22" height="20" viewBox="0 0 50 44" fill="none" aria-hidden="true"><path d="M8 6V22a17 17 0 0034 0V6" stroke="#161a21" stroke-width="8" stroke-linecap="round"/><path d="M2 26h8l4-13 6 24 5-17h18" stroke="#0f9d58" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+Uptimer <span class=docs>/ docs</span></a><div class=site-search-wrap><input class=site-search type=search placeholder="Search  ⌘K" aria-label="Search docs" autocomplete=off spellcheck=false role=combobox aria-expanded=false aria-controls=site-search-results data-version=1.8.0><div class=site-search-results id=site-search-results role=listbox hidden></div></div><details class=verpill-wrap><summary class=verpill>v1.8.0 ▾</summary><ul class=verpill-menu><li><a href=/v1.8.0/ class=on>v1.8.0 · latest</a></li><li><a href=/v1.7.0/>v1.7.0</a></li><li><a href=/v1.6.0/>v1.6.0</a></li><li><a href=/v1.5.0/>v1.5.0</a></li><li><a href=/v1.4.0/>v1.4.0</a></li><li><a href=/v1.3.0/>v1.3.0</a></li><li><a href=/v1.0.0/>v1.0.0</a></li></ul></details><span class=spacer></span>
+<a class=navlink href=/v1.8.0/getting-started/quick-start/>Guides</a>
+<a class=navlink href=/v1.8.0/reference/rest-api/>API Reference</a>
+<a class=navlink href=/v1.8.0/reference/python-sdk/>SDK</a>
+<a class=navlink href=https://myuptime.info rel=noopener>myuptime.info</a></nav></header><div class=shell><nav class=side><div class=grp><a href=/v1.8.0/getting-started/>Getting started</a></div><a href=/v1.8.0/getting-started/quick-start/>Quick start</a>
+<a href=/v1.8.0/getting-started/self-hosting/>Self-hosting</a>
+<a href=/v1.8.0/getting-started/requirements/>Requirements</a><div class=grp><a href=/v1.8.0/core-concepts/>Core concepts</a></div><a href=/v1.8.0/core-concepts/monitors-and-incidents/>Monitors & incidents</a>
+<a href=/v1.8.0/core-concepts/signals-and-rules/>Signals & rules</a>
+<a href=/v1.8.0/core-concepts/assertions/>Expected response</a>
+<a href=/v1.8.0/core-concepts/locations/>Locations</a>
+<a href=/v1.8.0/core-concepts/remote-workers/ class=on>Remote workers</a>
+<a href=/v1.8.0/core-concepts/workspaces/>Workspaces</a><div class=grp><a href=/v1.8.0/alerting/>Alerting</a></div><a href=/v1.8.0/alerting/destinations/>Destinations</a>
+<a href=/v1.8.0/alerting/alert-delivery/>Alert delivery</a>
+<a href=/v1.8.0/alerting/transformations/>Transformations</a>
+<a href=/v1.8.0/alerting/delivery-log/>Delivery log</a>
+<a href=/v1.8.0/alerting/slack-alerts/>Slack alerts</a>
+<a href=/v1.8.0/alerting/webhooks/>Webhooks</a><div class=grp><a href=/v1.8.0/operating/>Operating</a></div><a href=/v1.8.0/operating/configuration/>Configuration</a>
+<a href=/v1.8.0/operating/storage/>Persistent storage</a>
+<a href=/v1.8.0/operating/authentication/>Authentication</a>
+<a href=/v1.8.0/operating/production/>Production deployment</a><div class=grp><a href=/v1.8.0/reference/>Reference</a></div><a href=/v1.8.0/reference/rest-api/>REST API</a>
+<a href=/v1.8.0/reference/python-sdk/>Python SDK</a>
+<a href=/v1.8.0/reference/metrics/>Metrics</a>
+<a href=/v1.8.0/reference/changelog/>Changelog</a></nav><main class=content><div class=crumbs><a href=/v1.8.0/core-concepts/>Core concepts</a> ›
+Remote workers</div><h1>Remote workers</h1><p class=lede>Run your own prober to check from a private network or an extra location.</p><p>A <strong>worker</strong> is a prober: it pulls rules from the server, runs the checks, and reports results
+back over gRPC. Running one elsewhere adds a <a href=/v1.8.0/core-concepts/locations/>location</a> you
+control — inside a private network, or a second geography. Each worker has its own identity and
+must be <strong>registered once</strong> in the dashboard before it can connect.</p><h2 id=add-a-worker>Add a worker</h2><p><strong>1. Generate the worker&rsquo;s identity.</strong> This writes <code>worker.pem</code> + <code>worker.uuid</code> to the data dir
+and prints what you&rsquo;ll register:</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-sh data-lang=sh><span style=display:flex><span>docker run -v uptimer-data:/data ghcr.io/myuptime-info/uptimer:1.8.0 worker init
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-text data-lang=text><span style=display:flex><span>Private key generated and saved: /data/worker.pem
+</span></span><span style=display:flex><span>UUID generated and saved: /data/worker.uuid
+</span></span><span style=display:flex><span>Worker UUID: 7f3c1e90-4a2b-4c11-9f5e-2b8d6a0c1234
+</span></span><span style=display:flex><span>Public Key:
+</span></span><span style=display:flex><span>-----BEGIN PUBLIC KEY-----
+</span></span><span style=display:flex><span>MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA…
+</span></span><span style=display:flex><span>-----END PUBLIC KEY-----
+</span></span></code></pre></div><p><strong>2. Register it</strong> in the dashboard — <strong>Server → Workers → Add</strong> — mapping the output to the
+form:</p><table><thead><tr><th>From the init output</th><th>Dashboard field</th></tr></thead><tbody><tr><td><code>Worker UUID: …</code></td><td><strong>UID</strong> (the form labels it UID — paste the whole <code>Worker UUID</code> value)</td></tr><tr><td>the whole <code>Public Key</code> PEM block</td><td><strong>Public Key</strong></td></tr><tr><td><em>(your choice)</em></td><td><strong>Name</strong></td></tr><tr><td><em>(pick an existing one, or create one inline)</em></td><td><strong>Location</strong> — the location this worker serves</td></tr></tbody></table><p>The <strong>Location</strong> selector lists locations by name; if you have none yet, create one from the same
+form. (Its underlying value is the location&rsquo;s short id, not the worker UUID — pick by name and
+you won&rsquo;t hit the &ldquo;please select a valid location&rdquo; error.)</p><p><strong>3. Run the worker</strong>, pointed at the server&rsquo;s gRPC address:</p><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#7ee787>worker</span>:<span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>  </span><span style=color:#7ee787>grpc_server</span>:<span style=color:#6e7681> </span><span style=color:#a5d6ff>uptimer-grpc.example.com:50051</span><span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>  </span><span style=color:#7ee787>grpc_use_tls</span>:<span style=color:#6e7681> </span><span style=color:#79c0ff>true</span><span style=color:#6e7681>
+</span></span></span></code></pre></div><p>The worker signs every gRPC call with its private key; the server validates it against the
+registered public key. A complete, runnable server + workers stack is in
+<a href=https://github.com/myuptime-info/uptimer-docs/tree/main/examples/1.6.0/remote-workers><code>examples/1.6.0/remote-workers</code></a>;
+the production topology is on the <a href=/v1.8.0/operating/production/>Production deployment</a> page.</p><h2 id=tls>TLS</h2><p>The gRPC server doesn&rsquo;t terminate TLS itself — put it behind a reverse proxy / load balancer that
+does, and set <code>worker.grpc_use_tls: true</code>. Leave it <code>false</code> only on a trusted internal network.</p><div class=pager><a href=/v1.8.0/core-concepts/locations/><span class=sm>Previous</span>← Locations</a>
+<a class=next href=/v1.8.0/core-concepts/workspaces/><span class=sm>Next</span>Workspaces →</a></div></main><aside class=toc><div class=h>On this page</div><nav id=TableOfContents><ul><li><a href=#add-a-worker>Add a worker</a></li><li><a href=#tls>TLS</a></li></ul></nav></aside></div><script src=/js/search.min.8f9e560dddad932cfa30c1e1f5d6b1f249b9cdc934773e1d111334f124355b62.js defer></script></body></html>

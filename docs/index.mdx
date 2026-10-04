@@ -1,0 +1,33 @@
+---
+title: "Uptimer 2.0.0-preview"
+description: "Self-hosted monitoring that explains every decision: Resources, Signals, Rules and Incidents."
+---
+
+<Warning>
+This is the **2.0.0-preview** documentation, written for the Uptimer 2.0 field test. Commands and image tags on these pages are preview builds. Running Uptimer 1.x? Use the [1.x documentation](/legacy).
+</Warning>
+
+Uptimer watches your services and tells you, with its reasons, when one is in trouble.
+
+- A **Resource** is something you watch: a website, an API, a job.
+- A **Signal** is one stream of evidence about it. A managed worker or your own scripts send **Observations** on it.
+- A **Rule** reads the Signals and decides whether the Resource is in trouble.
+- An **Incident** is one period of trouble from one Rule. It has a lifecycle (open, closed), a confirmation (confirmed, unconfirmed) and a history.
+- A **Workspace** holds Resources and their people.
+
+## Start here
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Run the server and a worker with Docker Compose, then watch your first Resource.
+  </Card>
+  <Card title="From an API key to an Incident" icon="code" href="/first-incident-api">
+    Create a Resource, send an Observation and read the Incident with the Python SDK.
+  </Card>
+  <Card title="Run it for real" icon="server" href="/operating/running">
+    Ports, storage, sign-in, workers, logs and Sentry.
+  </Card>
+  <Card title="Coming from 1.8" icon="arrow-right-arrow-left" href="/operating/upgrading-from-1.8">
+    2.0 is a fresh installation. Here is what to recreate.
+  </Card>
+</CardGroup>

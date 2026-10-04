@@ -1,0 +1,32 @@
+# Uptimer 2.0.0-preview: the control plane and one worker on one host.
+# For a trial. Production: see https://uptimer.myuptime.info/operating/running
+services:
+  uptimer:
+    image: ghcr.io/myuptime-info/uptimer:2.0.0-rc1   # preview build
+    ports:
+      - "8080:8080"   # the UI and the API
+      - "9090:9090"   # /metrics, /livez, /readyz
+    environment:
+      UPTIMER__AUTH__DEV: "true"                       # trial sign-in; use OIDC in production
+      UPTIMER__GENERAL__SITE_URL: http://localhost:8080
+      UPTIMER__GRPC__HOSTS: uptimer,localhost          # names the worker API's certificate is good for
+    volumes:
+      - uptimer-data:/data
+
+  worker:
+    image: ghcr.io/myuptime-info/uptimer:2.0.0-rc1   # preview build
+    command: ["worker"]
+    restart: on-failure                                # waits until its certificate exists
+    environment:
+      UPTIMER__WORKER__GRPC_SERVER: uptimer:50051
+      UPTIMER__WORKER__CERT_FILE: /control/workers/edge-1/worker.pem
+      UPTIMER__WORKER__KEY_FILE: /control/workers/edge-1/worker-key.pem
+      UPTIMER__WORKER__CA_FILE: /control/workers/edge-1/worker-ca.pem
+      UPTIMER__OPS__PORT: "9091"
+    volumes:
+      - uptimer-data:/control:ro                       # one host only: reads the files worker-cert wrote
+    depends_on:
+      - uptimer
+
+volumes:
+  uptimer-data:

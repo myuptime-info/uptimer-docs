@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>API Reference on Uptimer</title><link>https://uptimer.myuptime.info/v1.0.0/api/</link><description>Recent content in API Reference on Uptimer</description><generator>Hugo</generator><language>en</language><atom:link href="https://uptimer.myuptime.info/v1.0.0/api/index.xml" rel="self" type="application/rss+xml"/><item><title>Version</title><link>https://uptimer.myuptime.info/v1.0.0/api/version/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.0.0/api/version/</guid><description>&lt;h1 id="version-endpoint"&gt;Version Endpoint&lt;/h1&gt;
+&lt;p&gt;Get API version information.&lt;/p&gt;
+&lt;h2 id="get-version"&gt;GET /version&lt;/h2&gt;
+&lt;p&gt;Returns the current API version. This endpoint does not require authentication.&lt;/p&gt;
+&lt;h3 id="request"&gt;Request&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;GET /api/version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="response"&gt;Response&lt;/h3&gt;
+&lt;h4 id="success-response"&gt;Success Response&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;Status:&lt;/strong&gt; 200 OK&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;1.0.0&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="response-fields"&gt;Response Fields&lt;/h4&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;Field&lt;/th&gt;
+					&lt;th&gt;Type&lt;/th&gt;
+					&lt;th&gt;Description&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;The current API version (e.g., &amp;ldquo;1.0.0&amp;rdquo;)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;error&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;null&lt;/td&gt;
+					&lt;td&gt;Always null for successful responses&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;meta&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;null&lt;/td&gt;
+					&lt;td&gt;Always null for this endpoint&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="example"&gt;Example&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl -X GET https://your-uptimer-instance.com/api/version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Response:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;1.0.0&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="notes"&gt;Notes&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;This endpoint is &lt;strong&gt;public&lt;/strong&gt; and does not require authentication&lt;/li&gt;
+&lt;li&gt;The version string follows semantic versioning (e.g., &amp;ldquo;1.0.0&amp;rdquo;)&lt;/li&gt;
+&lt;li&gt;During development, the version may be &amp;ldquo;dev&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;The version can be overridden during build using build flags&lt;/li&gt;
+&lt;/ul&gt;</description></item><item><title>Workspaces</title><link>https://uptimer.myuptime.info/v1.0.0/api/workspaces/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.0.0/api/workspaces/</guid><description>&lt;h1 id="workspaces-endpoints"&gt;Workspaces Endpoints&lt;/h1&gt;
+&lt;p&gt;Manage workspaces and permissions.&lt;/p&gt;
+&lt;h2 id="get-v1workspaces"&gt;GET /v1/workspaces&lt;/h2&gt;
+&lt;p&gt;Returns user&amp;rsquo;s workspaces.&lt;/p&gt;
+&lt;h3 id="request"&gt;Request&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;GET /api/v1/workspaces
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Authorization: Bearer YOUR_JWT_TOKEN
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="response"&gt;Response&lt;/h3&gt;
+&lt;h4 id="success-response"&gt;Success Response&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;Status:&lt;/strong&gt; 200 OK&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;ws_123456&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Production Monitoring&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;role&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;owner&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;kind&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;workspace&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;ws_789012&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Development Environment&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;role&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;member&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;kind&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;workspace&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ],
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="response-fields"&gt;Response Fields&lt;/h4&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;Field&lt;/th&gt;
+					&lt;th&gt;Type&lt;/th&gt;
+					&lt;th&gt;Description&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;array&lt;/td&gt;
+					&lt;td&gt;Array of workspace objects&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].id&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Unique workspace identifier&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].name&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Human-readable workspace name&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].role&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;User&amp;rsquo;s role in this workspace (&lt;code&gt;owner&lt;/code&gt;, &lt;code&gt;member&lt;/code&gt;)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].kind&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Object type identifier (&lt;code&gt;workspace&lt;/code&gt;)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;error&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;null&lt;/td&gt;
+					&lt;td&gt;Always null for successful responses&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;meta&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;null&lt;/td&gt;
+					&lt;td&gt;Always null for this endpoint&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h4 id="user-roles"&gt;User Roles&lt;/h4&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;Role&lt;/th&gt;
+					&lt;th&gt;Description&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;owner&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Full access to workspace&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;member&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Can manage rules within workspace&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="error-responses"&gt;Error Responses&lt;/h3&gt;
+&lt;h4 id="1001---missing-authorization-header"&gt;1001 - Missing Authorization Header&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;code&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;1001&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error_type&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;access_denied&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;message&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Missing Authorization header&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;details&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Authorization header is required&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="1003---invalid-token"&gt;1003 - Invalid Token&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;code&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;1003&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error_type&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;access_denied&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;message&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Invalid token&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;details&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;The provided JWT token is invalid or expired&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="example"&gt;Example&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl -X GET https://your-uptimer-instance.com/api/v1/workspaces &lt;span style="color:#79c0ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; -H &lt;span style="color:#a5d6ff"&gt;&amp;#34;Authorization: Bearer YOUR_JWT_TOKEN&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Response:&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>Rules</title><link>https://uptimer.myuptime.info/v1.0.0/api/rules/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.0.0/api/rules/</guid><description>&lt;h1 id="rules-endpoints"&gt;Rules Endpoints&lt;/h1&gt;
+&lt;p&gt;Manage monitoring rules within workspaces.&lt;/p&gt;
+&lt;h2 id="get-v1rules"&gt;GET /v1/rules&lt;/h2&gt;
+&lt;p&gt;Get all rules for workspace.&lt;/p&gt;
+&lt;h3 id="request"&gt;Request&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;GET /api/v1/rules?workspace_id=ws_123456
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Authorization: Bearer YOUR_JWT_TOKEN
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="query-parameters"&gt;Query Parameters&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;Parameter&lt;/th&gt;
+					&lt;th&gt;Type&lt;/th&gt;
+					&lt;th&gt;Required&lt;/th&gt;
+					&lt;th&gt;Description&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;workspace_id&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Yes&lt;/td&gt;
+					&lt;td&gt;The workspace UID&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="response"&gt;Response&lt;/h3&gt;
+&lt;h4 id="success-response"&gt;Success Response&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;Status:&lt;/strong&gt; 200 OK&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;rule_123456&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Website Health Check&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;interval&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;300&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;workspace_id&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;ws_123456&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;request&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;url&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;https://example.com&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;method&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;GET&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;content_type&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;data&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;kind&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;rule_request&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;response&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;statuses&amp;#34;&lt;/span&gt;: [&lt;span style="color:#a5d6ff"&gt;200&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;body&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;content&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;kind&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;rule_response_body&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;kind&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;rule_response&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;kind&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;rule&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ],
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="response-fields"&gt;Response Fields&lt;/h4&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;Field&lt;/th&gt;
+					&lt;th&gt;Type&lt;/th&gt;
+					&lt;th&gt;Description&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;array&lt;/td&gt;
+					&lt;td&gt;Array of rule objects&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].id&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Unique rule identifier&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].name&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Human-readable rule name&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].interval&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;integer&lt;/td&gt;
+					&lt;td&gt;Check interval in seconds&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].workspace_id&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Workspace UID this rule belongs to&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].request&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;object&lt;/td&gt;
+					&lt;td&gt;HTTP request configuration&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].request.url&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Target URL to monitor&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].request.method&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;HTTP method (&lt;code&gt;GET&lt;/code&gt;, &lt;code&gt;POST&lt;/code&gt;, &lt;code&gt;PUT&lt;/code&gt;, etc.)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].request.content_type&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Content-Type header (optional)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].request.data&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Request body data (optional)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].response&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;object&lt;/td&gt;
+					&lt;td&gt;Expected response configuration&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].response.statuses&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;array&lt;/td&gt;
+					&lt;td&gt;Expected HTTP status codes&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].response.body.content&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Expected response body content (optional)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].kind&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Object type identifier (&lt;code&gt;rule&lt;/code&gt;)&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="error-responses"&gt;Error Responses&lt;/h3&gt;
+&lt;h4 id="2004---missing-workspace-id"&gt;2004 - Missing Workspace ID&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;code&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;2004&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error_type&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;validation_error&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;message&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Missing workspace ID&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;details&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;workspace_id query parameter is required&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="2005---access-denied"&gt;2005 - Access Denied&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;code&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;2005&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error_type&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;access_denied&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;message&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Access denied&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;details&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;User does not have access to this workspace&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="get-v1rulesuid"&gt;GET /v1/rules/{uid}&lt;/h2&gt;
+&lt;p&gt;Get rule by UID.&lt;/p&gt;</description></item><item><title>Regions</title><link>https://uptimer.myuptime.info/v1.0.0/api/regions/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.0.0/api/regions/</guid><description>&lt;h1 id="regions-endpoints"&gt;Regions Endpoints&lt;/h1&gt;
+&lt;p&gt;Get available monitoring regions.&lt;/p&gt;
+&lt;h2 id="get-v1regions"&gt;GET /v1/regions&lt;/h2&gt;
+&lt;p&gt;Returns available regions with worker counts.&lt;/p&gt;
+&lt;h3 id="request"&gt;Request&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;GET /api/v1/regions
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Authorization: Bearer YOUR_JWT_TOKEN
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="response"&gt;Response&lt;/h3&gt;
+&lt;h4 id="success-response"&gt;Success Response&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;Status:&lt;/strong&gt; 200 OK&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;us-east-1&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;us-east-1&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;active_workers_count&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;5&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;kind&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;region&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;eu-west-1&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;eu-west-1&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;display_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;EU West (Ireland)&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;active_workers_count&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;3&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;kind&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;region&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ],
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="response-fields"&gt;Response Fields&lt;/h4&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;Field&lt;/th&gt;
+					&lt;th&gt;Type&lt;/th&gt;
+					&lt;th&gt;Description&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;array&lt;/td&gt;
+					&lt;td&gt;Array of region objects&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].id&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Unique region identifier&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].name&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Region name (e.g., &amp;ldquo;us-east-1&amp;rdquo;)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].active_workers_count&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;integer&lt;/td&gt;
+					&lt;td&gt;Number of active workers in this region&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;result[].kind&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;string&lt;/td&gt;
+					&lt;td&gt;Object type identifier (&lt;code&gt;region&lt;/code&gt;)&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="error-responses"&gt;Error Responses&lt;/h3&gt;
+&lt;h4 id="1001---missing-authorization-header"&gt;1001 - Missing Authorization Header&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;code&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;1001&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error_type&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;access_denied&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;message&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Missing Authorization header&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;details&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Authorization header is required&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="1003---invalid-token"&gt;1003 - Invalid Token&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;code&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;1003&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error_type&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;access_denied&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;message&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Invalid token&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;details&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;The provided JWT token is invalid or expired&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="example"&gt;Example&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl -X GET https://your-uptimer-instance.com/api/v1/regions &lt;span style="color:#79c0ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; -H &lt;span style="color:#a5d6ff"&gt;&amp;#34;Authorization: Bearer YOUR_JWT_TOKEN&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Response:&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>API Examples</title><link>https://uptimer.myuptime.info/v1.0.0/api/examples/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.0.0/api/examples/</guid><description>&lt;h1 id="api-examples"&gt;API Examples&lt;/h1&gt;
+&lt;p&gt;Basic usage examples.&lt;/p&gt;
+&lt;h2 id="authentication-setup"&gt;Authentication Setup&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;export &lt;span style="color:#79c0ff"&gt;UPTIMER_TOKEN&lt;/span&gt;&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;your_jwt_token_here&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Authorization: Bearer YOUR_JWT_TOKEN
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="basic-operations"&gt;Basic Operations&lt;/h2&gt;
+&lt;h3 id="create-rule"&gt;Create Rule&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl -X POST https://your-uptimer-instance.com/api/v1/rules &lt;span style="color:#79c0ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; -H &lt;span style="color:#a5d6ff"&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;&lt;span style="color:#79c0ff"&gt;$UPTIMER_TOKEN&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;&lt;/span&gt; &lt;span style="color:#79c0ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; -H &lt;span style="color:#a5d6ff"&gt;&amp;#34;Content-Type: application/json&amp;#34;&lt;/span&gt; &lt;span style="color:#79c0ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; -d &lt;span style="color:#a5d6ff"&gt;&amp;#39;{
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;name&amp;#34;: &amp;#34;Website Health Check&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;interval&amp;#34;: 300,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;workspace_id&amp;#34;: &amp;#34;ws_123456&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;request&amp;#34;: {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;url&amp;#34;: &amp;#34;https://example.com&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;method&amp;#34;: &amp;#34;GET&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;response&amp;#34;: {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;statuses&amp;#34;: [200]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; }&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Authorization: Bearer YOUR_JWT_TOKEN
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Content-Type: application/json
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="list-workspaces"&gt;List Workspaces&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl -X GET https://your-uptimer-instance.com/api/v1/workspaces &lt;span style="color:#79c0ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; -H &lt;span style="color:#a5d6ff"&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;&lt;span style="color:#79c0ff"&gt;$UPTIMER_TOKEN&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Authorization: Bearer YOUR_JWT_TOKEN
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="list-rules"&gt;List Rules&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl -X GET &lt;span style="color:#a5d6ff"&gt;&amp;#34;https://your-uptimer-instance.com/api/v1/rules?workspace_id=ws_123456&amp;#34;&lt;/span&gt; &lt;span style="color:#79c0ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; -H &lt;span style="color:#a5d6ff"&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;&lt;span style="color:#79c0ff"&gt;$UPTIMER_TOKEN&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Authorization: Bearer YOUR_JWT_TOKEN
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="update-rule"&gt;Update Rule&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl -X POST https://your-uptimer-instance.com/api/v1/rules/rule_123456 &lt;span style="color:#79c0ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; -H &lt;span style="color:#a5d6ff"&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;&lt;span style="color:#79c0ff"&gt;$UPTIMER_TOKEN&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;&lt;/span&gt; &lt;span style="color:#79c0ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; -H &lt;span style="color:#a5d6ff"&gt;&amp;#34;Content-Type: application/json&amp;#34;&lt;/span&gt; &lt;span style="color:#79c0ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; -d &lt;span style="color:#a5d6ff"&gt;&amp;#39;{
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;name&amp;#34;: &amp;#34;Updated Rule&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;interval&amp;#34;: 120,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;request&amp;#34;: {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;url&amp;#34;: &amp;#34;https://example.com&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;method&amp;#34;: &amp;#34;GET&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;response&amp;#34;: {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; &amp;#34;statuses&amp;#34;: [200]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a5d6ff"&gt; }&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Authorization: Bearer YOUR_JWT_TOKEN
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Content-Type: application/json
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="delete-rule"&gt;Delete Rule&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl -X DELETE https://your-uptimer-instance.com/api/v1/rules/rule_123456 &lt;span style="color:#79c0ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; -H &lt;span style="color:#a5d6ff"&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;&lt;span style="color:#79c0ff"&gt;$UPTIMER_TOKEN&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Authorization: Bearer YOUR_JWT_TOKEN
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="get-regions"&gt;Get Regions&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl -X GET https://your-uptimer-instance.com/api/v1/regions &lt;span style="color:#79c0ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; -H &lt;span style="color:#a5d6ff"&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;&lt;span style="color:#79c0ff"&gt;$UPTIMER_TOKEN&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Authorization: Bearer YOUR_JWT_TOKEN
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="error-handling"&gt;Error Handling&lt;/h2&gt;
+&lt;h3 id="validation-error"&gt;Validation Error&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;code&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;2001&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error_type&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;validation_error&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;message&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Validation failed&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;details&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Field &amp;#39;name&amp;#39; is required&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="access-denied"&gt;Access Denied&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;result&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;code&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;2005&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;error_type&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;access_denied&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;message&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Access denied&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;details&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;User does not have access to this workspace&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;meta&amp;#34;&lt;/span&gt;: &lt;span style="color:#79c0ff"&gt;null&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>SDKs &amp; Libraries</title><link>https://uptimer.myuptime.info/v1.0.0/api/sdks/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.0.0/api/sdks/</guid><description>&lt;h1 id="sdks--libraries"&gt;SDKs &amp;amp; Libraries&lt;/h1&gt;
+&lt;p&gt;Official and community SDKs for interacting with the Uptimer API.&lt;/p&gt;
+&lt;h2 id="python-sdk"&gt;Python SDK&lt;/h2&gt;
+&lt;p&gt;The official Python SDK provides a convenient way to interact with the Uptimer API from Python applications.&lt;/p&gt;
+&lt;h3 id="installation"&gt;Installation&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;pip install uptimer-python-sdk
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Or using &lt;code&gt;uv&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;uv add uptimer-python-sdk
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="quick-start"&gt;Quick Start&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff7b72"&gt;from&lt;/span&gt; &lt;span style="color:#ff7b72"&gt;uptimer.client&lt;/span&gt; &lt;span style="color:#ff7b72"&gt;import&lt;/span&gt; UptimerClient
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff7b72"&gt;from&lt;/span&gt; &lt;span style="color:#ff7b72"&gt;uptimer.models.rule&lt;/span&gt; &lt;span style="color:#ff7b72"&gt;import&lt;/span&gt; CreateRuleRequest, RuleRequest, RuleResponse, RuleResponseBody
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# Initialize the client&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client &lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt; UptimerClient(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; api_key&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;your-api-key-here&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; base_url&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;http://127.0.0.1:2517/api&amp;#34;&lt;/span&gt;, &lt;span style="color:#8b949e;font-style:italic"&gt;# or your custom base URL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# Get available regions and workspaces&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;regions &lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt; client&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;v1&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;regions&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;all()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;workspaces &lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt; client&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;v1&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;workspaces&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;all()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;workspace_id &lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt; workspaces[&lt;span style="color:#a5d6ff"&gt;0&lt;/span&gt;]&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;id
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# List existing rules&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rules &lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt; client&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;v1&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;rules&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;all(workspace_id)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# Create a new monitoring rule&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;new_rule &lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt; client&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;v1&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;rules&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;create(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; CreateRuleRequest(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; name&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;My Test Rule&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; interval&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;60&lt;/span&gt;, &lt;span style="color:#8b949e;font-style:italic"&gt;# Check every 60 seconds&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; workspace_id&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;workspace_id,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; request&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;RuleRequest(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; url&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;https://example.com&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; method&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;GET&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; content_type&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;application/json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; data&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;&amp;#34;&lt;/span&gt;, &lt;span style="color:#8b949e;font-style:italic"&gt;# data (substring) that should be contained in response&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; response&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;RuleResponse(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; statuses&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;[&lt;span style="color:#a5d6ff"&gt;200&lt;/span&gt;, &lt;span style="color:#a5d6ff"&gt;201&lt;/span&gt;, &lt;span style="color:#a5d6ff"&gt;202&lt;/span&gt;], &lt;span style="color:#8b949e;font-style:italic"&gt;# any of these statuses means site is up&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; body&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;RuleResponseBody(content&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;expected response&amp;#34;&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# Update an existing rule&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;updated_rule &lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt; client&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;v1&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;rules&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;update(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; new_rule&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;id,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; CreateRuleRequest(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; name&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;Updated Rule Name&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; interval&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;120&lt;/span&gt;, &lt;span style="color:#8b949e;font-style:italic"&gt;# Change to 2 minutes&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; workspace_id&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;workspace_id,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; request&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;RuleRequest(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; url&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;https://updated-example.com&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; method&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;POST&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; content_type&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;application/json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; data&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#39;{&amp;#34;key&amp;#34;: &amp;#34;value&amp;#34;}&amp;#39;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; response&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;RuleResponse(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; statuses&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;[&lt;span style="color:#a5d6ff"&gt;200&lt;/span&gt;, &lt;span style="color:#a5d6ff"&gt;201&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; body&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;RuleResponseBody(content&lt;span style="color:#ff7b72;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;updated expected response&amp;#34;&lt;/span&gt;),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8b949e;font-style:italic"&gt;# Delete a rule&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff7b72"&gt;try&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; client&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;v1&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;rules&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;delete(updated_rule&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;id)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff7b72"&gt;except&lt;/span&gt; DefaultUptimerApiError &lt;span style="color:#ff7b72"&gt;as&lt;/span&gt; e:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8b949e;font-style:italic"&gt;# Handle API errors&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; print(&lt;span style="color:#79c0ff"&gt;f&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;Error: &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;{&lt;/span&gt;e&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;message&lt;span style="color:#a5d6ff"&gt;}&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt; (Code: &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;{&lt;/span&gt;e&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;code&lt;span style="color:#a5d6ff"&gt;}&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;)&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff7b72"&gt;except&lt;/span&gt; UptimerInvalidHttpCodeError &lt;span style="color:#ff7b72"&gt;as&lt;/span&gt; e:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8b949e;font-style:italic"&gt;# Handle HTTP transport errors&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; print(&lt;span style="color:#79c0ff"&gt;f&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;HTTP Error: &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;{&lt;/span&gt;e&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;status_code&lt;span style="color:#a5d6ff"&gt;}&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt; for &lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;{&lt;/span&gt;e&lt;span style="color:#ff7b72;font-weight:bold"&gt;.&lt;/span&gt;url&lt;span style="color:#a5d6ff"&gt;}&lt;/span&gt;&lt;span style="color:#a5d6ff"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="error-handling"&gt;Error Handling&lt;/h3&gt;
+&lt;p&gt;The SDK provides comprehensive error handling:&lt;/p&gt;</description></item></channel></rss>

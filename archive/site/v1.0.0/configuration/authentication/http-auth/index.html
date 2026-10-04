@@ -1,0 +1,69 @@
+<!doctype html><html lang=en data-theme=light><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>HTTP Basic Authentication · Uptimer docs</title><link rel=icon href=/favicon.svg type=image/svg+xml><link rel=manifest href=/manifest.json><meta name=theme-color content="#4f46e5"><link rel=preconnect href=https://fonts.bunny.net crossorigin><link rel=stylesheet href="https://fonts.bunny.net/css?family=inter:400,500,600,700|jetbrains-mono:400,600"><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css><link rel=stylesheet href=/css/tokens.min.23f9249a946a7e06300ef28528ef40b3d03b70d8ac458907427b1f42a0369162.css><link rel=stylesheet href=/css/docs.min.70ac0a09c8350e5e795f84a945a75c34c3241ff979eb6e4dff1e4d9798f9779f.css></head><body><div class=verbanner role=note id=verbanner><span>You're viewing <strong>v1.0.0</strong> — an older version.</span>
+<a href=/v1.8.0/>Go to the latest (v1.8.0) →</a>
+<button type=button aria-label=Dismiss onclick='this.closest(".verbanner").remove();try{sessionStorage.setItem("u-verbanner-hidden","1")}catch{}'>×</button></div><script>try{if(sessionStorage.getItem("u-verbanner-hidden")){var b=document.getElementById("verbanner");b&&b.remove()}}catch{}</script><header class=site-header><nav class=site-nav><a class=logo href=/v1.0.0/ aria-label="Uptimer docs home"><svg width="22" height="20" viewBox="0 0 50 44" fill="none" aria-hidden="true"><path d="M8 6V22a17 17 0 0034 0V6" stroke="#161a21" stroke-width="8" stroke-linecap="round"/><path d="M2 26h8l4-13 6 24 5-17h18" stroke="#0f9d58" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+Uptimer <span class=docs>/ docs</span></a><div class=site-search-wrap><input class=site-search type=search placeholder="Search  ⌘K" aria-label="Search docs" autocomplete=off spellcheck=false role=combobox aria-expanded=false aria-controls=site-search-results data-version=1.0.0><div class=site-search-results id=site-search-results role=listbox hidden></div></div><details class=verpill-wrap><summary class=verpill>v1.0.0 ▾</summary><ul class=verpill-menu><li><a href=/v1.8.0/>v1.8.0 · latest</a></li><li><a href=/v1.7.0/>v1.7.0</a></li><li><a href=/v1.6.0/>v1.6.0</a></li><li><a href=/v1.5.0/>v1.5.0</a></li><li><a href=/v1.4.0/>v1.4.0</a></li><li><a href=/v1.3.0/>v1.3.0</a></li><li><a href=/v1.0.0/ class=on>v1.0.0</a></li></ul></details><span class=spacer></span>
+<a class=navlink href=/v1.0.0/getting-started/quick-start/>Guides</a>
+<a class=navlink href=/v1.0.0/reference/rest-api/>API Reference</a>
+<a class=navlink href=/v1.0.0/reference/python-sdk/>SDK</a>
+<a class=navlink href=https://myuptime.info rel=noopener>myuptime.info</a></nav></header><div class=shell><nav class=side><div class=grp><a href=/v1.0.0/quick-start/>Quick Start</a></div><div class=grp><a href=/v1.0.0/requirements/>Requirements</a></div><div class=grp><a href=/v1.0.0/configuration/>Configuration</a></div><div class=grp><a href=/v1.0.0/api/>API Reference</a></div><a href=/v1.0.0/api/version/>Version</a>
+<a href=/v1.0.0/api/workspaces/>Workspaces</a>
+<a href=/v1.0.0/api/rules/>Rules</a>
+<a href=/v1.0.0/api/regions/>Regions</a>
+<a href=/v1.0.0/api/examples/>API Examples</a>
+<a href=/v1.0.0/api/sdks/>SDKs & Libraries</a></nav><main class=content><div class=crumbs><a href=/v1.0.0/configuration/>Configuration</a> ›
+<a href=/v1.0.0/configuration/authentication/>Authentication</a> ›
+HTTP Basic Authentication</div><h1>HTTP Basic Authentication</h1><h1 id=http-basic-authentication>HTTP Basic Authentication</h1><p>Simple username/password authentication using nginx and htpasswd.</p><h2 id=quick-start>Quick Start</h2><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8b949e;font-style:italic># nginx example</span>
+</span></span><span style=display:flex><span>git clone https://github.com/myuptime-info/uptimer-docs.git
+</span></span><span style=display:flex><span>cd uptimer-docs/examples/dev-http-auth
+</span></span><span style=display:flex><span>docker-compose up -d
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Access: http://localhost (admin/password)</span>
+</span></span></code></pre></div><h2 id=explanation>Explanation</h2><h3 id=docker-composeyml>docker-compose.yml</h3><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#7ee787>services</span>:<span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>  </span><span style=color:#7ee787>uptimer</span>:<span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>    </span><span style=color:#7ee787>image</span>:<span style=color:#6e7681> </span><span style=color:#a5d6ff>myuptime/uptimer</span><span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>    </span><span style=color:#7ee787>volumes</span>:<span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>      </span>- <span style=color:#a5d6ff>./data:/data</span><span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>  </span><span style=color:#7ee787>nginx</span>:<span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>    </span><span style=color:#7ee787>image</span>:<span style=color:#6e7681> </span><span style=color:#a5d6ff>nginx:alpine</span><span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>    </span><span style=color:#7ee787>ports</span>:<span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>      </span>- <span style=color:#a5d6ff>&#34;80:80&#34;</span><span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>    </span><span style=color:#7ee787>volumes</span>:<span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>      </span>- <span style=color:#a5d6ff>./nginx.conf:/etc/nginx/nginx.conf:ro</span><span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>      </span>- <span style=color:#a5d6ff>./.htpasswd:/etc/nginx/.htpasswd:ro</span><span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>    </span><span style=color:#7ee787>depends_on</span>:<span style=color:#6e7681>
+</span></span></span><span style=display:flex><span><span style=color:#6e7681>      </span>- <span style=color:#a5d6ff>uptimer </span><span style=color:#6e7681>
+</span></span></span></code></pre></div><p>Runs Uptimer in dev mode and uses nginx to handle HTTP auth and proxying.</p><h3 id=nginxconf>nginx.conf</h3><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-nginx data-lang=nginx><span style=display:flex><span><span style=color:#ff7b72>events</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff7b72>worker_connections</span> <span style=color:#a5d6ff>1024</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff7b72>http</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff7b72>include</span>       <span style=color:#a5d6ff>mime.types</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff7b72>charset</span>       <span style=color:#a5d6ff>utf-8</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff7b72>upstream</span> <span style=color:#a5d6ff>ui</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff7b72>server</span> uptimer:<span style=color:#a5d6ff>2517</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff7b72>server</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff7b72>listen</span> <span style=color:#a5d6ff>80</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff7b72>server_name</span> <span style=color:#a5d6ff>localhost</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#8b949e;font-style:italic># HTTP Basic Authentication
+</span></span></span><span style=display:flex><span>        <span style=color:#ff7b72>auth_basic</span> <span style=color:#a5d6ff>&#34;Restricted</span> <span style=color:#a5d6ff>Access&#34;</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff7b72>auth_basic_user_file</span> <span style=color:#a5d6ff>/etc/nginx/.htpasswd</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#ff7b72>location</span> <span style=color:#a5d6ff>/</span> {
+</span></span><span style=display:flex><span>            <span style=color:#ff7b72>proxy_pass</span> <span style=color:#a5d6ff>http://ui</span>;
+</span></span><span style=display:flex><span>            <span style=color:#ff7b72>proxy_next_upstream</span> <span style=color:#a5d6ff>error</span> <span style=color:#a5d6ff>http_502</span>;
+</span></span><span style=display:flex><span>            <span style=color:#ff7b72>proxy_set_header</span> <span style=color:#a5d6ff>Host</span> <span style=color:#79c0ff>$host</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>} 
+</span></span></code></pre></div><h2 id=user-management>User Management</h2><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Add user</span>
+</span></span><span style=display:flex><span>htpasswd .htpasswd username
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8b949e;font-style:italic># Change password</span>
+</span></span><span style=display:flex><span>htpasswd .htpasswd username
+</span></span></code></pre></div><h2 id=troubleshooting>Troubleshooting</h2><h3 id=check-logs>Check Logs</h3><div class=highlight><pre tabindex=0 style=color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span>docker-compose logs nginx
+</span></span><span style=display:flex><span>docker-compose logs uptimer
+</span></span></code></pre></div></main><aside class=toc><div class=h>On this page</div><nav id=TableOfContents><ul><li><a href=#quick-start>Quick Start</a></li><li><a href=#explanation>Explanation</a><ul><li><a href=#docker-composeyml>docker-compose.yml</a></li><li><a href=#nginxconf>nginx.conf</a></li></ul></li><li><a href=#user-management>User Management</a></li><li><a href=#troubleshooting>Troubleshooting</a><ul><li><a href=#check-logs>Check Logs</a></li></ul></li></ul></nav></aside></div><script src=/js/search.min.8f9e560dddad932cfa30c1e1f5d6b1f249b9cdc934773e1d111334f124355b62.js defer></script></body></html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Alerting on Uptimer</title><link>https://uptimer.myuptime.info/v1.6.0/alerting/</link><description>Recent content in Alerting on Uptimer</description><generator>Hugo</generator><language>en</language><atom:link href="https://uptimer.myuptime.info/v1.6.0/alerting/index.xml" rel="self" type="application/rss+xml"/><item><title>Slack alerts</title><link>https://uptimer.myuptime.info/v1.6.0/alerting/slack-alerts/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.6.0/alerting/slack-alerts/</guid><description>&lt;p&gt;Uptimer sends alerts through &lt;strong&gt;one webhook per workspace&lt;/strong&gt;. Point it at a Slack
+&lt;a href="https://api.slack.com/messaging/webhooks"&gt;incoming webhook&lt;/a&gt; and you get a message when a monitor
+has a &lt;strong&gt;confirmed problem&lt;/strong&gt;, when it has &lt;strong&gt;confirmed no data&lt;/strong&gt;, and when it &lt;strong&gt;recovers&lt;/strong&gt;.&lt;/p&gt;
+&lt;h2 id="set-it-up"&gt;Set it up&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Set &lt;a href="https://uptimer.myuptime.info/v1.6.0/operating/configuration/"&gt;&lt;code&gt;general.site_url&lt;/code&gt;&lt;/a&gt; to your instance&amp;rsquo;s public base URL,
+for example &lt;code&gt;UPTIMER__GENERAL__SITE_URL: &amp;quot;https://uptimer.example.com&amp;quot;&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;In Slack, create an &lt;strong&gt;Incoming Webhook&lt;/strong&gt; and copy its URL.&lt;/li&gt;
+&lt;li&gt;In Uptimer, open &lt;strong&gt;Workspace → Settings → Webhook URL&lt;/strong&gt;, paste it, and save.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;On the next status change, Uptimer POSTs a Slack-formatted message with a link back to the
+&lt;strong&gt;subject timeline&lt;/strong&gt; — the page that carries the check, its signal, its rule and its history, so
+the alert answers &amp;ldquo;what happened&amp;rdquo; without a second click. (Before 1.5.0 the link went to a single
+rule&amp;rsquo;s history page, which no longer exists.)&lt;/p&gt;</description></item><item><title>Webhooks</title><link>https://uptimer.myuptime.info/v1.6.0/alerting/webhooks/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.6.0/alerting/webhooks/</guid><description>&lt;p&gt;The workspace &lt;a href="https://uptimer.myuptime.info/v1.6.0/alerting/slack-alerts/"&gt;alert webhook&lt;/a&gt; is just an HTTP &lt;code&gt;POST&lt;/code&gt; with a
+Slack-style JSON body. Any endpoint that accepts that shape works — a Slack incoming webhook, a
+relay, or your own service.&lt;/p&gt;
+&lt;h2 id="payload"&gt;Payload&lt;/h2&gt;
+&lt;p&gt;When an incident is confirmed or closes, Uptimer POSTs:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;attachments&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;author_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Uptimer&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;title&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Checkout API is down&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;color&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;#d50201&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;text&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Failing from 2 of 3 locations — de, fr\n`dial tcp 104.20.23.154:9: i/o timeout`\nDown for 2m before we alerted.\n&amp;lt;https://uptimer.example.com/ui/workspace/{workspace}/monitoring/subject/{subject}|View timeline&amp;gt;&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;footer&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Uptimer&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;timestamp&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;1786642711&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The title is the monitor name plus its state, and the colour follows it:&lt;/p&gt;</description></item></channel></rss>

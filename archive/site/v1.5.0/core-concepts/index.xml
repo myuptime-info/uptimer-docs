@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Core concepts on Uptimer</title><link>https://uptimer.myuptime.info/v1.5.0/core-concepts/</link><description>Recent content in Core concepts on Uptimer</description><generator>Hugo</generator><language>en</language><atom:link href="https://uptimer.myuptime.info/v1.5.0/core-concepts/index.xml" rel="self" type="application/rss+xml"/><item><title>Monitors &amp; incidents</title><link>https://uptimer.myuptime.info/v1.5.0/core-concepts/monitors-and-incidents/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.5.0/core-concepts/monitors-and-incidents/</guid><description>&lt;p&gt;A &lt;strong&gt;monitor&lt;/strong&gt; describes what to watch: &lt;strong&gt;what&lt;/strong&gt; to request (an HTTP or HTTPS URL, with a method
+and an optional body), &lt;strong&gt;how often&lt;/strong&gt; (an interval), and the
+&lt;a href="https://uptimer.myuptime.info/v1.5.0/core-concepts/assertions/"&gt;expected response&lt;/a&gt; that decides healthy from broken. Uptimer
+checks it on that interval from every &lt;a href="https://uptimer.myuptime.info/v1.5.0/core-concepts/locations/"&gt;location&lt;/a&gt; you assign —
+the server, or a &lt;a href="https://uptimer.myuptime.info/v1.5.0/core-concepts/remote-workers/"&gt;remote worker&lt;/a&gt; — and each check is one
+report from one location.&lt;/p&gt;
+&lt;p&gt;When enough of those reports say the same thing, Uptimer opens an &lt;strong&gt;incident&lt;/strong&gt;: the period the
+monitor was not healthy, what the locations saw, and how it ended. That is what the status badge
+and the history are showing you.&lt;/p&gt;</description></item><item><title>Expected response</title><link>https://uptimer.myuptime.info/v1.5.0/core-concepts/assertions/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.5.0/core-concepts/assertions/</guid><description>&lt;p&gt;A check passes when three things hold:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;the request completes — no connection or timeout error,&lt;/li&gt;
+&lt;li&gt;the response &lt;strong&gt;status code&lt;/strong&gt; is one you allow (default: &lt;code&gt;200&lt;/code&gt;), and&lt;/li&gt;
+&lt;li&gt;optionally, the response &lt;strong&gt;body contains&lt;/strong&gt; a substring you specify.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Anything else marks the monitor &lt;strong&gt;down&lt;/strong&gt;. There&amp;rsquo;s no assertion language, no latency threshold and
+no header checks — just status codes and an optional body match. Connection and TLS timeouts are
+a fixed 10 seconds.&lt;/p&gt;</description></item><item><title>Locations</title><link>https://uptimer.myuptime.info/v1.5.0/core-concepts/locations/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.5.0/core-concepts/locations/</guid><description>&lt;p&gt;A &lt;strong&gt;location&lt;/strong&gt; is a named place checks run from — for example &lt;code&gt;local&lt;/code&gt;, or a geography you add
+with a &lt;a href="https://uptimer.myuptime.info/v1.5.0/core-concepts/remote-workers/"&gt;remote worker&lt;/a&gt;. Each location is served by one or
+more workers, and every result a worker reports is labelled with the location it came from.&lt;/p&gt;
+&lt;p&gt;Manage locations in the dashboard. Assign a monitor to specific locations from the dashboard, or
+over the &lt;a href="https://uptimer.myuptime.info/v1.5.0/reference/rest-api/"&gt;REST API&lt;/a&gt; and &lt;a href="https://uptimer.myuptime.info/v1.5.0/reference/python-sdk/"&gt;Python SDK&lt;/a&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;What each surface calls it.&lt;/strong&gt; The dashboard, &lt;a href="https://uptimer.myuptime.info/v1.5.0/reference/rest-api/"&gt;API v2&lt;/a&gt; and the
+Python SDK all say &lt;strong&gt;locations&lt;/strong&gt; — the v2 field is &lt;code&gt;locations&lt;/code&gt; and it takes location &lt;em&gt;names&lt;/em&gt;.
+&lt;strong&gt;API v1 still says &lt;code&gt;regions&lt;/code&gt;&lt;/strong&gt;, and is unchanged and supported, so existing clients keep
+working. Workspace &lt;a href="https://uptimer.myuptime.info/v1.5.0/core-concepts/workspaces/#export--import"&gt;export/import&lt;/a&gt; also keeps
+the file key &lt;code&gt;regions&lt;/code&gt;. All three mean the same thing.&lt;/p&gt;</description></item><item><title>Remote workers</title><link>https://uptimer.myuptime.info/v1.5.0/core-concepts/remote-workers/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.5.0/core-concepts/remote-workers/</guid><description>&lt;p&gt;A &lt;strong&gt;worker&lt;/strong&gt; is a prober: it pulls rules from the server, runs the checks, and reports results
+back over gRPC. Running one elsewhere adds a &lt;a href="https://uptimer.myuptime.info/v1.5.0/core-concepts/locations/"&gt;location&lt;/a&gt; you
+control — inside a private network, or a second geography. Each worker has its own identity and
+must be &lt;strong&gt;registered once&lt;/strong&gt; in the dashboard before it can connect.&lt;/p&gt;
+&lt;h2 id="add-a-worker"&gt;Add a worker&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;1. Generate the worker&amp;rsquo;s identity.&lt;/strong&gt; This writes &lt;code&gt;worker.pem&lt;/code&gt; + &lt;code&gt;worker.uuid&lt;/code&gt; to the data dir
+and prints what you&amp;rsquo;ll register:&lt;/p&gt;</description></item><item><title>Workspaces</title><link>https://uptimer.myuptime.info/v1.5.0/core-concepts/workspaces/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.5.0/core-concepts/workspaces/</guid><description>&lt;p&gt;A &lt;strong&gt;workspace&lt;/strong&gt; groups everything you monitor, the people who can access it, and the
+&lt;a href="https://uptimer.myuptime.info/v1.5.0/alerting/slack-alerts/"&gt;alert webhook&lt;/a&gt;. Every monitor belongs to one workspace, and
+&lt;strong&gt;Monitoring&lt;/strong&gt; is that workspace&amp;rsquo;s home page.&lt;/p&gt;
+&lt;p&gt;Members have a role:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;owner&lt;/strong&gt; — manage the workspace and its monitors&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;editor&lt;/strong&gt; — manage monitors&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;viewer&lt;/strong&gt; — read-only&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;A separate account-level &lt;strong&gt;admin&lt;/strong&gt; role manages server-wide things: workers, locations and
+settings.&lt;/p&gt;
+&lt;h2 id="export--import"&gt;Export &amp;amp; import&lt;/h2&gt;
+&lt;p&gt;Export a workspace to a YAML file from &lt;strong&gt;Workspace → Settings → Export&lt;/strong&gt;. It contains every
+monitor (target, interval, expected response) and, for each one, the &lt;strong&gt;names&lt;/strong&gt; of the locations
+it runs in — under the key &lt;code&gt;regions&lt;/code&gt;, which is the file format&amp;rsquo;s name for them and is unchanged
+in 1.5.0 (the dashboard and &lt;a href="https://uptimer.myuptime.info/v1.5.0/reference/rest-api/"&gt;API v2&lt;/a&gt; say &lt;em&gt;locations&lt;/em&gt;). Import it from &lt;strong&gt;Workspace → Import&lt;/strong&gt;.&lt;/p&gt;</description></item></channel></rss>

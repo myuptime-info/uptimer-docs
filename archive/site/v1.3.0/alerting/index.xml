@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Alerting on Uptimer</title><link>https://uptimer.myuptime.info/v1.3.0/alerting/</link><description>Recent content in Alerting on Uptimer</description><generator>Hugo</generator><language>en</language><atom:link href="https://uptimer.myuptime.info/v1.3.0/alerting/index.xml" rel="self" type="application/rss+xml"/><item><title>Slack alerts</title><link>https://uptimer.myuptime.info/v1.3.0/alerting/slack-alerts/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.3.0/alerting/slack-alerts/</guid><description>&lt;p&gt;Uptimer sends alerts through &lt;strong&gt;one webhook per workspace&lt;/strong&gt;. Point it at a Slack
+&lt;a href="https://api.slack.com/messaging/webhooks"&gt;incoming webhook&lt;/a&gt; and you get a message in your
+channel whenever a rule flips &lt;strong&gt;up → down&lt;/strong&gt; (or recovers).&lt;/p&gt;
+&lt;h2 id="set-it-up"&gt;Set it up&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;In Slack, create an &lt;strong&gt;Incoming Webhook&lt;/strong&gt; and copy its URL.&lt;/li&gt;
+&lt;li&gt;In Uptimer, open &lt;strong&gt;Workspace → Settings → Webhook URL&lt;/strong&gt;, paste it, and save.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;On the next status change, Uptimer POSTs a Slack-formatted message — green when a rule recovers,
+red when it goes down — with a link back to the rule&amp;rsquo;s history.&lt;/p&gt;</description></item><item><title>Webhooks</title><link>https://uptimer.myuptime.info/v1.3.0/alerting/webhooks/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://uptimer.myuptime.info/v1.3.0/alerting/webhooks/</guid><description>&lt;p&gt;The workspace &lt;a href="https://uptimer.myuptime.info/v1.3.0/alerting/slack-alerts/"&gt;alert webhook&lt;/a&gt; is just an HTTP &lt;code&gt;POST&lt;/code&gt; with a
+Slack-style JSON body. Any endpoint that accepts that shape works — a Slack incoming webhook, a
+relay, or your own service.&lt;/p&gt;
+&lt;h2 id="payload"&gt;Payload&lt;/h2&gt;
+&lt;p&gt;On a status change Uptimer POSTs:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#e6edf3;background-color:#0d1117;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;attachments&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;color&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;#d50201&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;title&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;your rule name&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;text&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;…status message…&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#7ee787"&gt;&amp;#34;footer&amp;#34;&lt;/span&gt;: &lt;span style="color:#a5d6ff"&gt;&amp;#34;Uptimer&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Colours: recovered &lt;code&gt;#2eb887&lt;/code&gt; (green), down &lt;code&gt;#d50201&lt;/code&gt; (red), no-data grey.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This release has &lt;strong&gt;one Slack-compatible webhook per workspace&lt;/strong&gt; — no per-rule routing, no
+custom templates or headers, no retries, and no other channels (email/SMS). If you need
+fan-out or a different format, point the webhook at a small relay you control.&lt;/p&gt;</description></item></channel></rss>
