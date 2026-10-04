@@ -1,16 +1,11 @@
 # AGENTS.md — uptimer-docs
 
 The **public** documentation site for OSS **uptimer**, served at <https://uptimer.myuptime.info>.
-Fleet-wide rules still apply (see the workspace `AGENTS.md`): trunk-based on `main`, no
+Hugo, no external theme. Read this before editing; it's the design + content contract for the
+site. Fleet-wide rules still apply (see the workspace `AGENTS.md`): trunk-based on `main`, no
 agent attribution, Commitizen subjects.
 
-**2.0 (current):** Mintlify, source in `docs/` (`docs/docs.json`), published as
-**2.0.0-preview**. Check with `cd docs && npx mint broken-links`; preview with `npx mint dev`.
-`/latest/` stays on the 1.8.0 archive until the final 2.0 release. See `VERSIONING.md`.
-
-**1.x:** frozen, compiled archive in `archive/site/` — never rebuild or edit it
-(`archive/README.md`). The Hugo sections below describe that legacy source only; it is removed at
-the Mintlify cutover. The content rules in §2 still apply to 2.0 pages.
+Build: `hugo --gc --minify` (toolchain via `ai-fleet-meta/setup.sh --tools`).
 
 ## 1. Design
 
@@ -63,3 +58,11 @@ Short, and focused on getting a developer running fast, then going deeper.
   least one smoke-tested). Guides link them. Keep them current with the docs.
 - Templates hard-code **no version strings** — the pill, banner and image tag all derive from
   params or the tree.
+- **2.0 preview** lives in `content/v2.0.0-preview/` (`preview` in `hugo.toml`): Getting started ·
+  Operating · Reference. It describes the 2.0 release candidate, not 1.x: UI on `8080`, API v3 at
+  `/api/v3`, workers by certificate on `50051`, image tag from `preview_image`, the Python SDK as a
+  local wheel (never a PyPI prerelease). It never replaces the root or `/latest/` before 2.0 ships.
+- **Docs MCP**: `functions/mcp.js` (a Cloudflare Pages Function) serves `/mcp` from the built
+  `index.json`, searching the 2.0 preview pages only. Check it with `npx wrangler pages dev public`.
+- `docs/` (Mintlify) and `archive/` are inactive drafts from an earlier plan: not built, not
+  deployed, not guidance. Hugo is the site.

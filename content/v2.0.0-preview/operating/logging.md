@@ -1,0 +1,65 @@
+---
+title: "Logs and Sentry"
+weight: 50
+lede: "Log level, SQL log, Sentry error reporting, what is reported and what is redacted."
+---
+
+Every command reads these settings before it runs, the worker daemon
+included. A value that cannot be used stops the process and names the
+setting. Changing one takes a restart, not a new build.
+
+| Setting | Default | What it does |
+|---|---|---|
+| `UPTIMER__GENERAL__LOGGING__LEVEL` | `info` | `debug`, `info`, `warn` or `error`: the lowest level the log writes |
+| `UPTIMER__GENERAL__LOGGING__SQL` | `warn` | `silent`, `error`, `warn` or `info`: `warn` writes failed and slow queries, `info` writes every query |
+| `UPTIMER__GENERAL__LOGGING__SQL_SLOW_MS` | `200` | milliseconds before `warn` calls a query slow; `0` turns slow-query lines off |
+| `UPTIMER__SENTRY__DSN` | empty | the Sentry project to report errors to; empty reports nothing |
+| `UPTIMER__SENTRY__ENV` | `production` | the environment name on every event |
+
+The log is `key=value` text on standard error. SQL lines are written without
+their values: a query shows `?` where what somebody typed would be.
+
+1.x level values such as `DEV` and `PROD` are refused. Use the 2.0 values
+above.
+
+### What is reported
+
+With a DSN set, every `error` log line becomes a Sentry event, and so does a
+recovered panic in an HTTP handler, a worker API call, the judge, or a check a
+worker runs. A panic answers that one request with a failure and the process
+carries on. A panic is recorded by its type and stack; its text is kept only
+when Go's runtime wrote it, such as `assignment to entry in nil map`, because
+any other panic text can quote what somebody sent. Each event carries:
+
+- `release`: the build version
+- `environment`: `UPTIMER__SENTRY__ENV`
+- `services`: what this process runs, such as `cache,judge,nats` or `worker`
+- `service`, and `route` and `method` or `grpc_method`, where the failure
+  happened
+
+Refusals are not reported: a failed sign-in, a form with a wrong value, a
+person without access, or a worker that cannot prove itself is logged at
+`info` or `warn`, never `error`.
+
+Before a line is written or an event is sent, the Sentry DSN, the OIDC client
+secret, the sqids salt, the database password, credentials in any URL, bearer
+tokens, and any field named like a secret, token, password, cookie or key are
+replaced with `[redacted]`. So is any field that carries data somebody sent or
+a target answered: `labels`, `payload`, `body`, `meta`, `form`, `headers`.
+Check lines name the check, its Resource and its state, never what the target
+answered or what the check asks for. Events carry no request body, headers,
+path or user.
+
+Reporting never holds the product up. Events are sent in the background. If
+Sentry is unreachable, the event is dropped and the log line is still
+written. On shutdown a process waits at most 2 seconds for events still on
+their way.
+
+```yaml
+environment:
+  UPTIMER__GENERAL__LOGGING__LEVEL: info
+  UPTIMER__GENERAL__LOGGING__SQL: warn
+  UPTIMER__GENERAL__LOGGING__SQL_SLOW_MS: "500"
+  UPTIMER__SENTRY__DSN: https://<key>@o0.ingest.sentry.io/<project>
+  UPTIMER__SENTRY__ENV: production
+```

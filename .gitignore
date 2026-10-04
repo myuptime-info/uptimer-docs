@@ -25,3 +25,5 @@ Thumbs.db
 
 .hugo_build.lock
 examples/**/data
+# wrangler pages dev (local check of functions/)
+.wrangler/

@@ -1,0 +1,183 @@
+---
+title: "Running Uptimer"
+weight: 10
+lede: "Commands, services, ports, the operations endpoint, state on disk and settings."
+---
+
+This is the operator reference for the 2.0 control plane: the commands it
+answers to, the settings it reads, the ports it serves, the paths it keeps
+state in, and what it no longer does. Coming from 1.8? Start with
+[Moving from Uptimer 1.8 to 2.0](/v2.0.0-preview/operating/upgrading-from-1.8/).
+
+The binary is `uptimer`. It is configured by environment variables and command
+flags. There is no configuration file.
+
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `uptimer serve --services …` | Run the control plane. With no `--services`, every service in one process. |
+| `uptimer migrate` | Bring the database schema up to date, then exit. The rollout gate. |
+| `uptimer worker` | Run a worker daemon against a control plane. |
+| `uptimer worker-cert --uid <uid>` | Issue (or revoke) a worker's client certificate. |
+| `uptimer dev` | Everything in one process for a local run: identity, certificate, bus with no socket. |
+| `uptimer version` | Print the version, commit and build time. |
+| `uptimer --help`, `uptimer <command> --help` | What each command reads and accepts. |
+
+Run the binary with no command and it serves: that is what a container does.
+An unknown command is refused rather than ignored.
+
+### Services
+
+`serve --services` takes any of `ui`, `api`, `grpc`, `judge`, `nats`, `cache`,
+and `eventbus` as the alias for `nats,cache`. An unknown name is refused and
+the message lists the choices. A single box runs them all in one process; a
+fleet runs them apart against the same database, bus and cache.
+
+Asking for `grpc` with `UPTIMER__GRPC__PORT=0` is refused: a service that was
+asked for and cannot serve is not quietly dropped. An installation that runs no
+workers turns that port off and names no services, and the default set is then
+everything except the worker API.
+
+A process that runs no database-backed service — `nats`, `cache`, `eventbus` —
+never opens the product's database.
+
+## Ports
+
+| Port | Serves | Setting |
+|---|---|---|
+| 8080 | the UI | `UPTIMER__UI__PORT` |
+| 2518 | the public API, when it runs as its own process | `UPTIMER__SERVER__API__PORT` |
+| 50051 | the worker API (gRPC, mutual TLS) | `UPTIMER__GRPC__PORT` |
+| 4222 | the event bus | `UPTIMER__EVENTBUS__PORT` |
+| 6379 | the cache | `UPTIMER__REDIS__BIND_PORT` |
+| 9090 | operations: `/metrics`, `/livez`, `/readyz` (required) | `UPTIMER__OPS__PORT` |
+
+A port a process needs and cannot bind is a refusal to start that names the
+port. A process that logged the failure and carried on would look healthy while
+serving nothing.
+
+Run the services apart and give each process its own operations port; that is
+how a fleet scrapes them separately.
+
+## Operations endpoint
+
+Every long-running process — including `worker` — serves one operations
+listener:
+
+| Path | Answers |
+|---|---|
+| `/metrics` | Prometheus text, including one `uptimer_build_info` series per service this process runs |
+| `/livez` | `200` while the process is running. This is what restarts a wedged container. |
+| `/readyz` | `200` only when every selected service is serving. Otherwise `503` and the reason. |
+
+Readiness goes non-OK when a selected service fails to start or its serving
+loop stops — the shell, the API, the worker API, the judge, the bus and the
+cache each report their own — so a process that has lost one of its jobs is
+taken out of a load balancer rather than left in it.
+
+A process that serves the shell with OIDC sign-in also checks its provider's
+discovery document: it must be reachable, be JSON, name exactly the configured
+issuer, and list the authorization, token and key endpoints. Otherwise
+`/readyz` answers `503` with `oidc: …`, because nobody can sign in. One answer
+holds for 15 seconds. `/livez` stays `200`. The endpoint
+is on the operations listener and needs no sign-in.
+
+A process asked for `eventbus` answers to that name as well as to `nats` and
+`cache`, because it is the name the deployment used.
+
+The listener is not optional: `serve` and a `worker` daemon refuse to start
+without a port for it, because a process nothing can scrape or probe is one
+nobody can take out of a load balancer. `UPTIMER__OPS__PORT` moves it and
+`UPTIMER__OPS__ADDR` binds it to one interface. `worker --once` serves none: it
+asks, runs, reports and stops.
+
+### Metrics
+
+| Series | Labels |
+|---|---|
+| `uptimer_build_info` | `service`, `version`, `commit`, `built` |
+| `http_request_duration_seconds` | `route`, `method`, `status` |
+| `grpc_request_duration_seconds` | `grpc_method`, `grpc_code` |
+| `uptimer_judge_decisions_total` | `result` (`ok`, `error`) |
+| `uptimer_worker_checks_total` | `result` (`ok`, `error`) |
+| `uptimer_oidc_sign_ins_total` | `result` (`ok`, `error`) |
+
+`route` is the route pattern, not the path, so one route is one series.
+
+The two totals exist so a quiet service can be told from a stopped one: a judge
+with no work and a judge that has died both report nothing otherwise.
+
+A process running `judge` also removes delivery records older than 30 days,
+once an hour.
+
+## State that must survive a restart
+
+Everything lives under one directory, so a deployment mounts one volume.
+
+| What | Default | Setting |
+|---|---|---|
+| data directory | `/var/lib/uptimer` (the image sets `/data`) | `UPTIMER__DATA_DIR` |
+| database | `sqlite3://<data>/uptimer.sqlite` | `UPTIMER__DB__DSN` |
+| session signing key | `<data>/session.pem` | `UPTIMER__KEY_FILE` |
+| worker authority | `<data>/worker-ca` | `UPTIMER__GRPC__CA_DIR` |
+| durable queue | `<data>/eventbus-store` | `UPTIMER__EVENTBUS__STORE_DIR` |
+| worker certificate, key, CA | `worker.pem`, `worker-key.pem`, `worker-ca.pem` | `UPTIMER__WORKER__CERT_FILE`, `__KEY_FILE`, `__CA_FILE` |
+
+A relative path in any of those settings is read under the data directory, and
+an absolute one is used as given. A path typed on `worker`'s own `--cert`,
+`--key` or `--ca` flag is used as typed, so a worker started by hand from a
+directory of its own needs no data directory at all.
+
+Restarting against the same directory reuses the database, the signing key —
+so sessions survive — the worker authority, the queued announcements, and a
+worker's identity. None of them is recreated.
+
+The worker authority is made on a first run, by the process that serves the
+worker API. Once certificates have been issued, a missing authority is a
+refusal to start instead: the trust every daemon holds is gone, and a new
+authority would refuse all of them while looking healthy. Back the directory up
+or keep issuing from a mounted volume.
+
+PostgreSQL is the other supported backend: set `UPTIMER__DB__DSN` to a
+`postgres://…` URL, and the data directory then holds only the key, the
+authority and the queue.
+
+## Other settings
+
+| Setting | Default | What it does |
+|---|---|---|
+| `UPTIMER__SERVICES` | every service | which services a bare binary runs |
+| `UPTIMER__AUTH__DEV` | `false` | the development sign-in; see [Sign-in](/v2.0.0-preview/operating/sign-in/) |
+| `UPTIMER__SQIDS__SALT` | built-in | seeds the encoder behind every public id |
+| `UPTIMER__GENERAL__SITE_URL` | empty | how this installation is reached, so an alert can link back |
+| `UPTIMER__EVENTBUS__NATS_URL` | `nats://localhost:4222` | where to reach the bus |
+| `UPTIMER__REDIS__BIND_ADDR` | `localhost` | where the cache listens |
+| `UPTIMER__GRPC__HOSTS` | `localhost,127.0.0.1,::1` | names the worker API's own certificate is good for |
+| `UPTIMER__WORKER__EVERY` | `30` | seconds between a daemon asking for its assignments |
+
+## Shutdown
+
+On `SIGINT` or `SIGTERM` an all-services process stops producers first, waits
+up to 15 seconds for the worker API to finish a report it is holding, and only
+then drains the event bus. A report in flight is not lost to a restart.
+
+## What 1.x had and this does not
+
+These are deliberate removals, not oversights. Nothing in this reference or in
+any example uses them.
+
+| 1.x surface | Now |
+|---|---|
+| `--cfg` YAML configuration | Environment and flags only. There is no configuration file. |
+| `--delay` | Removed. Startup ordering belongs to the orchestrator. |
+| Top-level `grpc` and `server` commands, `availabilities` service | `serve --services grpc`, `serve --services judge`. |
+| `server init`, `worker init` | `worker-cert` issues identities; `dev` sets a local run up. |
+| Zap log levels `DEV` and `PROD` | `slog` levels `debug`, `info`, `warn` and `error`; see [Logs and error reporting](/v2.0.0-preview/operating/logging/). |
+| `UPTIMER__SENTRY__PROFILES_SAMPLE_RATE` | Not read. Sentry receives errors only; there is no tracing or profiling. |
+| `/system/healthcheck` | `/livez` and `/readyz` on the operations listener, for every process rather than only the UI. |
+| Metrics named after Subjects, rules lists and availabilities | Gone with the model they described. The HTTP and gRPC duration series are kept, with their dimensions. |
+| OIDC settings named `UPTIMER__SERVER__AUTH__OIDC__*` | Renamed to `UPTIMER__AUTH__OIDC__*`; see [Sign-in](/v2.0.0-preview/operating/sign-in/). 1.x OIDC account links are not read; see [Moving from Uptimer 1.8 to 2.0](/v2.0.0-preview/operating/upgrading-from-1.8/). |
+| The 1.x public API (`/api/v1/*`, `/api/v2/*`) | Answered with one explicit `410` saying the 2.0 SDK replaced it. No legacy handler runs. |
+| 1.x's own database | Not read, not migrated, not converted; 2.0 refuses to start against it. Move with a fresh installation: [Moving from Uptimer 1.8 to 2.0](/v2.0.0-preview/operating/upgrading-from-1.8/). |

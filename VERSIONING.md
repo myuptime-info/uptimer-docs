@@ -1,40 +1,94 @@
 # Documentation versioning
 
-## What is here
+The docs site keeps one content tree per documented release under `content/vX.Y.Z/`, plus a
+stable `/latest/` alias. The theme (Pico.css + `tokens.css` + the B2 layout in `layouts/`,
+per ADR-0001/0002) is version-agnostic — it derives the nav, breadcrumbs and pager from whatever
+version subtree a page lives in.
 
-| Path | What it is | Built with |
-|---|---|---|
-| `docs/` | The live 2.0 documentation, published as **2.0.0-preview** | Mintlify (`docs/docs.json`) |
-| `archive/site/` | The 1.0 to 1.8 documentation, compiled once and **frozen** | nothing: static HTML (see `archive/README.md`) |
-| `examples/2.0.0-preview/` | The Compose file the 2.0 quickstart uses | |
-| `examples/1.x.y/` | 1.x examples the archive links to | frozen |
-| `content/`, `layouts/`, `hugo.toml`, … | The Hugo source the archive was built from | removed at cutover (below) |
+## Structure
 
-## Working on 2.0 pages
-
-```sh
-cd docs
-npx mint dev            # local preview on :3000
-npx mint broken-links   # before every change
+```
+content/
+├── _index.md            # root → redirects to the default version
+├── v1.3.0/              # current (default + latest)
+│   ├── _index.md        # version landing (section cards)
+│   ├── getting-started/ · core-concepts/ · alerting/ · operating/ · reference/
+│   └── …                # each section has _index.md (weight) + pages (weight)
+└── v1.0.0/              # frozen archive
 ```
 
-Every page states it describes the 2.0.0-preview. Image tags are the preview
-build (`ghcr.io/myuptime-info/uptimer:2.0.0-rc1`); when the release
-candidate's tag changes, replace it in `docs/` and `examples/2.0.0-preview/`.
-Never `:latest`.
+The left-nav groups are a version's sub-sections (ordered by `weight`); pages within a group are
+ordered by their `weight`. Front matter used by the theme: `title`, `weight`, and `lede`
+(the one-line intro under the H1).
 
-## `/latest/`
+## `/latest/` links
 
-`/latest/` stays on 1.8.0 (in the archive) until Uptimer 2.0 is released. The
-2.0 release moves it: remove the `/latest` redirects from `docs/docs.json` and
-drop the preview label, banner and `-rc` tags.
+`/latest/…` always points at the current release, so external links survive version bumps. It is
+served by `static/_redirects` (Cloudflare Pages / Netlify splat syntax):
 
-## Cutover to Mintlify (one time)
+```
+/latest/*  /v1.3.0/:splat  301
+/latest    /v1.3.0/        301
+```
 
-1. Serve `archive/site/` from a static host at `https://archive.uptimer.myuptime.info`.
-2. Connect the Mintlify project to this repository with `docs/` as the docs
-   directory, and point `uptimer.myuptime.info` at Mintlify.
-3. Check that `/latest/…` and `/v1.x.y/…` redirect into the archive and that
-   `/mcp` answers.
-4. Remove the Hugo source (`content/`, `layouts/`, `assets/`, `i18n/`,
-   `archetypes/`, `static/`, `hugo.toml`) and the old Hugo deploy.
+Link to `/latest/getting-started/quick-start/` from outside the site; **inside** the site use
+version-absolute links (`/v1.3.0/…`), as the pages do. If the site moves to a host that doesn't
+read `_redirects`, configure the same rule there.
+
+## Adding a new version
+
+1. **Copy the current tree:** `cp -r content/v1.3.0 content/v1.4.0`
+2. **Update `hugo.toml`** `[params.versions]` — set `default` + `latest` to the new version and
+   prepend it to `available` (newest first).
+3. **Update `static/_redirects`** — point `/latest/*` **and** the `/v1.3.0/examples*` +
+   `/latest/examples*` rules at the new version.
+4. **Update `content/_index.md`** — set the root redirect `url` to the new version.
+5. **Rewrite the in-tree links** in the new folder to the new version prefix
+   (`/v1.3.0/` → `/v1.4.0/`) and update the content for what changed.
+6. **Copy `examples/1.3.0` → `examples/1.4.0`**, bump the header comment and the
+   `/v1.3.0/` links in each README, and repoint the content tree's `examples/1.3.0`
+   GitHub links at the new folder.
+7. **Pin the example images.** While the version is unreleased they pull `:edge` with a
+   note saying so; **on release, swap `:edge` → `:X.Y.Z` and delete the note.** This is
+   easy to forget — 1.4.0 shipped as `latest` with its examples still on `:edge`, so the
+   docs pages said `:1.4.0` and the copy-pasteable compose files said `:edge`.
+
+The version pill (`layouts/partials/version-selector.html`) and the outdated-version banner
+(`layouts/partials/version-banner.html`) update automatically from `[params.versions]` — no
+hard-coded version strings in templates.
+
+## A preview version
+
+A version documented before it ships — today `content/v2.0.0-preview/` — is a preview:
+
+- `hugo.toml [params.versions]`: listed first in `available`, named in `preview`. `default` and
+  `latest` stay on the shipped version, so the root and `/latest/` keep pointing at it.
+- `preview_image` is the tag `{{</* image */>}}` emits in that tree (a release candidate, e.g.
+  `2.0.0-rc1`); without it the tree pulls `:edge`. A new candidate is a one-line change here plus
+  `examples/2.0.0-preview/`.
+- The banner (`version-banner.html`) says it is a preview and links to the current release.
+- `static/_redirects` sends `/v2.0.0-preview/examples*` to `examples/2.0.0-preview/`.
+- The docs MCP (`functions/mcp.js`, served at `/mcp`) searches only this tree.
+
+When 2.0 ships: copy the tree to `content/v2.0.0/` (rewrite `/v2.0.0-preview/` links), make
+`2.0.0` `default` and `latest`, repoint `/latest/*` and the root redirect, clear `preview` and
+`preview_image`, and point `functions/mcp.js` at the released version. Keep the 1.x trees.
+
+## The container image tag
+
+Docs never reference `:latest` — every `docker` example pins the exact version via the
+`{{</* image */>}}` shortcode (`layouts/shortcodes/image.html`), which emits
+`ghcr.io/myuptime-info/uptimer:X.Y.Z` where `X.Y.Z` is **derived from the content tree the page
+lives in**. So copying `content/v1.3.0` → `content/v1.4.0` updates every image reference with no
+edits. Author image commands as:
+
+```
+docker run -p 2517:2517 {{</* image */>}}
+```
+
+## Build
+
+```sh
+hugo server -D          # local preview
+hugo --gc --minify      # production build → public/
+```

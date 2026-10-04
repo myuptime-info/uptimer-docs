@@ -1,5 +1,5 @@
 # Uptimer 2.0.0-preview: the control plane and one worker on one host.
-# For a trial. Production: see https://uptimer.myuptime.info/operating/running
+# For a trial. Production: see https://uptimer.myuptime.info/v2.0.0-preview/operating/running/
 services:
   uptimer:
     image: ghcr.io/myuptime-info/uptimer:2.0.0-rc1   # preview build

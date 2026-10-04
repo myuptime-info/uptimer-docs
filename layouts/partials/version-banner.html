@@ -13,7 +13,8 @@
 {{ if not (site.GetPage (strings.TrimSuffix "/" $to)) }}{{ $to = printf "/v%s/" .latest }}{{ end }}
 {{ if and .preview (eq $cur .preview) }}
 <div class="verbanner" role="note" id="verbanner">
-  <span>Uptimer <strong>v{{ $cur }}</strong> documentation preview — it describes the release candidate, and <strong>v{{ .latest }}</strong> remains the current release. Commands here pull <code>:edge</code>, the newest pre-release build. Python SDK {{ $cur }} support arrives with the final SDK release.</span>
+  {{ $tag := .preview_image | default "edge" }}
+  <span>Uptimer <strong>v{{ $cur }}</strong> documentation — it describes the release candidate, and <strong>v{{ .latest }}</strong> remains the current release. Commands here pull the preview image <code>:{{ $tag }}</code>. The Python SDK for this preview is a local wheel, not a PyPI release.</span>
   <a href="{{ $to }}">Go to the current release (v{{ .latest }}) →</a>
   <button type="button" aria-label="Dismiss" onclick="this.closest('.verbanner').remove();try{sessionStorage.setItem('u-verbanner-hidden','1')}catch(e){}">×</button>
 </div>

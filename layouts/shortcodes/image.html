@@ -1,11 +1,11 @@
 {{- /* The image tag for the version tree this page lives in. A preview version has no
-       released image yet — CI publishes pre-releases as :edge — so pointing at :1.4.0
-       would hand the reader a tag that does not exist. */ -}}
+       released image yet, so pointing at its version would hand the reader a tag that does
+       not exist: it pulls params.versions.preview_image (a release candidate), or :edge. */ -}}
 {{- $seg := index (split (strings.TrimPrefix "/" .Page.RelPermalink) "/") 0 -}}
 {{- $ver := strings.TrimPrefix "v" $seg -}}
 {{- with site.Params.versions -}}
 {{- if and .preview (eq $ver .preview) -}}
-{{- $ver = "edge" -}}
+{{- $ver = .preview_image | default "edge" -}}
 {{- end -}}
 {{- end -}}
 {{- printf "ghcr.io/myuptime-info/uptimer:%s" $ver -}}
