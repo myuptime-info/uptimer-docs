@@ -141,6 +141,16 @@ revision they were created from.
   `gt`, `gte`, `lt`, `lte` and a number or `{"meta": field}`. At most 4 deep
   and 16 comparisons. `wait` holds are seconds or `{"meta": field}`. `action`
   (1–200 characters) is written on the Rule's Incidents and alerts.
+- A `value` comparison may add `"min_count": N, "within_seconds": S`
+  (N 1–100, S 60–86400). It judges the latest N distinct Observations of that
+  Signal from the last S seconds (by time, then by stored identity): true if
+  all N are numbers that satisfy it, false if all N are numbers that fail it,
+  unknown if they are mixed, fewer than N, or include a missing value or
+  `no_data`. Opposing comparisons on the same Signal read the same set, so
+  they never both hold: three low then three high readings is the high side;
+  interleaved readings are neither. Duplicate submissions and re-evaluation
+  add no reading; older readings leave the window. The Rule's
+  `confirm_after` and `recover_after` apply after this count.
 - Unknown is three-valued: a Signal that never reported, went quiet, said
   `no_data` (whatever value it also carries), or carried no value cannot
   satisfy its own comparison. `not`

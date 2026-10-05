@@ -139,6 +139,51 @@ The alert a destination receives names the server, the verdict and the action, f
 `srv-0042: banned — Replace the server.`, with the reading above as its error. It is not a
 full record of every input value.
 
+## Require several traffic readings
+
+One low traffic reading can be noise. Revision 2 of the Template,
+[`fleet-triage-counted.json`](https://github.com/myuptime-info/uptimer-docs/blob/main/examples/2.0.0-preview/fleet-triage-counted.json),
+adds a count to both traffic comparisons:
+
+```json
+{"signal": "traffic_ratio", "field": "value", "operator": "lt", "operand": {"meta": "ratio_threshold"},
+ "min_count": 3, "within_seconds": 900}
+```
+
+Each comparison looks at the latest three distinct traffic Observations from the last 900
+seconds. If all three are below the threshold, `banned`'s comparison holds; if all three are at
+or above it, `checker_issue`'s does. If the three are mixed, fewer than three, or one of them is
+`no_data` or has no value, both are unknown, and neither Rule opens or recovers. Both Rules read
+the same three readings, so they never hold together: three low readings followed by three high
+ones is a checker issue, and alternating readings are neither. The same report sent twice adds
+no reading, and a reading older than 900 seconds leaves the set. The waits stay as they were:
+`banned` is confirmed 600 seconds after the third low reading opened it.
+
+```bash
+curl -s -H "$H" -X POST $API/workspaces/$WS/templates -d @fleet-triage-counted.json | jq '.result.id'
+curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources \
+  -d '{"template": "fleet-triage@2", "key": "srv-0050", "name": "srv-0050"}'
+
+push srv-0050 problem problem ok ok 0.1
+sleep 35
+curl -s -H "$H" $API/workspaces/$WS/resources/srv-0050/incidents | jq '.result | length'
+
+push srv-0050 problem problem ok ok 0.1; sleep 2
+push srv-0050 problem problem ok ok 0.1
+sleep 35
+curl -s -H "$H" $API/workspaces/$WS/resources/srv-0050/incidents | jq -c '.result[] | {rule, action, confirmation}'
+```
+
+```text
+"fleet-triage@2"
+0
+{"rule":"banned","action":"Replace the server.","confirmation":"unconfirmed"}
+```
+
+With the Python SDK, `ws.templates.publish(manifest)` publishes a Template and
+`ws.resources.observe(...)` pushes; the SDK's `examples/03_field_triage_counted.py` runs the
+same gate.
+
 ## When data is missing
 
 If host health cannot be read, or the traffic ratio has no confidence, send `no_data` for it
