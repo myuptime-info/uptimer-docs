@@ -184,6 +184,44 @@ With the Python SDK, `ws.templates.publish(manifest)` publishes a Template and
 `ws.resources.observe(...)` pushes; the SDK's `examples/03_field_triage_counted.py` runs the
 same gate.
 
+## Find servers by field, and retire one
+
+Lists take the Template and its fields as filters. Only `srv-0042` was created with a provider:
+
+```bash
+curl -s -H "$H" "$API/workspaces/$WS/resources?template=fleet-triage&meta.provider=hetzner" | jq -r '.result[].key'
+```
+
+```text
+srv-0042
+```
+
+When a server leaves your inventory, archive it. Archiving is not deleting: the server keeps its
+key and its history, leaves the active list, stops accepting Observations, and its open Incidents
+close as `resource_archived` (not as a recovery). Its key cannot be reused, and there is no
+restore.
+
+```bash
+curl -s -H "$H" -X POST $API/workspaces/$WS/resources/srv-0044/archive | jq -r '.result.archived_at != null'
+curl -s -H "$H" -X POST $API/workspaces/$WS/resources/srv-0044/observations \
+  -d '{"signal": "control", "state": "ok"}' | jq -r '.error.message'
+curl -s -H "$H" "$API/workspaces/$WS/resources?template=fleet-triage" | jq -r '[.result[].key] | join(" ")'
+curl -s -H "$H" "$API/workspaces/$WS/incidents?template=fleet-triage&resource_state=archived" \
+  | jq -c '.result[] | {resource: .resource.key, rule, lifecycle, closed_reason}'
+```
+
+```text
+true
+Resource srv-0044 is archived and accepts no Observations.
+srv-0042 srv-0043 srv-0050
+{"resource":"srv-0044","rule":"checker_issue","lifecycle":"closed","closed_reason":"resource_archived"}
+```
+
+Lists page by `limit` and `next_cursor`; `state=archived` or `state=all` lists archived servers.
+With the Python SDK: `ws.resources.list(template="fleet-triage", meta={"provider": "hetzner"})`,
+`ws.resources.archive("srv-0044")` and
+`ws.incidents.list(template="fleet-triage", resource_state="archived")`.
+
 ## When data is missing
 
 If host health cannot be read, or the traffic ratio has no confidence, send `no_data` for it

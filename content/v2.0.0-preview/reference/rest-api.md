@@ -79,15 +79,16 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 | `GET /locations` | `[{id, name}]` |
 | `GET /workspaces/{ws}/templates` | the system Templates, then this Workspace's own, every revision (`id` is `key@version`); each Rule carries its `action` |
 | `POST /workspaces/{ws}/templates` | publish a pushed-data Template revision (below) → 201; 409 if this key and version exist; editor or owner, full key |
-| `GET /workspaces/{ws}/resources` | `[Resource]` with `open_incident` |
+| `GET /workspaces/{ws}/resources` | page of Resources by id, with `open_incident` and `archived_at`; `state` active (default), archived or all; `template`; `meta.<field>=<value>` (below); `limit` 1–200, `cursor` |
 | `POST /workspaces/{ws}/resources` | create from a Template: `{template, key?, name, meta}` → 201, Resource detail. `template` is a key (its newest revision) or `key@version` |
 | `GET /workspaces/{ws}/resources/{id or key}` | Resource detail: `signals`, `rules` (each with `status`, `explanation`, `since`, `open_incident`, `action`), `maintenance` |
 | `PATCH /workspaces/{ws}/resources/{id or key}` | `{name?, meta?}`; unsent answers stay; key and Template never change |
+| `POST /workspaces/{ws}/resources/{id or key}/archive` | retire it from the inventory → 200, Resource detail with `archived_at`; 409 if already archived; editor or owner, full key |
 | `POST /workspaces/{ws}/resources/{r}/observations` | `{signal, state, kind?, value?, labels?, body?, at?, id?}` → 202 `{resource, signal, observation, created_signal}`; `state` is ok, problem or no_data (no evidence this time; never health); the same `id` twice is stored once |
 | `GET /workspaces/{ws}/resources/{r}/observations?signal&limit` | newest logged Observations — context, not a decision record |
 | `PUT /workspaces/{ws}/resources/{r}/maintenance` | `{minutes}`: hold notifications; judging and history go on |
 | `DELETE /workspaces/{ws}/resources/{r}/maintenance` | end it |
-| `GET /workspaces/{ws}/incidents` | page of Incidents, newest first; filters `resource`, `rule`, `lifecycle` (open, closed), `confirmation` (confirmed, unconfirmed) |
+| `GET /workspaces/{ws}/incidents` | page of Incidents, newest first; filters `resource`, `rule`, `lifecycle` (open, closed), `confirmation` (confirmed, unconfirmed), and the Resources' `template`, `resource_state` (all by default, active, archived) and `meta.<field>` |
 | `GET /workspaces/{ws}/resources/{r}/incidents` | the same, for one Resource |
 | `GET /workspaces/{ws}/incidents/{id}` | Incident with `history`, oldest first |
 | `GET /workspaces/{ws}/incidents/{id}/deliveries?limit` | what was sent about it, newest first: `[{at, destination, type, event, status, reason}]`; `status` delivered, failed or held; `reason` a fixed code (below), null when delivered |
@@ -109,6 +110,28 @@ confirmed, a verdict change or closed; an acknowledgement does not move it),
 do when it opened, or null). History is
 `[{at, kind, condition, verdict, explanation}]`, kinds `opened`, `confirmed`,
 `verdict_changed`, `closed`. It is kept after the Rule is edited or removed.
+
+## Archive and filters
+
+Archiving retires a Resource that left the inventory. It is not a deletion:
+the Resource keeps its id, key, Template revision, metadata and history, and
+stays readable by id or key. It leaves the active list, its open Incidents
+close with `closed_reason` `resource_archived` (never a recovery, never
+announced as one), and it takes no more Observations (422 on `resource`, on
+API v3 and on the Observation address), edits, maintenance or checks (409).
+Its key stays reserved: no new Resource can take it. There is no restore.
+A write already holding the Resource when the archive arrives commits first;
+anything later is refused, and a worker's report for it is dropped — no
+Observation is stored after the archive.
+
+Resource and Incident lists take a bounded filter: `template` (a Template
+key, any revision) and up to five `meta.<field>=<value>` equalities on that
+Template's single-valued fields (string, enum, url, integer, number,
+duration, boolean). The value is read as the field's type, so
+`meta.ratio_threshold=0.40` matches `0.4`. A field filter without
+`template`, an unknown field, a list field or a value the field cannot hold is
+422. An Incident filter may match at most 5000 Resources. Every list stays
+inside the Workspace the key reaches, and pages by a stable cursor.
 
 ## Pushed-data Templates
 
