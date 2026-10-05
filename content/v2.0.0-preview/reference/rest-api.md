@@ -108,8 +108,56 @@ An Incident: `id`, `resource {id, key, name}`, `rule`
 confirmed, a verdict change or closed; an acknowledgement does not move it),
 `acknowledgement {by, at, via}`, and `action` (what its Rule told a person to
 do when it opened, or null). History is
-`[{at, kind, condition, verdict, explanation}]`, kinds `opened`, `confirmed`,
-`verdict_changed`, `closed`. It is kept after the Rule is edited or removed.
+`[{at, kind, condition, verdict, explanation, evidence}]`, kinds `opened`,
+`confirmed`, `verdict_changed`, `closed`. It is kept after the Rule is edited or
+removed. `evidence` is what that transition recorded from the Rule's inputs
+when it was decided (below), or null: an administrative closure records none.
+
+## Webhooks
+
+A plain webhook destination receives the attachments a Slack destination
+does, plus an `incident` object (Slack destinations never get it):
+
+```json
+"incident": {
+  "id": "p5rO8cFSTi1T", "rule": "banned", "verdict": "problem",
+  "action": "Replace the server.", "transition": "confirmed", "at": "2026-10-05T12:11:00Z",
+  "resource": {"key": "srv-0042", "name": "srv-0042", "template": "fleet-triage@1",
+               "fields": {"provider": "hetzner", "ratio_threshold": 0.4}, "fields_omitted": 0},
+  "evidence": {"inputs": [
+      {"signal": "region_a", "status": "problem", "at": "2026-10-05T12:10:58Z"},
+      {"signal": "traffic_ratio", "status": "ok", "value": 0.12, "at": "2026-10-05T12:10:59Z"},
+      {"signal": "host_health", "unresolved": "the sender reported no_data"}],
+    "omitted": 0, "truncated": false},
+  "evidence_note": "Recorded when this transition was decided: one reading per declared Rule input. It is not every contributing Observation, and not current context."
+}
+```
+
+- `evidence` is recorded when the transition is decided, one entry per
+  declared Rule input, and never changes afterwards: later Observations, Rule
+  edits and Rule removal leave it as it was. A reminder repeats the latest
+  recorded evidence. It is null when nothing was recorded.
+- Each input has the reading the Rule evaluated — `status`, `value` (only if
+  one was sent), `at`, and only the `labels` the Rule selects by — or
+  `unresolved` saying why there was none: never reported, silent, `no_data`,
+  or no value for a value comparison. A counted comparison adds
+  `counted {matching, required, within_seconds}`.
+- Bounds: at most 16 inputs (the rest counted in `omitted`), 8 labels, 200
+  characters per text value (cut with `…`). Any cut sets `truncated`.
+- Credentials never leave: a selected label whose name marks a credential
+  (token, secret, password, key, auth, session, cookie, signature, …) is
+  recorded as `"[redacted]"` and listed in that input's `redacted`, so it never
+  reads as missing. The watched URL in the attachment text and `{{url}}` keeps
+  its host, path and other parameters, but any user info (a username alone can
+  be a token) and the values of credential-named query parameters read
+  `redacted`. This applies to
+  problems, reminders and recoveries alike, and to the API history.
+- `resource.fields` are the Template's single-valued fields, except secret
+  fields and URLs; lists, secrets, URLs and fields past 16 are counted in
+  `fields_omitted`, never sent. Observation bodies, other labels, API keys and
+  destination URLs are never in it.
+- Transformations can use `{{rule}}`, `{{action}}`, `{{resource}}` (the key)
+  and `{{evidence}}` (the evidence in one line).
 
 ## Archive and filters
 

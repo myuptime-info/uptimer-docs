@@ -184,6 +184,28 @@ With the Python SDK, `ws.templates.publish(manifest)` publishes a Template and
 `ws.resources.observe(...)` pushes; the SDK's `examples/03_field_triage_counted.py` runs the
 same gate.
 
+## Get the alert with its evidence
+
+Add a webhook under **Settings → Destinations** (type Webhook, your endpoint's URL) and make
+it the default. When a verdict is confirmed, the webhook body carries an `incident` object:
+the Rule (`banned`, `dead` or `checker_issue`), its action, the server's key and fields, and
+the evidence that transition recorded — each Signal's status or the traffic ratio it read, or
+why it had none:
+
+```json
+"evidence": {"inputs": [
+  {"signal": "region_a", "status": "problem", "at": "…"},
+  {"signal": "control", "status": "problem", "at": "…"},
+  {"signal": "host_health", "unresolved": "the sender reported no_data"}],
+ "omitted": 0, "truncated": false}
+```
+
+The evidence is recorded when the transition is decided and does not change when newer
+Observations arrive; it is not a list of every Observation. Labels you send, Observation
+bodies and secret fields are not included. The full shape is in the
+[API v3 reference](/v2.0.0-preview/reference/rest-api/#webhooks). A Slack destination gets the
+same alert text without the `incident` object.
+
 ## Find servers by field, and retire one
 
 Lists take the Template and its fields as filters. Only `srv-0042` was created with a provider:
