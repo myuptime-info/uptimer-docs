@@ -184,6 +184,48 @@ With the Python SDK, `ws.templates.publish(manifest)` publishes a Template and
 `ws.resources.observe(...)` pushes; the SDK's `examples/03_field_triage_counted.py` runs the
 same gate.
 
+## Flag weak servers
+
+A server can pass every check and still carry far less traffic than its peers. Revision 3,
+[`fleet-triage-weak.json`](https://github.com/myuptime-info/uptimer-docs/blob/main/examples/2.0.0-preview/fleet-triage-weak.json),
+adds a `peer_ratio` Signal and a fourth Rule, `weak`:
+
+| Rule | When | Action |
+|---|---|---|
+| `weak` | both regional checks, control and host health report ok, and the latest three peer ratios within 1800 seconds are below the server's `peer_ratio_threshold` (default 0.3), for 1800 seconds | Review the server when time permits. |
+
+Your system computes the peer ratio: this server's traffic divided by the median traffic of its
+peers. Uptimer never sees the peers or the raw traffic. If the peer set is too small or the
+median is not valid, push `no_data` for `peer_ratio`; a weak verdict needs three valid ratios.
+
+`weak` never holds together with `banned`, `dead` or `checker_issue`: it needs every check
+and the host healthy. It has its own Incident and history, and recovers once the latest three
+ratios are at or above the threshold for another 1800 seconds. Keep pushing every round: a gap
+longer than the window leaves the count short, which is unknown and pauses recovery.
+
+```bash
+curl -s -H "$H" -X POST $API/workspaces/$WS/templates -d @fleet-triage-weak.json | jq '.result.id'
+curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources \
+  -d '{"template": "fleet-triage@3", "key": "srv-0060", "name": "srv-0060"}'
+
+for round in 1 2 3; do
+  push srv-0060 ok ok ok ok 1.0
+  curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources/srv-0060/observations \
+    -d '{"signal": "peer_ratio", "state": "ok", "value": 0.2}'
+  sleep 2
+done
+sleep 35
+curl -s -H "$H" $API/workspaces/$WS/resources/srv-0060/incidents | jq -c '.result[] | {rule, action, confirmation}'
+```
+
+```text
+"fleet-triage@3"
+{"rule":"weak","action":"Review the server when time permits.","confirmation":"unconfirmed"}
+```
+
+It is confirmed, and announced, once it has held for 1800 seconds. Alerts go to the same
+destination as the other verdicts: routing one Rule to its own destination is not available yet.
+
 ## Get the alert with its evidence
 
 Add a webhook under **Settings → Destinations** (type Webhook, your endpoint's URL) and make
