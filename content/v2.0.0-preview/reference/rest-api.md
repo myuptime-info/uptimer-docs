@@ -75,13 +75,15 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 | `GET /version` (no key) | `{version, api: "v3"}` |
 | `GET /key` | what this key may do: `{user, access, workspace}`; `access` is `["full"]` or `["read", …actions]`, `workspace` is null on a full key |
 | `GET /workspaces` | the Workspaces this key reaches: `[{id, name, role}]` |
-| `GET /templates` | published Templates with `fields`, `signals`, `rules` |
+| `GET /templates` | the system Templates with `fields`, `signals`, `rules` |
 | `GET /locations` | `[{id, name}]` |
+| `GET /workspaces/{ws}/templates` | the system Templates, then this Workspace's own, every revision (`id` is `key@version`); each Rule carries its `action` |
+| `POST /workspaces/{ws}/templates` | publish a pushed-data Template revision (below) → 201; 409 if this key and version exist; editor or owner, full key |
 | `GET /workspaces/{ws}/resources` | `[Resource]` with `open_incident` |
-| `POST /workspaces/{ws}/resources` | create from a Template: `{template, key?, name, meta}` → 201, Resource detail |
-| `GET /workspaces/{ws}/resources/{id or key}` | Resource detail: `signals`, `rules` (each with `status`, `explanation`, `since`, `open_incident`), `maintenance` |
+| `POST /workspaces/{ws}/resources` | create from a Template: `{template, key?, name, meta}` → 201, Resource detail. `template` is a key (its newest revision) or `key@version` |
+| `GET /workspaces/{ws}/resources/{id or key}` | Resource detail: `signals`, `rules` (each with `status`, `explanation`, `since`, `open_incident`, `action`), `maintenance` |
 | `PATCH /workspaces/{ws}/resources/{id or key}` | `{name?, meta?}`; unsent answers stay; key and Template never change |
-| `POST /workspaces/{ws}/resources/{r}/observations` | `{signal, state, kind?, value?, labels?, body?, at?, id?}` → 202 `{resource, signal, observation, created_signal}`; the same `id` twice is stored once |
+| `POST /workspaces/{ws}/resources/{r}/observations` | `{signal, state, kind?, value?, labels?, body?, at?, id?}` → 202 `{resource, signal, observation, created_signal}`; `state` is ok, problem or no_data (no evidence this time; never health); the same `id` twice is stored once |
 | `GET /workspaces/{ws}/resources/{r}/observations?signal&limit` | newest logged Observations — context, not a decision record |
 | `PUT /workspaces/{ws}/resources/{r}/maintenance` | `{minutes}`: hold notifications; judging and history go on |
 | `DELETE /workspaces/{ws}/resources/{r}/maintenance` | end it |
@@ -103,9 +105,50 @@ An Incident: `id`, `resource {id, key, name}`, `rule`
 (recovered, rule_removed), `opened_at`, `confirmed_at`, `closed_at`,
 `effective_at` (when its latest recorded transition took effect: opened,
 confirmed, a verdict change or closed; an acknowledgement does not move it),
-`acknowledgement {by, at, via}`. History is
+`acknowledgement {by, at, via}`, and `action` (what its Rule told a person to
+do when it opened, or null). History is
 `[{at, kind, condition, verdict, explanation}]`, kinds `opened`, `confirmed`,
 `verdict_changed`, `closed`. It is kept after the Rule is edited or removed.
+
+## Pushed-data Templates
+
+A Workspace editor publishes a Template for evidence its own systems push: no
+URL, no Locations, no managed worker. A revision
+never changes; publish the next `version` to change it. Resources keep the
+revision they were created from.
+
+```json
+{"key": "fleet-triage", "version": 1, "name": "…", "summary": "…",
+ "fields":  [{"key": "ratio_threshold", "label": "…", "type": "number", "default": 0.5, "min": 0}],
+ "signals": [{"key": "region_a", "kind": "heartbeat", "every_seconds": 300}, …],
+ "rules":   [{"key": "banned", "action": "Replace the server.",
+              "wait": {"confirm_after": 600, "recover_after": 600},
+              "decision": {"all": [
+                {"signal": "region_a", "field": "status", "operator": "eq", "operand": "problem"},
+                {"signal": "traffic_ratio", "field": "value", "operator": "lt",
+                 "operand": {"meta": "ratio_threshold"}}]}}]}
+```
+
+- Fields: `string`, `integer`, `number`, `boolean`, `enum` (`options`),
+  `duration_seconds`, `string_list`, `integer_list`; `required`, `default`,
+  `min`, `max`. No `url` or `location_list`.
+- Signals: `kind` heartbeat, periodic or event. `every_seconds` (10–86400) is
+  how often the sender pushes; a heartbeat silent for three of those is
+  unresolved.
+- Rules are composite: `decision` is one node — `all`
+  (2+), `any` (2+), `not`, or a comparison on one of this Resource's Signals:
+  `status` with `eq`/`neq` and `ok` or `problem`, or `value` with `eq`, `neq`,
+  `gt`, `gte`, `lt`, `lte` and a number or `{"meta": field}`. At most 4 deep
+  and 16 comparisons. `wait` holds are seconds or `{"meta": field}`. `action`
+  (1–200 characters) is written on the Rule's Incidents and alerts.
+- Unknown is three-valued: a Signal that never reported, went quiet, said
+  `no_data` (whatever value it also carries), or carried no value cannot
+  satisfy its own comparison. `not`
+  unknown is unknown; `all` is false once anything is false; `any` is true
+  once anything is true. An unknown result neither opens, confirms nor closes
+  an Incident.
+- At most 32 fields, 16 signals, 10 rules. Unknown keys are refused (400);
+  an invalid definition is 422 and stores nothing.
 
 ## From a key to an Incident
 

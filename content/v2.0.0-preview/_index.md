@@ -26,12 +26,14 @@ Uptimer watches your services and tells you, with its reasons, when one is in tr
 2. [From an API key to an Incident](/v2.0.0-preview/getting-started/first-incident/): create a
    Resource, send an Observation and read the Rule result and the Incident with API v3 and the
    local Python SDK wheel.
-3. [Run it for real](/v2.0.0-preview/operating/running/):
+3. [Triage pushed fleet signals](/v2.0.0-preview/getting-started/pushed-triage/): publish a
+   workerless Template and get banned, dead or checker_issue from what your systems push.
+4. [Run it for real](/v2.0.0-preview/operating/running/):
    [PostgreSQL](/v2.0.0-preview/operating/database/),
    [OIDC sign-in](/v2.0.0-preview/operating/sign-in/),
    [workers and their certificates](/v2.0.0-preview/operating/workers/),
    [logs and Sentry](/v2.0.0-preview/operating/logging/).
-4. [Coming from 1.8](/v2.0.0-preview/operating/upgrading-from-1.8/): 2.0 is a fresh installation.
+5. [Coming from 1.8](/v2.0.0-preview/operating/upgrading-from-1.8/): 2.0 is a fresh installation.
 
 AI tools can use Uptimer through the [installed binary's MCP mode](/v2.0.0-preview/reference/mcp/),
 and search these pages through the [docs MCP](/v2.0.0-preview/reference/docs-mcp/).
