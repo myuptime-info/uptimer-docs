@@ -24,8 +24,12 @@ key and reads nothing here.
 
 A **scoped** key (User → API keys → Access: Scoped) reaches one Workspace. It
 reads everything there and takes only the actions it was given:
-`acknowledge`, `maintenance` (start and end), `observe` (send Observations).
-It never creates or changes Resources. Its owner's role still applies on top:
+`acknowledge`, `maintenance` (start and end), `observe` (send Observations),
+`templates` (publish Templates), `resources` (create and archive Resources).
+It never edits a Resource, and it reads a Resource's secret Template fields as
+`[redacted]`, its URL fields without credentials, and an Observation label whose
+name marks a credential (`api_token`, `Authorization`, …) as `[redacted]`; Template
+field defaults follow the same rule. Its owner's role still applies on top:
 a viewer's scoped key cannot start maintenance. Any other Workspace answers
 404. A scoped key is not accepted as the second factor of an Observation
 address. `uptimer mcp` uses these keys; see
@@ -56,7 +60,7 @@ Every answer is one envelope:
 |---|---|---|---|
 | 400 | 1400 | `bad_request` | The body is not JSON this route reads (unknown fields are refused). |
 | 401 | 1401 | `auth` | No key, or one this installation does not accept. |
-| 403 | 1403 | `forbidden` | A member whose role does not allow this write, or a scoped key without the action; then `details.scope` names it (`acknowledge`, `maintenance`, `observe`, or `full`). |
+| 403 | 1403 | `forbidden` | A member whose role does not allow this write, or a scoped key without the action; then `details.scope` names it (`acknowledge`, `maintenance`, `observe`, `templates`, `resources`, or `full`). |
 | 404 | 1404 | `not_found` | No such route, Workspace, Resource or Incident — including one in a Workspace you do not belong to. |
 | 409 | 1409 | `conflict` | Not in a state the action applies to (acknowledging a closed or acknowledged Incident). |
 | 422 | 1422 | `validation` | A field was refused; `details.field` names it. |
