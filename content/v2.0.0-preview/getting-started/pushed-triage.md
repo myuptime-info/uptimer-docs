@@ -303,6 +303,9 @@ If host health cannot be read, or the traffic ratio has no confidence, send `no_
 
 ## What stays in your database
 
-Rolling and peer medians, minimum sample counts and raw traffic history stay where they are
-today. Push only the derived ratio and the statuses. Removing servers and filtering them by
-metadata are not part of this preview yet.
+Rolling and peer medians, peer sets and raw traffic history stay where they are today. Push
+only the derived ratios and the statuses. Uptimer keeps what it needs to decide: the latest
+readings a counted comparison asks for ([Require several traffic readings](#require-several-traffic-readings)),
+each server's fields for filtering, and its history after you archive it
+([Find servers by field, and retire one](#find-servers-by-field-and-retire-one)). Routing one
+Rule to its own destination is not available yet: every verdict goes to the default destination.
