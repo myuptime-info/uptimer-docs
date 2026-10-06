@@ -1,0 +1,47 @@
+{
+  "key": "service-triage", "version": 2,
+  "name": "Synthetic service triage",
+  "summary": "Classifies access loss, service failure, and probe faults, from pushed checks.",
+  "fields": [
+    {"key": "provider", "label": "Provider", "type": "string"},
+    {"key": "load_threshold", "label": "Traffic ratio threshold", "type": "number",
+     "default": 0.5, "min": 0, "help": "Below this share of the baseline, traffic counts as gone."}
+  ],
+  "signals": [
+    {"key": "probe_a", "kind": "heartbeat", "every_seconds": 300},
+    {"key": "probe_b", "kind": "heartbeat", "every_seconds": 300},
+    {"key": "origin", "kind": "heartbeat", "every_seconds": 300},
+    {"key": "service_health", "kind": "heartbeat", "every_seconds": 300},
+    {"key": "load_ratio", "kind": "heartbeat", "every_seconds": 300}
+  ],
+  "rules": [
+    {"key": "access_loss", "action": "Investigate the access path.",
+     "wait": {"confirm_after": 600, "recover_after": 600},
+     "decision": {"all": [
+       {"signal": "probe_a", "field": "status", "operator": "eq", "operand": "problem"},
+       {"signal": "probe_b", "field": "status", "operator": "eq", "operand": "problem"},
+       {"signal": "origin", "field": "status", "operator": "eq", "operand": "ok"},
+       {"signal": "service_health", "field": "status", "operator": "eq", "operand": "ok"},
+       {"signal": "load_ratio", "field": "value", "operator": "lt", "operand": {"meta": "load_threshold"},
+       "min_count": 3, "within_seconds": 900}
+     ]}},
+    {"key": "service_down", "action": "Investigate the service.",
+     "wait": {"confirm_after": 0, "recover_after": 300},
+     "decision": {"any": [
+       {"signal": "origin", "field": "status", "operator": "eq", "operand": "problem"},
+       {"signal": "service_health", "field": "status", "operator": "eq", "operand": "problem"}
+     ]}},
+    {"key": "probe_issue", "action": "Inspect the probe.",
+     "wait": {"confirm_after": 0, "recover_after": 0},
+     "decision": {"all": [
+       {"any": [
+         {"signal": "probe_a", "field": "status", "operator": "eq", "operand": "problem"},
+         {"signal": "probe_b", "field": "status", "operator": "eq", "operand": "problem"}
+       ]},
+       {"signal": "origin", "field": "status", "operator": "eq", "operand": "ok"},
+       {"signal": "service_health", "field": "status", "operator": "eq", "operand": "ok"},
+       {"signal": "load_ratio", "field": "value", "operator": "gte", "operand": {"meta": "load_threshold"},
+       "min_count": 3, "within_seconds": 900}
+     ]}}
+  ]
+}

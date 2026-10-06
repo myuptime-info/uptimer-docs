@@ -1,18 +1,18 @@
 ---
-title: "Triage pushed fleet signals"
+title: "Triage pushed service signals"
 weight: 30
-lede: "Publish a workerless Template, create servers by your own keys, push what your database knows, and get banned, dead or checker_issue — each with what to do."
+lede: "Publish a workerless Template, create Resources by your own keys, and turn pushed checks into distinct Incidents."
 ---
 
-Your own systems already know each server's checks and traffic. This guide hands that
-evidence to Uptimer as Observations and lets it decide, per server, between three
-verdicts. No URL, Location, worker or probe is involved: everything is pushed.
+This fictional service example sends checks and load values to Uptimer as
+Observations. Uptimer decides between three verdicts for each Resource. No
+URL, Location, or managed worker is involved: every input is pushed.
 
 | Rule | When | Action |
 |---|---|---|
-| `banned` | both regional checks report problem, the control check and host health report ok, and the traffic ratio is below the server's threshold | Replace the server. |
-| `dead` | the control check or host health reports problem | Open a provider ticket. |
-| `checker_issue` | at least one regional check reports problem, control and host health report ok, and the traffic ratio is at or above the threshold | Inspect the checker; do not replace the server. |
+| `access_loss` | both external probes report problem, the origin check and host health report ok, and the traffic ratio is below the server's threshold | Investigate the access path. |
+| `service_down` | the origin check or host health reports problem | Investigate the service. |
+| `probe_issue` | at least one external probe reports problem, origin and host health report ok, and the traffic ratio is at or above the threshold | Inspect the probe. |
 
 With every input known, at most one of the three holds. Each is its own Rule with its own
 Incidents and history.
@@ -29,26 +29,26 @@ WS=$(curl -s -H "$H" $API/workspaces | jq -r '.result[0].id')
 
 ## 1. Publish the Template
 
-Download [`fleet-triage.json`](https://github.com/myuptime-info/uptimer-docs/blob/main/examples/2.0.0-preview/fleet-triage.json)
+Download [`service-triage.json`](https://github.com/myuptime-info/uptimer-docs/blob/main/examples/2.0.0-preview/service-triage.json)
 and publish it:
 
 ```bash
-curl -s -H "$H" -X POST $API/workspaces/$WS/templates -d @fleet-triage.json | jq '.result.id, .error'
+curl -s -H "$H" -X POST $API/workspaces/$WS/templates -d @service-triage.json | jq '.result.id, .error'
 ```
 
 ```text
-"fleet-triage@1"
+"service-triage@1"
 null
 ```
 
 It declares:
 
-- a field `ratio_threshold` (a number, default `0.5`): below it, traffic counts as gone;
-- five pushed Signals: `region_a`, `region_b`, `control`, `host_health` and
-  `traffic_ratio`, each expected every 300 seconds;
-- the three Rules above, each with a `decision`, a `wait` and an `action`. `banned` waits
-  600 seconds before it is confirmed and 600 seconds of health before it closes; `dead`
-  confirms at once and closes after 300 seconds; `checker_issue` confirms and closes at once.
+- a field `load_threshold` (a number, default `0.5`): below it, traffic counts as gone;
+- five pushed Signals: `probe_a`, `probe_b`, `origin`, `service_health` and
+  `load_ratio`, each expected every 300 seconds;
+- the three Rules above, each with a `decision`, a `wait` and an `action`. `access_loss` waits
+  600 seconds before it is confirmed and 600 seconds of health before it closes; `service_down`
+  confirms at once and closes after 300 seconds; `probe_issue` confirms and closes at once.
 
 A revision never changes. To change the Template, publish it again with `"version": 2`.
 Servers you already created keep revision 1, and so do their Incidents. Publishing the same
@@ -57,16 +57,16 @@ nothing. The format is in the [API v3 reference](/v2.0.0-preview/reference/rest-
 
 ## 2. Create a server by its own key
 
-Use the key your inventory already has. `meta` is optional here: `ratio_threshold` defaults to
+Use the key your inventory already has. `meta` is optional here: `load_threshold` defaults to
 `0.5`.
 
 ```bash
 curl -s -H "$H" -X POST $API/workspaces/$WS/resources \
-  -d '{"template": "fleet-triage", "key": "srv-0042", "name": "srv-0042", "meta": {"provider": "hetzner", "ratio_threshold": 0.4}}' \
+  -d '{"template": "service-triage", "key": "srv-0042", "name": "srv-0042", "meta": {"provider": "alpha", "load_threshold": 0.4}}' \
   | jq '.result | {key, rules: [.rules[] | {key, action}]}'
 ```
 
-`"template": "fleet-triage"` takes the newest revision; `"fleet-triage@1"` pins one. A Resource
+`"template": "service-triage"` takes the newest revision; `"service-triage@1"` pins one. A Resource
 that is refused, for example a threshold that is not a number, is not created at all.
 
 ## 3. Push what your database knows
@@ -76,21 +76,21 @@ ratio is your current traffic divided by the server's baseline, as your database
 sent as `value`:
 
 ```bash
-# push <server> <region_a> <region_b> <control> <host_health> [ratio]
+# push <server> <probe_a> <probe_b> <origin> <service_health> [ratio]
 push() {
   send() { curl -s -o /dev/null -H "$H" -X POST "$API/workspaces/$WS/resources/$1/observations" -d "$2"; }
-  send "$1" "{\"signal\": \"region_a\", \"state\": \"$2\"}"
-  send "$1" "{\"signal\": \"region_b\", \"state\": \"$3\"}"
-  send "$1" "{\"signal\": \"control\", \"state\": \"$4\"}"
-  send "$1" "{\"signal\": \"host_health\", \"state\": \"$5\"}"
+  send "$1" "{\"signal\": \"probe_a\", \"state\": \"$2\"}"
+  send "$1" "{\"signal\": \"probe_b\", \"state\": \"$3\"}"
+  send "$1" "{\"signal\": \"origin\", \"state\": \"$4\"}"
+  send "$1" "{\"signal\": \"service_health\", \"state\": \"$5\"}"
   if [ -n "$6" ]; then
-    send "$1" "{\"signal\": \"traffic_ratio\", \"state\": \"ok\", \"value\": $6}"
+    send "$1" "{\"signal\": \"load_ratio\", \"state\": \"ok\", \"value\": $6}"
   else
-    send "$1" '{"signal": "traffic_ratio", "state": "no_data"}'
+    send "$1" '{"signal": "load_ratio", "state": "no_data"}'
   fi
 }
 
-push srv-0042 problem problem ok ok 0.1     # both regions fail, the host is fine, traffic is gone
+push srv-0042 problem problem ok ok 0.1     # both probes fail, the host is fine, traffic is gone
 ```
 
 Uptimer judges a burst of pushes for one server together, within about half a minute. Then
@@ -104,11 +104,11 @@ curl -s -H "$H" $API/workspaces/$WS/resources/srv-0042/incidents \
 
 ```json
 {
-  "rule": "banned",
-  "action": "Replace the server.",
+  "rule": "access_loss",
+  "action": "Investigate the access path.",
   "lifecycle": "open",
   "confirmation": "unconfirmed",
-  "explanation": "region_a problem, region_b problem, control ok, host_health ok, traffic_ratio 0.1"
+  "explanation": "probe_a problem, probe_b problem, origin ok, service_health ok, load_ratio 0.1"
 }
 ```
 
@@ -120,10 +120,10 @@ The other two verdicts:
 ```bash
 for server in srv-0043 srv-0044; do
   curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources \
-    -d "{\"template\": \"fleet-triage\", \"key\": \"$server\", \"name\": \"$server\"}"
+    -d "{\"template\": \"service-triage\", \"key\": \"$server\", \"name\": \"$server\"}"
 done
-push srv-0043 problem problem problem ok 0.1   # dead: the control check fails
-push srv-0044 problem ok ok ok 0.9             # checker_issue: traffic is normal
+push srv-0043 problem problem problem ok 0.1   # service_down: the origin check fails
+push srv-0044 problem ok ok ok 0.9             # probe_issue: traffic is normal
 sleep 35
 for server in srv-0043 srv-0044; do
   curl -s -H "$H" $API/workspaces/$WS/resources/$server/incidents | jq -c '.result[] | {rule, action}'
@@ -131,38 +131,38 @@ done
 ```
 
 ```text
-{"rule":"dead","action":"Open a provider ticket."}
-{"rule":"checker_issue","action":"Inspect the checker; do not replace the server."}
+{"rule":"service_down","action":"Investigate the service."}
+{"rule":"probe_issue","action":"Inspect the probe."}
 ```
 
 The alert a destination receives names the server, the verdict and the action, for example
-`srv-0042: banned — Replace the server.`, with the reading above as its error. It is not a
+`srv-0042: access_loss — Investigate the access path.`, with the reading above as its error. It is not a
 full record of every input value.
 
 ## Require several traffic readings
 
 One low traffic reading can be noise. Revision 2 of the Template,
-[`fleet-triage-counted.json`](https://github.com/myuptime-info/uptimer-docs/blob/main/examples/2.0.0-preview/fleet-triage-counted.json),
+[`service-triage-counted.json`](https://github.com/myuptime-info/uptimer-docs/blob/main/examples/2.0.0-preview/service-triage-counted.json),
 adds a count to both traffic comparisons:
 
 ```json
-{"signal": "traffic_ratio", "field": "value", "operator": "lt", "operand": {"meta": "ratio_threshold"},
+{"signal": "load_ratio", "field": "value", "operator": "lt", "operand": {"meta": "load_threshold"},
  "min_count": 3, "within_seconds": 900}
 ```
 
 Each comparison looks at the latest three distinct traffic Observations from the last 900
-seconds. If all three are below the threshold, `banned`'s comparison holds; if all three are at
-or above it, `checker_issue`'s does. If the three are mixed, fewer than three, or one of them is
+seconds. If all three are below the threshold, `access_loss`'s comparison holds; if all three are at
+or above it, `probe_issue`'s does. If the three are mixed, fewer than three, or one of them is
 `no_data` or has no value, both are unknown, and neither Rule opens or recovers. Both Rules read
 the same three readings, so they never hold together: three low readings followed by three high
-ones is a checker issue, and alternating readings are neither. The same report sent twice adds
+ones is a probe issue, and alternating readings are neither. The same report sent twice adds
 no reading, and a reading older than 900 seconds leaves the set. The waits stay as they were:
-`banned` is confirmed 600 seconds after the third low reading opened it.
+`access_loss` is confirmed 600 seconds after the third low reading opened it.
 
 ```bash
-curl -s -H "$H" -X POST $API/workspaces/$WS/templates -d @fleet-triage-counted.json | jq '.result.id'
+curl -s -H "$H" -X POST $API/workspaces/$WS/templates -d @service-triage-counted.json | jq '.result.id'
 curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources \
-  -d '{"template": "fleet-triage@2", "key": "srv-0050", "name": "srv-0050"}'
+  -d '{"template": "service-triage@2", "key": "srv-0050", "name": "srv-0050"}'
 
 push srv-0050 problem problem ok ok 0.1
 sleep 35
@@ -175,43 +175,43 @@ curl -s -H "$H" $API/workspaces/$WS/resources/srv-0050/incidents | jq -c '.resul
 ```
 
 ```text
-"fleet-triage@2"
+"service-triage@2"
 0
-{"rule":"banned","action":"Replace the server.","confirmation":"unconfirmed"}
+{"rule":"access_loss","action":"Investigate the access path.","confirmation":"unconfirmed"}
 ```
 
 With the Python SDK, `ws.templates.publish(manifest)` publishes a Template and
 `ws.resources.observe(...)` pushes; the SDK's `examples/03_field_triage_counted.py` runs the
 same gate.
 
-## Flag weak servers
+## Flag low_activity servers
 
 A server can pass every check and still carry far less traffic than its peers. Revision 3,
-[`fleet-triage-weak.json`](https://github.com/myuptime-info/uptimer-docs/blob/main/examples/2.0.0-preview/fleet-triage-weak.json),
-adds a `peer_ratio` Signal and a fourth Rule, `weak`:
+[`service-triage-low_activity.json`](https://github.com/myuptime-info/uptimer-docs/blob/main/examples/2.0.0-preview/service-triage-low_activity.json),
+adds a `peer_load_ratio` Signal and a fourth Rule, `low_activity`:
 
 | Rule | When | Action |
 |---|---|---|
-| `weak` | both regional checks, control and host health report ok, and the latest three peer ratios within 1800 seconds are below the server's `peer_ratio_threshold` (default 0.3), for 1800 seconds | Review the server when time permits. |
+| `low_activity` | both external probes, origin and host health report ok, and the latest three peer ratios within 1800 seconds are below the server's `peer_load_threshold` (default 0.3), for 1800 seconds | Review service demand when time permits. |
 
 Your system computes the peer ratio: this server's traffic divided by the median traffic of its
 peers. Uptimer never sees the peers or the raw traffic. If the peer set is too small or the
-median is not valid, push `no_data` for `peer_ratio`; a weak verdict needs three valid ratios.
+median is not valid, push `no_data` for `peer_load_ratio`; a low_activity verdict needs three valid ratios.
 
-`weak` never holds together with `banned`, `dead` or `checker_issue`: it needs every check
+`low_activity` never holds together with `access_loss`, `service_down` or `probe_issue`: it needs every check
 and the host healthy. It has its own Incident and history, and recovers once the latest three
 ratios are at or above the threshold for another 1800 seconds. Keep pushing every round: a gap
 longer than the window leaves the count short, which is unknown and pauses recovery.
 
 ```bash
-curl -s -H "$H" -X POST $API/workspaces/$WS/templates -d @fleet-triage-weak.json | jq '.result.id'
+curl -s -H "$H" -X POST $API/workspaces/$WS/templates -d @service-triage-low_activity.json | jq '.result.id'
 curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources \
-  -d '{"template": "fleet-triage@3", "key": "srv-0060", "name": "srv-0060"}'
+  -d '{"template": "service-triage@3", "key": "srv-0060", "name": "srv-0060"}'
 
 for round in 1 2 3; do
   push srv-0060 ok ok ok ok 1.0
   curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources/srv-0060/observations \
-    -d '{"signal": "peer_ratio", "state": "ok", "value": 0.2}'
+    -d '{"signal": "peer_load_ratio", "state": "ok", "value": 0.2}'
   sleep 2
 done
 sleep 35
@@ -219,22 +219,82 @@ curl -s -H "$H" $API/workspaces/$WS/resources/srv-0060/incidents | jq -c '.resul
 ```
 
 ```text
-"fleet-triage@3"
-{"rule":"weak","action":"Review the server when time permits.","confirmation":"unconfirmed"}
+"service-triage@3"
+{"rule":"low_activity","action":"Review service demand when time permits.","confirmation":"unconfirmed"}
 ```
 
 It is confirmed, and announced, once it has held for 1800 seconds. Alerts go to the same
 destination as the other verdicts unless a Rule names its own ([below](#send-each-verdict-to-its-own-destination)).
 
+## Compare load with its own past
+
+From the release candidate after `2.0.0-rc2`, Uptimer can compute the "usual" itself: push
+the service's raw load, and a Rule compares the newest reading with a share of the median of
+that service's own load over the last days. Revision 4,
+[`service-triage-history.json`](https://github.com/myuptime-info/uptimer-docs/blob/main/examples/2.0.0-preview/service-triage-history.json),
+replaces `load_ratio` with a raw `load` Signal. `access_loss` and `probe_issue` compare it
+with `load_share` (default 0.5) of its own 7-day median, once at least 12 earlier readings
+exist:
+
+```json
+{"signal": "load", "field": "value", "operator": "lt", "operand": {"meta": "load_share"},
+ "baseline": {"days": 7, "min_samples": 12}}
+```
+
+The median reads only this service's own `load`: earlier numeric readings observed in the
+last 7 days, by when they were observed. The newest reading, later ones, `no_data` and
+readings without a value are left out, and the same report sent twice counts once. Fewer than
+12 readings, a median of 0, or a newest reading that is `no_data` or has no value is unknown,
+so it can neither open `access_loss` nor prove a recovery. `days` is 1 to 30 and
+`min_samples` 1 to 10000; a baseline comparison cannot also take `min_count`. Peer medians
+stay in your system, as for `low_activity`.
+
+```bash
+curl -s -H "$H" -X POST $API/workspaces/$WS/templates -d @service-triage-history.json | jq '.result.id'
+curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources \
+  -d '{"template": "service-triage@4", "key": "srv-0070", "name": "srv-0070"}'
+
+# Twelve earlier readings, one every 12 hours: the usual is about 100.
+for i in $(seq 1 12); do
+  curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources/srv-0070/observations \
+    -d "{\"signal\": \"load\", \"state\": \"ok\", \"value\": 100, \"at\": \"$(date -u -d "-$((i * 12)) hours" +%FT%TZ)\"}"
+done
+# Now: both probes fail, origin and service are fine, and load is 40.
+for signal in probe_a probe_b; do
+  curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources/srv-0070/observations \
+    -d "{\"signal\": \"$signal\", \"state\": \"problem\"}"
+done
+for signal in origin service_health; do
+  curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources/srv-0070/observations \
+    -d "{\"signal\": \"$signal\", \"state\": \"ok\"}"
+done
+curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources/srv-0070/observations \
+  -d '{"signal": "load", "state": "ok", "value": 40}'
+sleep 35
+INC=$(curl -s -H "$H" $API/workspaces/$WS/resources/srv-0070/incidents | jq -r '.result[0].id')
+curl -s -H "$H" $API/workspaces/$WS/incidents/$INC \
+  | jq -c '.result | {rule, explanation}, (.history[0].evidence.inputs[] | select(.signal == "load") | .baseline)'
+```
+
+```text
+"service-triage@4"
+{"rule":"access_loss","explanation":"probe_a problem, probe_b problem, origin ok, service_health ok, load 40 (7d median 100 of 12 readings)"}
+{"days":7,"required":12,"samples":12,"median":100}
+```
+
+Load of 90 instead would be `probe_issue`: at least half the usual means traffic still
+arrives, so the probes are wrong. The waits are unchanged: `access_loss` is confirmed after
+600 seconds.
+
 ## Send each verdict to its own destination
 
 From the release candidate after `2.0.0-rc2`, a Rule can name the destination its alerts go
-to. Page on-call for `banned` and `dead`, and send `checker_issue` and `weak` somewhere
+to. Page on-call for `access_loss` and `service_down`, and send `probe_issue` and `low_activity` somewhere
 quieter. Create both under **Settings → Destinations**; each destination's page shows its
 id. Add it to the Rule in your Template, then publish the next revision:
 
 ```json
-{"key": "banned", "action": "Replace the server.", "destination": "<on-call destination id>",
+{"key": "access_loss", "action": "Investigate the access path.", "destination": "<on-call destination id>",
  "wait": {"confirm_after": 600, "recover_after": 600}, "decision": {"all": [ … ]}}
 ```
 
@@ -251,15 +311,15 @@ to the default destination.
 
 Add a webhook under **Settings → Destinations** (type Webhook, your endpoint's URL) and make
 it the default. When a verdict is confirmed, the webhook body carries an `incident` object:
-the Rule (`banned`, `dead` or `checker_issue`), its action, the server's key and fields, and
+the Rule (`access_loss`, `service_down` or `probe_issue`), its action, the server's key and fields, and
 the evidence that transition recorded — each Signal's status or the traffic ratio it read, or
 why it had none:
 
 ```json
 "evidence": {"inputs": [
-  {"signal": "region_a", "status": "problem", "at": "…"},
-  {"signal": "control", "status": "problem", "at": "…"},
-  {"signal": "host_health", "unresolved": "the sender reported no_data"}],
+  {"signal": "probe_a", "status": "problem", "at": "…"},
+  {"signal": "origin", "status": "problem", "at": "…"},
+  {"signal": "service_health", "unresolved": "the sender reported no_data"}],
  "omitted": 0, "truncated": false}
 ```
 
@@ -274,7 +334,7 @@ same alert text without the `incident` object.
 Lists take the Template and its fields as filters. Only `srv-0042` was created with a provider:
 
 ```bash
-curl -s -H "$H" "$API/workspaces/$WS/resources?template=fleet-triage&meta.provider=hetzner" | jq -r '.result[].key'
+curl -s -H "$H" "$API/workspaces/$WS/resources?template=service-triage&meta.provider=alpha" | jq -r '.result[].key'
 ```
 
 ```text
@@ -289,9 +349,9 @@ restore.
 ```bash
 curl -s -H "$H" -X POST $API/workspaces/$WS/resources/srv-0044/archive | jq -r '.result.archived_at != null'
 curl -s -H "$H" -X POST $API/workspaces/$WS/resources/srv-0044/observations \
-  -d '{"signal": "control", "state": "ok"}' | jq -r '.error.message'
-curl -s -H "$H" "$API/workspaces/$WS/resources?template=fleet-triage" | jq -r '[.result[].key] | join(" ")'
-curl -s -H "$H" "$API/workspaces/$WS/incidents?template=fleet-triage&resource_state=archived" \
+  -d '{"signal": "origin", "state": "ok"}' | jq -r '.error.message'
+curl -s -H "$H" "$API/workspaces/$WS/resources?template=service-triage" | jq -r '[.result[].key] | join(" ")'
+curl -s -H "$H" "$API/workspaces/$WS/incidents?template=service-triage&resource_state=archived" \
   | jq -c '.result[] | {resource: .resource.key, rule, lifecycle, closed_reason}'
 ```
 
@@ -299,13 +359,13 @@ curl -s -H "$H" "$API/workspaces/$WS/incidents?template=fleet-triage&resource_st
 true
 Resource srv-0044 is archived and accepts no Observations.
 srv-0042 srv-0043 srv-0050
-{"resource":"srv-0044","rule":"checker_issue","lifecycle":"closed","closed_reason":"resource_archived"}
+{"resource":"srv-0044","rule":"probe_issue","lifecycle":"closed","closed_reason":"resource_archived"}
 ```
 
 Lists page by `limit` and `next_cursor`; `state=archived` or `state=all` lists archived servers.
-With the Python SDK: `ws.resources.list(template="fleet-triage", meta={"provider": "hetzner"})`,
+With the Python SDK: `ws.resources.list(template="service-triage", meta={"provider": "alpha"})`,
 `ws.resources.archive("srv-0044")` and
-`ws.incidents.list(template="fleet-triage", resource_state="archived")`.
+`ws.incidents.list(template="service-triage", resource_state="archived")`.
 
 ## When data is missing
 
@@ -314,9 +374,9 @@ If host health cannot be read, or the traffic ratio has no confidence, send `no_
 
 - A missing, `no_data` or value-less input cannot satisfy its own comparison: it is unknown.
   A `value` sent with `no_data` is ignored.
-- Other known inputs still decide. A failing control check is `dead` whatever the ratio says;
-  one regional check saying ok rules out `banned`.
-- An unknown result changes nothing: it never opens or confirms a ban, and an open Incident
+- Other known inputs still decide. A failing origin check is `service_down` whatever the ratio says;
+  one external probe saying ok rules out `access_loss`.
+- An unknown result changes nothing: it never opens or confirms access loss, and an open Incident
   does not close while its result is unknown.
 - A Signal not pushed for three rounds (900 seconds here) is unknown too, so a script that
   stops cannot leave a server looking healthy.
@@ -324,8 +384,10 @@ If host health cannot be read, or the traffic ratio has no confidence, send `no_
 
 ## What stays in your database
 
-Rolling and peer medians, peer sets and raw traffic history stay where they are today. Push
-only the derived ratios and the statuses. Uptimer keeps what it needs to decide: the latest
+Peer medians and peer sets stay where they are today: push only the derived peer ratio.
+From the release candidate after `2.0.0-rc2`, a service's own usual load can instead be
+computed by Uptimer from the raw readings you push ([Compare load with its own past](#compare-load-with-its-own-past)).
+Uptimer keeps what it needs to decide: the latest
 readings a counted comparison asks for ([Require several traffic readings](#require-several-traffic-readings)),
 each server's fields for filtering, and its history after you archive it
 ([Find servers by field, and retire one](#find-servers-by-field-and-retire-one)).

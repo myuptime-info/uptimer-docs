@@ -125,14 +125,14 @@ does, plus an `incident` object (Slack destinations never get it):
 
 ```json
 "incident": {
-  "id": "p5rO8cFSTi1T", "rule": "banned", "verdict": "problem",
-  "action": "Replace the server.", "transition": "confirmed", "at": "2026-10-05T12:11:00Z",
-  "resource": {"key": "srv-0042", "name": "srv-0042", "template": "fleet-triage@1",
-               "fields": {"provider": "hetzner", "ratio_threshold": 0.4}, "fields_omitted": 0},
+  "id": "p5rO8cFSTi1T", "rule": "access_loss", "verdict": "problem",
+  "action": "Investigate the access path.", "transition": "confirmed", "at": "2026-10-05T12:11:00Z",
+  "resource": {"key": "srv-0042", "name": "srv-0042", "template": "service-triage@1",
+               "fields": {"provider": "alpha", "load_threshold": 0.4}, "fields_omitted": 0},
   "evidence": {"inputs": [
-      {"signal": "region_a", "status": "problem", "at": "2026-10-05T12:10:58Z"},
-      {"signal": "traffic_ratio", "status": "ok", "value": 0.12, "at": "2026-10-05T12:10:59Z"},
-      {"signal": "host_health", "unresolved": "the sender reported no_data"}],
+      {"signal": "probe_a", "status": "problem", "at": "2026-10-05T12:10:58Z"},
+      {"signal": "load_ratio", "status": "ok", "value": 0.12, "at": "2026-10-05T12:10:59Z"},
+      {"signal": "service_health", "unresolved": "the sender reported no_data"}],
     "omitted": 0, "truncated": false},
   "evidence_note": "Recorded when this transition was decided: one reading per declared Rule input. It is not every contributing Observation, and not current context."
 }
@@ -146,7 +146,9 @@ does, plus an `incident` object (Slack destinations never get it):
   one was sent), `at`, and only the `labels` the Rule selects by — or
   `unresolved` saying why there was none: never reported, silent, `no_data`,
   or no value for a value comparison. A counted comparison adds
-  `counted {matching, required, within_seconds}`.
+  `counted {matching, required, within_seconds}`; a baseline comparison adds
+  `baseline {days, required, samples, median}` (`median` null with no earlier
+  readings).
 - Bounds: at most 16 inputs (the rest counted in `omitted`), 8 labels, 200
   characters per text value (cut with `…`). Any cut sets `truncated`.
 - Credentials never leave: a selected label whose name marks a credential
@@ -181,7 +183,7 @@ Resource and Incident lists take a bounded filter: `template` (a Template
 key, any revision) and up to five `meta.<field>=<value>` equalities on that
 Template's single-valued fields (string, enum, url, integer, number,
 duration, boolean). The value is read as the field's type, so
-`meta.ratio_threshold=0.40` matches `0.4`. A field filter without
+`meta.load_threshold=0.40` matches `0.4`. A field filter without
 `template`, an unknown field, a list field or a value the field cannot hold is
 422. An Incident filter may match at most 5000 Resources. Every list stays
 inside the Workspace the key reaches, and pages by a stable cursor.
@@ -194,15 +196,15 @@ never changes; publish the next `version` to change it. Resources keep the
 revision they were created from.
 
 ```json
-{"key": "fleet-triage", "version": 1, "name": "…", "summary": "…",
- "fields":  [{"key": "ratio_threshold", "label": "…", "type": "number", "default": 0.5, "min": 0}],
- "signals": [{"key": "region_a", "kind": "heartbeat", "every_seconds": 300}, …],
- "rules":   [{"key": "banned", "action": "Replace the server.",
+{"key": "service-triage", "version": 1, "name": "…", "summary": "…",
+ "fields":  [{"key": "load_threshold", "label": "…", "type": "number", "default": 0.5, "min": 0}],
+ "signals": [{"key": "probe_a", "kind": "heartbeat", "every_seconds": 300}, …],
+ "rules":   [{"key": "access_loss", "action": "Investigate the access path.",
               "wait": {"confirm_after": 600, "recover_after": 600},
               "decision": {"all": [
-                {"signal": "region_a", "field": "status", "operator": "eq", "operand": "problem"},
-                {"signal": "traffic_ratio", "field": "value", "operator": "lt",
-                 "operand": {"meta": "ratio_threshold"}}]}}]}
+                {"signal": "probe_a", "field": "status", "operator": "eq", "operand": "problem"},
+                {"signal": "load_ratio", "field": "value", "operator": "lt",
+                 "operand": {"meta": "load_threshold"}}]}}]}
 ```
 
 - Fields: `string`, `integer`, `number`, `boolean`, `enum` (`options`),
@@ -237,6 +239,19 @@ revision they were created from.
   interleaved readings are neither. Duplicate submissions and re-evaluation
   add no reading; older readings leave the window. The Rule's
   `confirm_after` and `recover_after` apply after this count.
+- From the release candidate after `2.0.0-rc2`, a `value` comparison may
+  instead add `"baseline": {"days": D, "min_samples": M}` (D 1–30, M 1–10000).
+  Its `operand` is then a share of the usual (above 0, at most 100; a number or
+  `{"meta": field}`): the newest reading is compared with `operand × median`,
+  where the median is of this Resource's own earlier numeric readings of that
+  Signal observed in the last D days and before the newest (by time, then by
+  stored identity). The newest reading, later ones, `no_data` and readings
+  without a value are left out, the same report sent twice counts once, and at
+  most the newest 10,000 are read. Fewer than M readings, a zero median, or a
+  newest reading that is `no_data` or has no value is unknown. A late reading
+  counts by when it was observed. A baseline comparison reads the newest
+  reading and cannot also take `min_count`. The explanation shows it, e.g.
+  `load 40 (7d median 100 of 12 readings)`.
 - Unknown is three-valued: a Signal that never reported, went quiet, said
   `no_data` (whatever value it also carries), or carried no value cannot
   satisfy its own comparison. `not`

@@ -115,12 +115,12 @@ With a key scoped to **Send Observations**, **Publish Templates** and
 [pushed-fleet triage](/v2.0.0-preview/getting-started/pushed-triage/)
 end to end, on the same API v3 behaviour:
 
-1. `publish_template` with the guide's `fleet-triage.json` as `manifest`.
-2. `create_resource` `{template: "fleet-triage", key: "srv-0042", meta: {provider: "hetzner"}}`.
-3. `send_observation` for `region_a`, `region_b`, `control`, `host_health`
-   (`state`), and `traffic_ratio` (`state: ok`, `value: 0.1`), or
+1. `publish_template` with the guide's `service-triage.json` as `manifest`.
+2. `create_resource` `{template: "service-triage", key: "srv-0042", meta: {provider: "alpha"}}`.
+3. `send_observation` for `probe_a`, `probe_b`, `origin`, `service_health`
+   (`state`), and `load_ratio` (`state: ok`, `value: 0.1`), or
    `state: no_data` when the ratio is not valid.
-4. `list_incidents` `{template: "fleet-triage", meta: {provider: "hetzner"}}`,
+4. `list_incidents` `{template: "service-triage", meta: {provider: "alpha"}}`,
    then `get_incident` for the transition evidence.
 5. `archive_resource` for a server that left the inventory.
 

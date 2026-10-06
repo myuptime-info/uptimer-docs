@@ -27,7 +27,7 @@ Uptimer watches your services and tells you, with its reasons, when one is in tr
    Resource, send an Observation and read the Rule result and the Incident with API v3 and the
    local Python SDK wheel.
 3. [Triage pushed fleet signals](/v2.0.0-preview/getting-started/pushed-triage/): publish a
-   workerless Template and get banned, dead or checker_issue from what your systems push.
+   workerless Template and get access_loss, service_down or probe_issue from what your systems push.
 4. [Run it for real](/v2.0.0-preview/operating/running/):
    [PostgreSQL](/v2.0.0-preview/operating/database/),
    [OIDC sign-in](/v2.0.0-preview/operating/sign-in/),

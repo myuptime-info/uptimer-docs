@@ -1,0 +1,61 @@
+{
+  "key": "service-triage", "version": 3,
+  "name": "Synthetic service triage",
+  "summary": "Classifies access loss, service failure, probe faults, and low activity, from pushed checks.",
+  "fields": [
+    {"key": "provider", "label": "Provider", "type": "string"},
+    {"key": "load_threshold", "label": "Traffic ratio threshold", "type": "number",
+     "default": 0.5, "min": 0, "help": "Below this share of the baseline, traffic counts as gone."},
+    {"key": "peer_load_threshold", "label": "Peer ratio threshold", "type": "number",
+     "default": 0.3, "min": 0, "max": 1, "help": "Below this share of the peer median, a healthy server counts as low_activity."}
+  ],
+  "signals": [
+    {"key": "probe_a", "kind": "heartbeat", "every_seconds": 300},
+    {"key": "probe_b", "kind": "heartbeat", "every_seconds": 300},
+    {"key": "origin", "kind": "heartbeat", "every_seconds": 300},
+    {"key": "service_health", "kind": "heartbeat", "every_seconds": 300},
+    {"key": "load_ratio", "kind": "heartbeat", "every_seconds": 300},
+    {"key": "peer_load_ratio", "kind": "heartbeat", "every_seconds": 300,
+     "help": "This server's traffic divided by the median of its peers, computed by your system."}
+  ],
+  "rules": [
+    {"key": "access_loss", "action": "Investigate the access path.",
+     "wait": {"confirm_after": 600, "recover_after": 600},
+     "decision": {"all": [
+       {"signal": "probe_a", "field": "status", "operator": "eq", "operand": "problem"},
+       {"signal": "probe_b", "field": "status", "operator": "eq", "operand": "problem"},
+       {"signal": "origin", "field": "status", "operator": "eq", "operand": "ok"},
+       {"signal": "service_health", "field": "status", "operator": "eq", "operand": "ok"},
+       {"signal": "load_ratio", "field": "value", "operator": "lt", "operand": {"meta": "load_threshold"},
+       "min_count": 3, "within_seconds": 900}
+     ]}},
+    {"key": "service_down", "action": "Investigate the service.",
+     "wait": {"confirm_after": 0, "recover_after": 300},
+     "decision": {"any": [
+       {"signal": "origin", "field": "status", "operator": "eq", "operand": "problem"},
+       {"signal": "service_health", "field": "status", "operator": "eq", "operand": "problem"}
+     ]}},
+    {"key": "probe_issue", "action": "Inspect the probe.",
+     "wait": {"confirm_after": 0, "recover_after": 0},
+     "decision": {"all": [
+       {"any": [
+         {"signal": "probe_a", "field": "status", "operator": "eq", "operand": "problem"},
+         {"signal": "probe_b", "field": "status", "operator": "eq", "operand": "problem"}
+       ]},
+       {"signal": "origin", "field": "status", "operator": "eq", "operand": "ok"},
+       {"signal": "service_health", "field": "status", "operator": "eq", "operand": "ok"},
+       {"signal": "load_ratio", "field": "value", "operator": "gte", "operand": {"meta": "load_threshold"},
+       "min_count": 3, "within_seconds": 900}
+     ]}},
+    {"key": "low_activity", "action": "Review service demand when time permits.",
+     "wait": {"confirm_after": 1800, "recover_after": 1800},
+     "decision": {"all": [
+       {"signal": "probe_a", "field": "status", "operator": "eq", "operand": "ok"},
+       {"signal": "probe_b", "field": "status", "operator": "eq", "operand": "ok"},
+       {"signal": "origin", "field": "status", "operator": "eq", "operand": "ok"},
+       {"signal": "service_health", "field": "status", "operator": "eq", "operand": "ok"},
+       {"signal": "peer_load_ratio", "field": "value", "operator": "lt", "operand": {"meta": "peer_load_threshold"},
+       "min_count": 3, "within_seconds": 1800}
+     ]}}
+  ]
+}
