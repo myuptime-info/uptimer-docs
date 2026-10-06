@@ -224,7 +224,28 @@ curl -s -H "$H" $API/workspaces/$WS/resources/srv-0060/incidents | jq -c '.resul
 ```
 
 It is confirmed, and announced, once it has held for 1800 seconds. Alerts go to the same
-destination as the other verdicts: routing one Rule to its own destination is not available yet.
+destination as the other verdicts unless a Rule names its own ([below](#send-each-verdict-to-its-own-destination)).
+
+## Send each verdict to its own destination
+
+From the release candidate after `2.0.0-rc2`, a Rule can name the destination its alerts go
+to. Page on-call for `banned` and `dead`, and send `checker_issue` and `weak` somewhere
+quieter. Create both under **Settings → Destinations**; each destination's page shows its
+id. Add it to the Rule in your Template, then publish the next revision:
+
+```json
+{"key": "banned", "action": "Replace the server.", "destination": "<on-call destination id>",
+ "wait": {"confirm_after": 600, "recover_after": 600}, "decision": {"all": [ … ]}}
+```
+
+The confirmed problem, the reminders, a no-data message and the recovery of that Rule's
+Incidents all go to its destination and nowhere else. A Rule without a destination follows
+the server's own destination, then the Workspace default, as before. Publishing a Rule with
+a destination of another Workspace, or one that does not exist, answers `422`. If you switch
+the destination off later, that Rule's alerts are held (each Incident's deliveries say
+`destination_disabled`); if you delete it, they fall back to the default. Where an alert goes
+never changes when an Incident opens, confirms or closes. In `2.0.0-rc2`, every verdict goes
+to the default destination.
 
 ## Get the alert with its evidence
 
@@ -307,5 +328,4 @@ Rolling and peer medians, peer sets and raw traffic history stay where they are 
 only the derived ratios and the statuses. Uptimer keeps what it needs to decide: the latest
 readings a counted comparison asks for ([Require several traffic readings](#require-several-traffic-readings)),
 each server's fields for filtering, and its history after you archive it
-([Find servers by field, and retire one](#find-servers-by-field-and-retire-one)). Routing one
-Rule to its own destination is not available yet: every verdict goes to the default destination.
+([Find servers by field, and retire one](#find-servers-by-field-and-retire-one)).

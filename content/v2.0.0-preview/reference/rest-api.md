@@ -81,7 +81,7 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 | `GET /workspaces` | the Workspaces this key reaches: `[{id, name, role}]` |
 | `GET /templates` | the system Templates with `fields`, `signals`, `rules` |
 | `GET /locations` | `[{id, name}]` |
-| `GET /workspaces/{ws}/templates` | the system Templates, then this Workspace's own, every revision (`id` is `key@version`); each Rule carries its `action` |
+| `GET /workspaces/{ws}/templates` | the system Templates, then this Workspace's own, every revision (`id` is `key@version`); each Rule carries its `action` and `destination` |
 | `POST /workspaces/{ws}/templates` | publish a pushed-data Template revision (below) → 201; 409 if this key and version exist; editor or owner, full key |
 | `GET /workspaces/{ws}/resources` | page of Resources by id, with `open_incident` and `archived_at`; `state` active (default), archived or all; `template`; `meta.<field>=<value>` (below); `limit` 1–200, `cursor` |
 | `POST /workspaces/{ws}/resources` | create from a Template: `{template, key?, name, meta}` → 201, Resource detail. `template` is a key (its newest revision) or `key@version` |
@@ -100,7 +100,8 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 
 A delivery `reason` is one of `unreachable`, `http_NNN` (the status code the
 destination answered), `not_sent` (it could not be prepared), `maintenance`,
-`no_destination`, `resource_gone`, `not_announced`. It never quotes the
+`no_destination`, `destination_disabled` (the Rule's own destination is
+switched off), `resource_gone`, `not_announced`. It never quotes the
 destination's URL, the body sent, or what the destination answered; the
 operator's delivery log in the UI keeps that text.
 
@@ -216,6 +217,16 @@ revision they were created from.
   `gt`, `gte`, `lt`, `lte` and a number or `{"meta": field}`. At most 4 deep
   and 16 comparisons. `wait` holds are seconds or `{"meta": field}`. `action`
   (1–200 characters) is written on the Rule's Incidents and alerts.
+- From the release candidate after `2.0.0-rc2`, a Rule may add
+  `"destination": "<id>"`, the id of one of this Workspace's destinations
+  (shown on its page under Settings → Destinations). Its Incidents' problem,
+  reminder, no-data and recovery messages then go there only, instead of the
+  Resource's own destination or the Workspace default; a Rule without one
+  follows those as before. Another Workspace's id, a deleted one, or one that
+  is not a destination id answers `422` and stores nothing. If the destination
+  is switched off later, the Rule's messages are held (`destination_disabled`
+  in its delivery log) and go nowhere else; if it is deleted later, they follow
+  the Resource and the Workspace default. Routing never changes what is decided.
 - A `value` comparison may add `"min_count": N, "within_seconds": S`
   (N 1–100, S 60–86400). It judges the latest N distinct Observations of that
   Signal from the last S seconds (by time, then by stored identity): true if
