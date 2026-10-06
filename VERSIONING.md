@@ -63,9 +63,9 @@ A version documented before it ships — today `content/v2.0.0-preview/` — is 
 
 - `hugo.toml [params.versions]`: listed first in `available`, named in `preview`. `default` and
   `latest` stay on the shipped version, so the root and `/latest/` keep pointing at it.
-- `preview_image` is the tag `{{</* image */>}}` emits in that tree (a release candidate, e.g.
-  `2.0.0-rc1`); without it the tree pulls `:edge`. A new candidate is a one-line change here plus
-  `examples/2.0.0-preview/`.
+- `preview_image` is the tag `{{</* image */>}}` emits in that tree (a release candidate pinned to
+  its index digest, e.g. `2.0.0-rc2@sha256:…`); without it the tree pulls `:edge`. A new
+  candidate is a one-line change here plus `examples/2.0.0-preview/`.
 - The banner (`version-banner.html`) says it is a preview and links to the current release.
 - `static/_redirects` sends `/v2.0.0-preview/examples*` to `examples/2.0.0-preview/`.
 - The docs MCP (`functions/mcp.js`, served at `/mcp`) searches only this tree.

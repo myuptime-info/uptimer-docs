@@ -16,11 +16,11 @@ available = ["2.0.0-preview", "1.8.0", "1.7.0", "1.6.0", "1.5.0", "1.4.0", "1.3.
 latest = "1.8.0"
 # A version documented before it ships. It keeps `default` and `latest` on the shipped one,
 # leaves /latest/ alone and shows its preview banner (VERSIONING.md). `preview_image` is the
-# tag `{{< image >}}` emits in that tree; without it the tree pulls :edge. At final ship set
-# default+latest to the released version, repoint /latest/* and the root redirect, and clear
-# both lines.
+# tag `{{< image >}}` emits in that tree (tag@index digest pins it); without it the tree
+# pulls :edge. At final ship set default+latest to the released version, repoint /latest/*
+# and the root redirect, and clear both lines.
 preview = "2.0.0-preview"
-preview_image = "2.0.0-rc1"
+preview_image = "2.0.0-rc2@sha256:1dcea73dc2b9906e3e0f1f0d5a95eb585a4ea1f7e89fc1f2cc43bd7d14773557"
 
 # Home also emits index.json — the client-side search index (see layouts/index.json).
 [outputs]
