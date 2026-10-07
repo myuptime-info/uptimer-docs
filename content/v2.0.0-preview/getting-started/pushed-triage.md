@@ -375,6 +375,26 @@ With the Python SDK: `ws.resources.list(template="service-triage", meta={"provid
 `ws.resources.archive("srv-0044")` and
 `ws.incidents.list(template="service-triage", resource_state="archived")`.
 
+## Move a server to a new revision
+
+From the release candidate after `2.0.0-rc2`, a server can follow another published revision
+without changing its key: from its page (**Rebind**), or with the API.
+
+```bash
+curl -s -H "$H" -X POST $API/workspaces/$WS/resources/srv-0042/rebind \
+  -d '{"template": "service-triage@4", "meta": {"provider": "alpha"}}' | jq -c '.result | {key, template}'
+```
+
+```text
+{"key":"srv-0042","template":"service-triage@4"}
+```
+
+The server keeps its id, key and history. Its Signals and Rules become the new revision's. Its
+open Incidents of the old revision close as `rule_removed`, not as a recovery, and stay readable
+with the Observations they used. Evidence for a Signal the new revision does not declare is
+refused. Nothing changes if the revision or an answer is refused, and an archived server cannot
+be rebound. Publishing a new revision never moves a server on its own.
+
 ## When data is missing
 
 If host health cannot be read, or the traffic ratio has no confidence, send `no_data` for it
