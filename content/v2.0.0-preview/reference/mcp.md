@@ -83,7 +83,7 @@ on stderr; logs never go to stdout.
 | `acknowledge_incident` | `acknowledge` | take an open Incident on |
 | `start_maintenance`, `end_maintenance` | `maintenance` | hold or release a Resource's notifications |
 | `send_test_observation` | `observe` | send one Observation, labelled `source: mcp-test` |
-| `send_observation` | `observe` | push one Observation: `state` ok, problem or no_data, a numeric `value`, optional `at` and `id` |
+| `send_observation` | `observe` | push one Observation: `state` ok, problem or no_data, a numeric `value`, optional `at`, `id` and `reason` (a short why, kept with the evidence and alert) |
 | `publish_template` | `templates` | publish a pushed-data Template revision (the API v3 manifest) |
 | `create_resource`, `archive_resource` | `resources` | create a Resource from a Template by your own key; archive one |
 | `rebind_resource` | full key | move a pushed-data Resource to another published revision (`template`, `meta`), keeping its id and key; after `2.0.0-rc2` |

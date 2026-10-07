@@ -122,6 +122,24 @@ curl -s -H "$H" $API/workspaces/$WS/resources/srv-0042/incidents \
 It is confirmed once the trouble has held for 600 seconds; keep pushing every round. When the
 evidence turns healthy and stays so for 600 seconds, it closes.
 
+### Say why
+
+From the release candidate after `2.0.0-rc2`, an Observation can carry a short `reason`: what
+your check saw, in plain text. A Rule that decides on that reading keeps it with the recorded
+evidence, and the alert repeats it:
+
+```bash
+curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources/srv-0042/observations \
+  -d '{"signal": "probe_a", "state": "problem", "reason": "TLS handshake timeout from probe-eu-1"}'
+```
+
+The Incident's history then shows `"reason": "TLS handshake timeout from probe-eu-1"` on that
+input, the Incident page says **Sender said, when this opened: probe_a: …**, and a webhook or Slack
+alert adds `Reason: probe_a: TLS handshake timeout from probe-eu-1`. Past 200 characters a reason
+is cut to 199 and "…"; line breaks become spaces; a URL in it loses any user name, password and
+credential-like query value. A reading sent without a reason simply shows none: the evidence has no
+`reason` field and the alert no Reason line. A later Observation never changes a recorded reason.
+
 The other two verdicts:
 
 ```bash
