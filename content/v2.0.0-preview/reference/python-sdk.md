@@ -35,6 +35,7 @@ any member may acknowledge an Incident.
 
 ```python
 client.workspaces()   # [Workspace(id, name, role)]
+client.create_workspace("Field iteration 2")  # Workspace(id, name, role="owner"); a full key only; server after 2.0.0-rc2
 client.templates()    # the Templates this server publishes, with their fields
 client.locations()    # [Location(id, name)]
 ws = client.workspace("<workspace id>")

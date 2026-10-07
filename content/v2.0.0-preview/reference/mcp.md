@@ -72,6 +72,7 @@ on stderr; logs never go to stdout.
 | Tool | Needs | What it does |
 |---|---|---|
 | `list_workspaces` | read | Workspaces the key reaches, with your role |
+| `create_workspace` | full key | create a Workspace you own, by `name`; answers its id. A scoped key does not have it. From the release candidate after `2.0.0-rc2` |
 | `list_resources` | read | a page of Resources with their open Incident; `template`, `state` (active, archived, all), `meta` field values, `cursor` (1–50) |
 | `list_templates` | read | the Templates Resources here can be made from, every revision |
 | `get_resource` | read | Signals, Rules with their result and explanation, maintenance |

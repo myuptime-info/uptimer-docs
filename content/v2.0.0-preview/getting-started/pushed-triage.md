@@ -344,7 +344,8 @@ srv-0042
 When a server leaves your inventory, archive it. Archiving is not deleting: the server keeps its
 key and its history, leaves the active list, stops accepting Observations, and its open Incidents
 close as `resource_archived` (not as a recovery). Its key cannot be reused, and there is no
-restore.
+restore. From the release candidate after `2.0.0-rc2` the UI does the same: **Archive** on the
+server's row or page ([Quickstart](/v2.0.0-preview/getting-started/quick-start/#6-archive-a-resource-you-no-longer-need)).
 
 ```bash
 curl -s -H "$H" -X POST $API/workspaces/$WS/resources/srv-0044/archive | jq -r '.result.archived_at != null'

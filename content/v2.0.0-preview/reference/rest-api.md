@@ -79,6 +79,7 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 | `GET /version` (no key) | `{version, api: "v3"}` |
 | `GET /key` | what this key may do: `{user, access, workspace}`; `access` is `["full"]` or `["read", …actions]`, `workspace` is null on a full key |
 | `GET /workspaces` | the Workspaces this key reaches: `[{id, name, role}]` |
+| `POST /workspaces` | create a Workspace you own: `{"name": "…"}` (1–60 characters, trimmed) → 201 `{id, name, role: "owner"}`; 422 `field: name` for a blank or longer name; 403 `scope: full` for a scoped key. Full key only. From the release candidate after `2.0.0-rc2` |
 | `GET /templates` | the system Templates with `fields`, `signals`, `rules` |
 | `GET /locations` | `[{id, name}]` |
 | `GET /workspaces/{ws}/templates` | the system Templates, then this Workspace's own, every revision (`id` is `key@version`); each Rule carries its `action` and `destination` |

@@ -61,6 +61,8 @@ curl -s http://localhost:9090/readyz
 1. Open `http://localhost:8080/ui/` and choose **Continue as Admin (development)**. Development sign-in is for this trial only; production uses [OIDC](/v2.0.0-preview/operating/sign-in/).
 2. Open **Server → Locations → Add a location**, for example `eu-central`. A Location is a place checks run from.
 
+Uptimer gives you a first workspace. To start over with an empty one (a fresh field round, say), open the workspace switcher at the top of the sidebar and choose **Create workspace** (from the release candidate after `2.0.0-rc2`). Name it; you land on its settings as its owner, and the switcher takes you back to any other workspace. API v3 (`POST /api/v3/workspaces`), the Python SDK (`client.create_workspace(name)`) and MCP (`create_workspace`) do the same with a full API key.
+
 ## 3. Register the worker and issue its certificate
 
 1. Open **Server → Workers → Register a worker**. Name it `edge-1`, choose the Location, and enter a new UUID as its **Identity**:
@@ -95,6 +97,21 @@ curl -s http://localhost:9090/readyz
 ```bash
 docker compose run --rm worker worker --once
 ```
+
+## 6. Archive a Resource you no longer need
+
+From the release candidate after `2.0.0-rc2`, an editor or owner archives a Resource from the
+UI: **Archive** on its row in **Resources**, or on its page. The next page names it and says
+what archiving does; **Cancel, keep it active** changes nothing.
+
+Archiving cannot be undone. The Resource leaves the Resource list, its checks stop,
+Observations sent to it are refused, and it can no longer be edited or put in maintenance. Its
+open Incidents close as archived, not as recovered, and nobody is notified. It keeps its key,
+settings and history: **Resources → Archived Resources** lists it, and its page, timeline and
+Incidents stay readable. There is no restore, and its key cannot be used again. A viewer
+cannot archive. Archiving from the UI does exactly what the API's
+`POST /api/v3/workspaces/{ws}/resources/{id or key}/archive` does
+([API v3](/v2.0.0-preview/reference/rest-api/)).
 
 ## Next
 
