@@ -24,7 +24,14 @@ Workspace editor or owner:
 ```bash
 export API=http://localhost:8080/api/v3
 export H="Authorization: Bearer <the token>"
-WS=$(curl -s -H "$H" $API/workspaces | jq -r '.result[0].id')
+# Which Workspace: the only one this key reaches, or the one UPTIMER_WORKSPACE
+# names by id or name. See them: curl -s -H "$H" $API/workspaces | jq -r '.result[] | "\(.id)  \(.name)"'
+WS=$(curl -s -H "$H" $API/workspaces | jq -er --arg want "${UPTIMER_WORKSPACE:-}" '
+  .result as $all | ($all | map("\(.id) (\(.name))") | join(", ")) as $choices
+  | if $want != "" then [$all[] | select(.id == $want or .name == $want)]
+      | if length == 1 then .[0].id else error("no single Workspace is called \($want); choose one of: \($choices)") end
+    elif ($all | length) == 1 then $all[0].id
+    else error("this key reaches \($all | length) Workspaces; set UPTIMER_WORKSPACE to one of: \($choices)") end') || unset WS
 ```
 
 ## 1. Publish the Template

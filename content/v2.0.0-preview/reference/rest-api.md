@@ -93,7 +93,7 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 | `GET /workspaces/{ws}/resources/{r}/observations?signal&limit` | newest logged Observations — context, not a decision record |
 | `PUT /workspaces/{ws}/resources/{r}/maintenance` | `{minutes}`: hold notifications; judging and history go on |
 | `DELETE /workspaces/{ws}/resources/{r}/maintenance` | end it |
-| `GET /workspaces/{ws}/incidents` | page of Incidents, newest first; filters `resource`, `rule`, `lifecycle` (open, closed), `confirmation` (confirmed, unconfirmed), and the Resources' `template`, `resource_state` (all by default, active, archived) and `meta.<field>` |
+| `GET /workspaces/{ws}/incidents` | page of Incidents, newest first; filters `resource`, `rule`, `lifecycle` (open, closed), `confirmation` (confirmed, unconfirmed), `acknowledged` (true, false; with `lifecycle=open`, false is what still needs action; from the release candidate after `2.0.0-rc2`), and the Resources' `template`, `resource_state` (all by default, active, archived) and `meta.<field>` |
 | `GET /workspaces/{ws}/resources/{r}/incidents` | the same, for one Resource |
 | `GET /workspaces/{ws}/incidents/{id}` | Incident with `history`, oldest first |
 | `GET /workspaces/{ws}/incidents/{id}/deliveries?limit` | what was sent about it, newest first: `[{at, destination, type, event, status, reason}]`; `status` delivered, failed or held; `reason` a fixed code (below), null when delivered |
@@ -269,7 +269,14 @@ API=http://127.0.0.1:8080/api/v3
 KEY=...   # User → API keys
 H="Authorization: Bearer $KEY"
 
-WS=$(curl -s -H "$H" $API/workspaces | jq -r '.result[0].id')
+# Which Workspace: the only one this key reaches, or the one UPTIMER_WORKSPACE
+# names by id or name. See them: curl -s -H "$H" $API/workspaces | jq -r '.result[] | "\(.id)  \(.name)"'
+WS=$(curl -s -H "$H" $API/workspaces | jq -er --arg want "${UPTIMER_WORKSPACE:-}" '
+  .result as $all | ($all | map("\(.id) (\(.name))") | join(", ")) as $choices
+  | if $want != "" then [$all[] | select(.id == $want or .name == $want)]
+      | if length == 1 then .[0].id else error("no single Workspace is called \($want); choose one of: \($choices)") end
+    elif ($all | length) == 1 then $all[0].id
+    else error("this key reaches \($all | length) Workspaces; set UPTIMER_WORKSPACE to one of: \($choices)") end') || unset WS
 LOC=$(curl -s -H "$H" $API/locations | jq -r '.result[0].id')
 
 curl -s -H "$H" -X POST $API/workspaces/$WS/resources -d @- <<EOF | jq '.result | {id, key, signals, rules}'

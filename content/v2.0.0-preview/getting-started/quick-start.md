@@ -90,6 +90,8 @@ Uptimer gives you a first workspace. To start over with an empty one (a fresh fi
    ```
 4. Open the Resource. Its Rule reads **problem**, and the Resource links to its open Incident. The Incident page shows why it opened: the Observations, the Rule, the Incident and where it was delivered.
 
+From the release candidate after `2.0.0-rc2`, **Incidents** in the sidebar lists the workspace's open Incidents. It opens on **Needs action**: those nobody has acknowledged. **Acknowledged** shows the ones somebody took on, with who and when. Pick a Rule to see only its Incidents. Listing never changes an Incident or what is sent.
+
 ## 5. Check a worker by hand
 
 `worker --once` asks for the assignments, runs what is due, reports and stops. It exits non-zero when the control plane refuses it:

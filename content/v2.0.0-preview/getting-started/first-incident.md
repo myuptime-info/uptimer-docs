@@ -15,7 +15,12 @@ Open **API keys → New key**, name it, and copy the token. It is shown once. Th
 ```bash
 export UPTIMER_URL=http://localhost:8080/api
 export UPTIMER_API_KEY=<the token>
+# export UPTIMER_WORKSPACE="<id or name>"  # only when the key reaches more than one Workspace
 ```
+
+A key that reaches several Workspaces writes only after you choose one: the examples below stop
+and list the Workspaces until `UPTIMER_WORKSPACE` names one. With a single Workspace, leave it
+unset.
 
 ## 2. Install the SDK wheel
 
@@ -30,14 +35,28 @@ uptimer-env/bin/pip install ./uptimer_python_sdk-2.0.0-py3-none-any.whl
 
 ```python
 import os
+import sys
 import time
 
 from uptimer import NotFoundError, UptimerClient
 
+
+def chosen_workspace(client):
+    """The Workspace UPTIMER_WORKSPACE names (its id or name), or the only one this key reaches."""
+    want = os.environ.get("UPTIMER_WORKSPACE", "")
+    reachable = client.workspaces()
+    matching = [w for w in reachable if want in (w.id, w.name)] if want else reachable
+    if len(matching) != 1:
+        choices = ", ".join(f"{w.id} ({w.name})" for w in reachable)
+        problem = f"no single Workspace is called {want!r}" if want else f"this key reaches {len(reachable)} Workspaces"
+        sys.exit(f"{problem}; set UPTIMER_WORKSPACE to one of: {choices}")
+    return client.workspace(matching[0].id)
+
+
 client = UptimerClient(api_key=os.environ["UPTIMER_API_KEY"], base_url=os.environ["UPTIMER_URL"])
 client.check_compatibility()
 
-ws = client.workspace(client.workspaces()[0].id)
+ws = chosen_workspace(client)
 location = client.locations()[0]
 
 try:
@@ -93,7 +112,14 @@ Every id is a public id. You never need a database row number.
 H="Authorization: Bearer $UPTIMER_API_KEY"
 API=$UPTIMER_URL/v3
 
-WS=$(curl -s -H "$H" $API/workspaces | jq -r '.result[0].id')
+# Which Workspace: the only one this key reaches, or the one UPTIMER_WORKSPACE
+# names by id or name. See them: curl -s -H "$H" $API/workspaces | jq -r '.result[] | "\(.id)  \(.name)"'
+WS=$(curl -s -H "$H" $API/workspaces | jq -er --arg want "${UPTIMER_WORKSPACE:-}" '
+  .result as $all | ($all | map("\(.id) (\(.name))") | join(", ")) as $choices
+  | if $want != "" then [$all[] | select(.id == $want or .name == $want)]
+      | if length == 1 then .[0].id else error("no single Workspace is called \($want); choose one of: \($choices)") end
+    elif ($all | length) == 1 then $all[0].id
+    else error("this key reaches \($all | length) Workspaces; set UPTIMER_WORKSPACE to one of: \($choices)") end') || unset WS
 LOC=$(curl -s -H "$H" $API/locations | jq -r '.result[0].id')
 
 curl -s -H "$H" -X POST $API/workspaces/$WS/resources \

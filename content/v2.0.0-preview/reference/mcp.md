@@ -77,7 +77,7 @@ on stderr; logs never go to stdout.
 | `list_templates` | read | the Templates Resources here can be made from, every revision |
 | `get_resource` | read | Signals, Rules with their result and explanation, maintenance |
 | `list_observations` | read | newest Observations of a Resource (1–50) |
-| `list_incidents` | read | Incidents, newest first; filters including `template`, `resource_state` and `meta`, and a cursor (1–50) |
+| `list_incidents` | read | Incidents, newest first; filters including `rule`, `lifecycle`, `acknowledged` (true or false; after `2.0.0-rc2`), `template`, `resource_state` and `meta`, and a cursor (1–50) |
 | `get_incident` | read | one Incident and its recorded history, with each transition's input `evidence` |
 | `list_incident_deliveries` | read | what was sent about an Incident: delivered, failed or held, with a reason code |
 | `acknowledge_incident` | `acknowledge` | take an open Incident on |
