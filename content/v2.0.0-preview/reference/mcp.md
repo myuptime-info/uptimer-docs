@@ -84,7 +84,7 @@ on stderr; logs never go to stdout.
 | `start_maintenance`, `end_maintenance` | `maintenance` | hold or release a Resource's notifications |
 | `send_test_observation` | `observe` | send one Observation, labelled `source: mcp-test` |
 | `send_observation` | `observe` | push one Observation: `state` ok, problem or no_data, a numeric `value`, optional `at`, `id` and `reason` (a short why, kept with the evidence and alert) |
-| `publish_template` | `templates` | publish a pushed-data Template revision (the API v3 manifest) |
+| `publish_template` | `templates` | publish a pushed-data Template revision (the API v3 manifest); after `2.0.0-rc3` its Rules may use `known`, `all_known` and `any_known` ([any number of probes](/v2.0.0-preview/getting-started/pushed-triage/)) |
 | `create_resource`, `archive_resource` | `resources` | create a Resource from a Template by your own key; archive one |
 | `rebind_resource` | full key | move a pushed-data Resource to another published revision (`template`, `meta`), keeping its id and key; after `2.0.0-rc2` |
 
@@ -103,6 +103,13 @@ Template field defaults. An Observation label whose name marks a credential
 (`api_token`, `Authorization`, …) reads `[redacted]`; other labels stay. Editing a
 Resource stays a full key's, so a redacted value is never written back. A full
 key reads the real values.
+
+Not everything has a tool. After `2.0.0-rc3`, the `opened` webhook event is
+switched on per webhook destination in the UI (**Settings**, the destination's
+**Also send when an Incident opens**), and the Resource page's recorded decision evidence,
+latest Signals, and the list's age and open-Incident sorting are in the
+browser only. A Template's Rules cannot select Observation labels
+([REST API](/v2.0.0-preview/reference/rest-api/)); MCP adds none.
 
 ## A read flow
 

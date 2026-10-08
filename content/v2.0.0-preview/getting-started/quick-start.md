@@ -92,6 +92,8 @@ Uptimer gives you a first workspace. To start over with an empty one (a fresh fi
 
 From the release candidate after `2.0.0-rc2`, **Incidents** in the sidebar lists the workspace's open Incidents. It opens on **Needs action**: those nobody has acknowledged. **Acknowledged** shows the ones somebody took on, with who and when. Pick a Rule to see only its Incidents. Listing never changes an Incident or what is sent.
 
+From the release candidate after `2.0.0-rc3`, the Resource page says **Why {rule} is open** for each open Incident: its problem and the evidence it recorded when it opened, which later readings never change. Below it, **Latest Signals** shows each Signal as it stands now, with a Signal that never reported, went stale or says `no_data` named as such. The Resources list shows how long ago each Resource was created and how long its oldest open Incident has been open, and sorts by either.
+
 ## 5. Check a worker by hand
 
 `worker --once` asks for the assignments, runs what is due, reports and stops. It exits non-zero when the control plane refuses it:
