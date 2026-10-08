@@ -84,7 +84,7 @@ on stderr; logs never go to stdout.
 | `start_maintenance`, `end_maintenance` | `maintenance` | hold or release a Resource's notifications |
 | `send_test_observation` | `observe` | send one Observation, labelled `source: mcp-test` |
 | `send_observation` | `observe` | push one Observation: `state` ok, problem or no_data, a numeric `value`, optional `at`, `id` and `reason` (a short why, kept with the evidence and alert) |
-| `publish_template` | `templates` | publish a pushed-data Template revision (the API v3 manifest); after `2.0.0-rc3` its Rules may use `known`, `all_known` and `any_known` ([any number of probes](/v2.0.0-preview/getting-started/pushed-triage/)) |
+| `publish_template` | `templates` | publish a pushed-data Template revision (the API v3 manifest); after `2.0.0-rc3` its Rules may use `known`, `all_known` and `any_known` ([any number of probes](/v2.0.0-preview/getting-started/pushed-triage/)); after `2.0.0-rc4` each Rule may set `routes` ([route by Rule and transition](/v2.0.0-preview/getting-started/pushed-triage/#route-by-rule-and-transition)) |
 | `create_resource`, `archive_resource` | `resources` | create a Resource from a Template by your own key; archive one |
 | `rebind_resource` | full key | move a pushed-data Resource to another published revision (`template`, `meta`), keeping its id and key; after `2.0.0-rc2` |
 

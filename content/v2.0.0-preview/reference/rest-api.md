@@ -82,11 +82,11 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 | `POST /workspaces` | create a Workspace you own: `{"name": "…"}` (1–60 characters, trimmed) → 201 `{id, name, role: "owner"}`; 422 `field: name` for a blank or longer name; 403 `scope: full` for a scoped key. Full key only. From the release candidate after `2.0.0-rc2` |
 | `GET /templates` | the system Templates with `fields`, `signals`, `rules` |
 | `GET /locations` | `[{id, name}]` |
-| `GET /workspaces/{ws}/templates` | the system Templates, then this Workspace's own, every revision (`id` is `key@version`); each Rule carries its `action` and `destination` |
+| `GET /workspaces/{ws}/templates` | the system Templates, then this Workspace's own, every revision (`id` is `key@version`); each Rule carries its `action`, `destination` and `routes` |
 | `POST /workspaces/{ws}/templates` | publish a pushed-data Template revision (below) → 201; 409 if this key and version exist; editor or owner, full key |
 | `GET /workspaces/{ws}/resources` | page of Resources by id, with `open_incident` and `archived_at`; `state` active (default), archived or all; `template`; `meta.<field>=<value>` (below); `limit` 1–200, `cursor` |
 | `POST /workspaces/{ws}/resources` | create from a Template: `{template, key?, name, meta}` → 201, Resource detail. `template` is a key (its newest revision) or `key@version` |
-| `GET /workspaces/{ws}/resources/{id or key}` | Resource detail: `signals`, `rules` (each with `status`, `explanation`, `since`, `open_incident`, `action`), `maintenance` |
+| `GET /workspaces/{ws}/resources/{id or key}` | Resource detail: `signals`, `rules` (each with `status`, `explanation`, `since`, `open_incident`, `action`, `destination`, `routes`), `maintenance` |
 | `PATCH /workspaces/{ws}/resources/{id or key}` | `{name?, meta?}`; unsent answers stay; key and Template never change |
 | `POST /workspaces/{ws}/resources/{id or key}/archive` | retire it from the inventory → 200, Resource detail with `archived_at`; 409 if already archived; editor or owner, full key |
 | `POST /workspaces/{ws}/resources/{id or key}/rebind` | move an active pushed-data Resource to another published pushed-data revision: `{"template": "key" or "key@version", "meta": {…}}` → 200, Resource detail with the same `id` and `key`, the new `template`, Signals and Rules. Its old Rules' open Incidents close as `rule_removed`; earlier Observations and Incidents stay readable; evidence for a Signal the new revision does not declare is refused. 422 (`field`) for an unknown, worker, or same revision or a refused answer, with nothing changed; 409 if archived; editor or owner, full key. From the release candidate after `2.0.0-rc2` |
@@ -102,7 +102,8 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 
 A delivery `reason` is one of `unreachable`, `http_NNN` (the status code the
 destination answered), `not_sent` (it could not be prepared), `maintenance`,
-`no_destination`, `destination_disabled` (the Rule's own destination is
+`no_destination`, `not_routed` (the Rule's `routes` send this transition
+nowhere, on purpose; after `2.0.0-rc4`), `destination_disabled` (the Rule's own destination is
 switched off), `resource_gone`, `not_opted_in` (an opening routed to a destination that did not ask for it), `confirmed_first` (an opening the Incident's confirmation overtook), `not_announced`. It never quotes the
 destination's URL, the body sent, or what the destination answered; the
 operator's delivery log in the UI keeps that text.
@@ -189,7 +190,7 @@ does, plus an `incident` object (Slack destinations never get it):
 ```
 
 - `transition` is `confirmed`, `closed` (a recovery), a reminder's latest
-  transition, or `opened`; `lifecycle` and `confirmation` are the Incident's
+  transition, `opened`, or `acknowledged` (where a Rule routes it, after `2.0.0-rc4`); `lifecycle` and `confirmation` are the Incident's
   state as of it.
 - **Opening events (opt-in).** A webhook destination with **Also send when an
   Incident opens** (Settings → Destinations) also receives one event when an
@@ -205,7 +206,8 @@ does, plus an `incident` object (Slack destinations never get it):
   (`confirm_after: 0`) sends no opening; one that closes before it is confirmed
   sends nothing more (read the Incident). Slack destinations, and webhooks
   that did not opt in, receive what they did before; an opening routed to one
-  of those is logged as held (`not_opted_in`). The event's `kind` field (and
+  of those is logged as held (`not_opted_in`), unless a Rule's `routes` send
+  openings to that Slack destination (after `2.0.0-rc4`). The event's `kind` field (and
   `{{kind}}` in a transformation) is `opened`. From the release candidate after `2.0.0-rc3`.
 - `evidence` is recorded when the transition is decided, one entry per
   declared Rule input, and never changes afterwards: later Observations, Rule
@@ -298,6 +300,30 @@ revision they were created from.
   is switched off later, the Rule's messages are held (`destination_disabled`
   in its delivery log) and go nowhere else; if it is deleted later, they follow
   the Resource and the Workspace default. Routing never changes what is decided.
+- From the release candidate after `2.0.0-rc4`, a Rule may add `routes`
+  instead of `destination`: up to 10 destinations of this Workspace, each with
+  the transitions it receives.
+
+  ```json
+  "routes": [
+    {"destination": "<on-call Slack id>", "on": ["opened", "problem", "recovery", "acknowledged"]},
+    {"destination": "<ops webhook id>"}
+  ]
+  ```
+
+  Transitions are `opened`, `problem` (the confirmed problem and its
+  reminders), `no_data`, `recovery` and `acknowledged`; a route without `on`
+  gets `problem`, `no_data` and `recovery`. Each transition goes to every
+  route that selects it and nowhere else: no Resource or Workspace default.
+  `"routes": []` sends nothing. A transition no route selects is logged as
+  held with `not_routed` (`no_destination` stays for a Workspace with nowhere
+  to send). A Slack destination routed `opened` gets the opening before
+  confirmation; a webhook still needs **Also send when an Incident opens**.
+  `acknowledged` is sent once when somebody takes the Incident on, with its
+  `confirmation` as of then. `destination` and `routes` together, a
+  destination twice, an unknown transition, `"on": []` or another
+  Workspace's id answer `422`. Reads show each route with `on` spelled out,
+  `[]` for a route to nowhere, and `null` for a Rule without routes.
 - A `value` comparison may add `"min_count": N, "within_seconds": S`
   (N 1–100, S 60–86400). It judges the latest N distinct Observations of that
   Signal from the last S seconds (by time, then by stored identity): true if

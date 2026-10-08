@@ -332,6 +332,34 @@ the destination off later, that Rule's alerts are held (each Incident's deliveri
 never changes when an Incident opens, confirms or closes. In `2.0.0-rc2`, every verdict goes
 to the default destination.
 
+### Route by Rule and transition
+
+From the release candidate after `2.0.0-rc4`, a Rule can use `routes` instead of `destination`
+to send its Incidents to several destinations, choose which transitions each one gets, or
+send nothing at all. Page on-call in Slack the moment `access_loss` opens, tell an ops
+webhook once it is confirmed, and keep `probe_issue` in the Uptimer UI only:
+
+```json
+{"key": "access_loss", "action": "Investigate the access path.",
+ "routes": [
+   {"destination": "<on-call Slack id>", "on": ["opened", "problem", "recovery", "acknowledged"]},
+   {"destination": "<ops webhook id>"}],
+ "wait": {"confirm_after": 600, "recover_after": 600}, "decision": {"all": [ … ]}}
+
+{"key": "probe_issue", "action": "Check the probe host.", "routes": [], … }
+```
+
+The transitions are `opened`, `problem` (the confirmed problem and its reminders), `no_data`,
+`recovery` and `acknowledged`; a route without `on` gets `problem`, `no_data` and `recovery`,
+what a destination always got. A Rule with `routes` never falls back to the server's or the
+Workspace default destination, so a new Rule published with `"routes": []` cannot page
+anyone. What it leaves out shows in each Incident's deliveries as `not_routed`, apart from
+`no_destination` (a Workspace with nowhere to send).
+
+Slack on `opened` gets the opening before the 600-second wait ends. A webhook routed
+`opened` still needs **Also send when an Incident opens**, below. `acknowledged` is sent once
+when somebody takes the Incident on. A Rule cannot have both `destination` and `routes`.
+
 ## Get the alert with its evidence
 
 Add a webhook under **Settings → Destinations** (type Webhook, your endpoint's URL) and make
@@ -361,7 +389,8 @@ same `incident` object with `"transition": "opened"`, `"lifecycle": "open"` and
 `"confirmation": "unconfirmed"`, and the evidence it opened on. The `confirmed` event still
 follows after 600 seconds; an opening is never sent once the Incident is confirmed. A new
 reading while it waits sends no second opening, and an Incident
-that clears before it is confirmed sends nothing more. Slack destinations are unchanged.
+that clears before it is confirmed sends nothing more. A Slack destination gets openings only
+where a Rule routes them (above).
 
 ## Find servers by field, and retire one
 
