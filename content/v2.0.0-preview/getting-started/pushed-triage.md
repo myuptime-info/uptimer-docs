@@ -354,6 +354,15 @@ bodies and secret fields are not included. The full shape is in the
 [API v3 reference](/v2.0.0-preview/reference/rest-api/#webhooks). A Slack destination gets the
 same alert text without the `incident` object.
 
+`access_loss` waits 600 seconds before it is confirmed. If your automation should start before
+that, tick **Also send when an Incident opens** on the webhook (from the release candidate after
+`2.0.0-rc3`). The webhook then also gets one `opened` event as soon as the Incident opens: the
+same `incident` object with `"transition": "opened"`, `"lifecycle": "open"` and
+`"confirmation": "unconfirmed"`, and the evidence it opened on. The `confirmed` event still
+follows after 600 seconds; an opening is never sent once the Incident is confirmed. A new
+reading while it waits sends no second opening, and an Incident
+that clears before it is confirmed sends nothing more. Slack destinations are unchanged.
+
 ## Find servers by field, and retire one
 
 Lists take the Template and its fields as filters. Only `srv-0042` was created with a provider:

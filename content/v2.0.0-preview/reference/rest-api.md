@@ -103,7 +103,7 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 A delivery `reason` is one of `unreachable`, `http_NNN` (the status code the
 destination answered), `not_sent` (it could not be prepared), `maintenance`,
 `no_destination`, `destination_disabled` (the Rule's own destination is
-switched off), `resource_gone`, `not_announced`. It never quotes the
+switched off), `resource_gone`, `not_opted_in` (an opening routed to a destination that did not ask for it), `confirmed_first` (an opening the Incident's confirmation overtook), `not_announced`. It never quotes the
 destination's URL, the body sent, or what the destination answered; the
 operator's delivery log in the UI keeps that text.
 
@@ -128,7 +128,8 @@ does, plus an `incident` object (Slack destinations never get it):
 ```json
 "incident": {
   "id": "p5rO8cFSTi1T", "rule": "access_loss", "verdict": "problem",
-  "action": "Investigate the access path.", "transition": "confirmed", "at": "2026-10-05T12:11:00Z",
+  "action": "Investigate the access path.", "transition": "confirmed",
+  "lifecycle": "open", "confirmation": "confirmed", "at": "2026-10-05T12:11:00Z",
   "resource": {"key": "srv-0042", "name": "srv-0042", "template": "service-triage@1",
                "fields": {"provider": "alpha", "load_threshold": 0.4}, "fields_omitted": 0},
   "evidence": {"inputs": [
@@ -140,6 +141,25 @@ does, plus an `incident` object (Slack destinations never get it):
 }
 ```
 
+- `transition` is `confirmed`, `closed` (a recovery), a reminder's latest
+  transition, or `opened`; `lifecycle` and `confirmation` are the Incident's
+  state as of it.
+- **Opening events (opt-in).** A webhook destination with **Also send when an
+  Incident opens** (Settings → Destinations) also receives one event when an
+  Incident opens and is not confirmed yet: `transition: "opened"`,
+  `lifecycle: "open"`, `confirmation: "unconfirmed"`, the same Incident `id`,
+  and the evidence recorded when it opened. It is sent right after the opening
+  is stored, while the Incident is still unconfirmed; the confirmed event
+  follows as before. Uptimer never starts an opening request once the Incident
+  is confirmed or closed: if confirmation comes first (a backlog, a delivery
+  pause), only the confirmed event is sent, and an opening confirmed between
+  being picked and being sent is logged as held (`confirmed_first`). One per opening: re-evaluation while unconfirmed sends nothing
+  more, so `id` plus `transition` identifies it. An Incident confirmed at once
+  (`confirm_after: 0`) sends no opening; one that closes before it is confirmed
+  sends nothing more (read the Incident). Slack destinations, and webhooks
+  that did not opt in, receive what they did before; an opening routed to one
+  of those is logged as held (`not_opted_in`). The event's `kind` field (and
+  `{{kind}}` in a transformation) is `opened`. From the release candidate after `2.0.0-rc3`.
 - `evidence` is recorded when the transition is decided, one entry per
   declared Rule input, and never changes afterwards: later Observations, Rule
   edits and Rule removal leave it as it was. A reminder repeats the latest
