@@ -120,6 +120,53 @@ do when it opened, or null). History is
 removed. `evidence` is what that transition recorded from the Rule's inputs
 when it was decided (below), or null: an administrative closure records none.
 
+## Observation labels
+
+An Observation may carry `labels`: string keys and values the sender (or a
+worker) attaches, such as `{"region": "eu-west", "probe": "probe-eu-1"}`.
+They are not Resource Template fields: fields (`meta`) are a Resource's own
+settings, given when it is created or edited, used by Rules as thresholds and
+by lists as filters, and sent with a webhook as `incident.resource.fields`.
+Labels belong to one reading.
+
+**Matching.** A Rule's input may select readings by labels. A reading matches
+only when it carries every declared label with exactly the same value (case
+included); labels the Rule does not name are ignored. A reading that does not
+match is not that Rule's evidence.
+
+**Which Rules select labels today.** None that a Template in this release
+configures:
+- Built-in Templates (such as `website-check`) derive Rules that read their
+  Signals without a label selector.
+- Published (pushed-data) Templates use composite Rules, which name their
+  Signals in `decision` and cannot declare `input`. A manifest Rule with
+  `"input": {"labels": …}` is refused (400: an unknown key).
+
+Label selection is part of the Rule contract (DDR-0003 INV-RL03) for Rules
+that declare it; no API v3 route sets it yet.
+
+**Evidence.** Recorded evidence copies only the labels a Rule selects by (at
+most 8, values cut at 200 characters, credential-named ones `[redacted]`).
+Because no shipped Rule selects labels, recorded evidence and webhook
+payloads carry no Observation labels today. Labels stay context: the
+Observation log (`GET …/resources/{r}/observations`, the Resource's log page)
+shows them. To carry a sender's explanation into evidence and alerts, use the
+Observation `reason` instead.
+
+For example, a pushed problem
+
+```json
+{"signal": "probe_a", "state": "problem",
+ "labels": {"region": "eu-west", "probe": "probe-eu-1"},
+ "reason": "TLS handshake timeout"}
+```
+
+is logged with both labels and the reason. The Incident it opens records
+`{"signal": "probe_a", "status": "problem", "reason": "TLS handshake timeout", …}`
+for that input, without the labels. A built-in Website check's Observations
+likewise carry `url` and `method` labels that appear in the log, not in
+evidence.
+
 ## Webhooks
 
 A plain webhook destination receives the attachments a Slack destination
@@ -274,6 +321,16 @@ revision they were created from.
   counts by when it was observed. A baseline comparison reads the newest
   reading and cannot also take `min_count`. The explanation shows it, e.g.
   `load 40 (7d median 100 of 12 readings)`.
+- From the release candidate after `2.0.0-rc3`, a composite can ask whether an input has usable data:
+  `{"signal": "probe_a", "field": "known"}` (optionally `"within_seconds": S`,
+  60–86400) is true for a fresh `ok` or `problem` reading and false for a
+  Signal never heard from, gone quiet, older than its window, or reporting
+  `no_data`; it is never unknown. `{"all_known": [comparisons…], "min_known": N}`
+  and `any_known` judge only the comparisons (2–16, status or value, one Signal
+  each) whose Signal is known: unknown while fewer than N are known, else
+  `all` / `any` of the known ones. One Template then covers a Resource with
+  one probe and one with several: an absent probe does not block the verdict,
+  and with no known probe there is no verdict at all.
 - Unknown is three-valued: a Signal that never reported, went quiet, said
   `no_data` (whatever value it also carries), or carried no value cannot
   satisfy its own comparison. `not`

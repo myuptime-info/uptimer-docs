@@ -422,6 +422,29 @@ with the Observations they used. Evidence for a Signal the new revision does not
 refused. Nothing changes if the revision or an answer is refused, and an archived server cannot
 be rebound. Publishing a new revision never moves a server on its own.
 
+## Any number of probes
+
+From the release candidate after `2.0.0-rc3`, one Template can serve a server with one probe and
+another with three. `all_known` judges only the probes that have reported a fresh `ok` or
+`problem`, and stays unknown until `min_known` of them have:
+
+```json
+{"key": "access_loss", "action": "Investigate the access path.",
+ "wait": {"confirm_after": 600, "recover_after": 600},
+ "decision": {"all": [
+   {"all_known": [
+     {"signal": "probe_a", "field": "status", "operator": "eq", "operand": "problem"},
+     {"signal": "probe_b", "field": "status", "operator": "eq", "operand": "problem"},
+     {"signal": "probe_c", "field": "status", "operator": "eq", "operand": "problem"}],
+    "min_known": 1},
+   {"signal": "origin", "field": "status", "operator": "eq", "operand": "ok"}]}}
+```
+
+A server that only has `probe_a` is judged on `probe_a`; one with all three needs all three
+failing. A probe that never reports, goes quiet, or says `no_data` is left out rather than
+counted as healthy, and with no probe known the Rule decides nothing. To test one input alone,
+`{"signal": "probe_b", "field": "known"}` is true while `probe_b` has a fresh `ok` or `problem`.
+
 ## When data is missing
 
 If host health cannot be read, or the traffic ratio has no confidence, send `no_data` for it
