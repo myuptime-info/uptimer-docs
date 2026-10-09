@@ -99,14 +99,21 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 | `GET /workspaces/{ws}/incidents/{id}` | Incident with `history`, oldest first |
 | `GET /workspaces/{ws}/incidents/{id}/deliveries?limit` | what was sent about it, newest first: `[{at, destination, type, event, status, reason}]`; `status` delivered, failed or held; `reason` a fixed code (below), null when delivered |
 | `POST /workspaces/{ws}/incidents/{id}/acknowledge` | take it on; 409 if closed or already taken |
+| `GET /workspaces/{ws}/destinations` | `[{id, name, type, channel, enabled, send_on_open, default}]`, by name; never a URL. Full key; after `2.0.0-rc5` |
+| `POST /workspaces/{ws}/destinations` | `{name, type: slack or webhook, url, channel?, enabled?, send_on_open?, default?}` → 201 ([below](#destinations)); editor or owner, full key |
+| `PATCH /workspaces/{ws}/destinations/{id}` | `{name?, url?, channel?, enabled?, send_on_open?, default?}` → 200; the type never changes; editor or owner, full key |
+| `DELETE /workspaces/{ws}/destinations/{id}` | → 200 `{id, deleted: true}`; 422 with `details.used_by` while a live route uses it; editor or owner, full key |
+| `POST /workspaces/{ws}/destinations/{id}/test` | send the test message → 200 `{status: delivered or failed, reason}`; editor or owner, full key |
+| `GET /workspaces/{ws}/destinations/{id}/deliveries?limit&cursor` | page of what was sent to it, newest first: `[{at, event, status, reason, incident}]` (`incident` null for a test); full key |
 
 A delivery `reason` is one of `unreachable`, `http_NNN` (the status code the
 destination answered), `not_sent` (it could not be prepared), `maintenance`,
 `no_destination`, `not_routed` (the Rule's `routes` send this transition
 nowhere, on purpose; after `2.0.0-rc4`), `destination_disabled` (the Rule's own destination is
 switched off), `resource_gone`, `not_opted_in` (an opening routed to a destination that did not ask for it), `confirmed_first` (an opening the Incident's confirmation overtook), `not_announced`. It never quotes the
-destination's URL, the body sent, or what the destination answered; the
-operator's delivery log in the UI keeps that text.
+destination's URL, the body sent, or what the destination answered. The
+operator's delivery log in the UI shows the body sent and the status the
+destination answered, never its URL or its words.
 
 An Incident: `id`, `resource {id, key, name}`, `rule`
 (the Rule identity recorded when it opened), `lifecycle`, `confirmation`,
@@ -120,6 +127,30 @@ do when it opened, or null). History is
 `confirmed`, `verdict_changed`, `closed`. It is kept after the Rule is edited or
 removed. `evidence` is what that transition recorded from the Rule's inputs
 when it was decided (below), or null: an administrative closure records none.
+
+## Destinations
+
+From the release candidate after `2.0.0-rc5`, a script manages the Workspace's destinations
+with a full API key; a scoped key gets `403` (`scope: full`). A destination's `url` is
+written, never read back: no answer, error, test result or delivery entry carries it, a
+payload, or what the far end said. A test or a delivery that did not arrive says why with a
+fixed `reason` code (above). `send_on_open` is a webhook's opt-in to opening events (Slack
+answers `422`; route openings to Slack with a Rule's `routes`). `channel` is a Slack
+destination's channel override. The first destination becomes the default; `"default": true`
+moves it, and a switched-off destination cannot be it. A name is unique in its Workspace
+(`409`).
+
+A Template Rule names a destination by id, `"<id>"` or `{"id": "<id>"}`, or by name,
+`{"name": "oncall"}`, in `destination` and in each route. Publishing resolves a name to the one
+destination of the publishing Workspace with that name (the exact name, else the only one that
+matches ignoring case) and stores its id, so one manifest publishes in every Workspace that has
+an `oncall`. No such destination, or more than one, answers `422`. Reads show the id.
+
+`DELETE` answers `422` while a live route uses the destination: the newest revision of one of
+the Workspace's Templates names it, or an active Resource's current Rules do.
+`details.used_by` lists them, such as `Template paged@2 Rule host_down; Resource srv-0042 Rule
+host_down`. Publish the next revision without it, and rebind or archive those Resources; then
+the delete goes through. Older revisions no Resource uses do not hold it.
 
 ## Observation labels
 

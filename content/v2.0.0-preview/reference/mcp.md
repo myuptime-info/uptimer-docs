@@ -87,6 +87,11 @@ on stderr; logs never go to stdout.
 | `publish_template` | `templates` | publish a pushed-data Template revision (the API v3 manifest); after `2.0.0-rc3` its Rules may use `known`, `all_known` and `any_known` ([any number of probes](/v2.0.0-preview/getting-started/pushed-triage/)); after `2.0.0-rc4` each Rule may set `routes` ([route by Rule and transition](/v2.0.0-preview/getting-started/pushed-triage/#route-by-rule-and-transition)) |
 | `create_resource`, `archive_resource` | `resources` | create a Resource from a Template by your own key; archive one |
 | `rebind_resource` | full key | move a pushed-data Resource to another published revision (`template`, `meta`), keeping its id and key; after `2.0.0-rc2` |
+| `list_destinations` | full key | the Workspace's destinations: id, name, type, channel, enabled, `send_on_open`, default; never a URL. After `2.0.0-rc5` |
+| `create_destination`, `update_destination` | full key | add a Slack or webhook destination (`name`, `type`, `url`, …), or change one; its URL is never shown back |
+| `delete_destination` | full key | delete one; refused with `used_by` while a live route still uses it |
+| `test_destination` | full key | send the test message; `delivered`, or `failed` with a reason code |
+| `list_destination_deliveries` | full key | what was sent to one destination, newest first, with a cursor |
 
 A write tool is listed only when the key has its action, and API v3 checks it
 again on every call. With a key for one Workspace, the `workspace` argument
@@ -106,7 +111,8 @@ key reads the real values.
 
 Not everything has a tool. After `2.0.0-rc3`, the `opened` webhook event is
 switched on per webhook destination in the UI (**Settings**, the destination's
-**Also send when an Incident opens**), and the Resource page's recorded decision evidence,
+**Also send when an Incident opens**; after `2.0.0-rc5` also `send_on_open` in
+`create_destination` and `update_destination`), and the Resource page's recorded decision evidence,
 latest Signals, and the list's age and open-Incident sorting are in the
 browser only. A Template's Rules cannot select Observation labels
 ([REST API](/v2.0.0-preview/reference/rest-api/)); MCP adds none.

@@ -360,6 +360,30 @@ Slack on `opened` gets the opening before the 600-second wait ends. A webhook ro
 `opened` still needs **Also send when an Incident opens**, below. `acknowledged` is sent once
 when somebody takes the Incident on. A Rule cannot have both `destination` and `routes`.
 
+### Script the destinations too
+
+From the release candidate after `2.0.0-rc5`, a full API key creates the destinations and the
+Template names them, so no id is copied by hand:
+
+```bash
+curl -s -H "$H" -X POST $API/workspaces/$WS/destinations \
+  -d '{"name": "oncall", "type": "slack", "url": "https://hooks.slack.com/services/…"}' | jq '.result.id, .error'
+```
+
+```json
+"routes": [{"destination": {"name": "oncall"}, "on": ["opened", "problem", "recovery", "acknowledged"]},
+           {"destination": {"name": "ops"}}]
+```
+
+Publishing looks the name up in that Workspace and stores its id, so the same manifest works in
+every Workspace that has an `oncall` and an `ops`. A name it cannot find, or that two
+destinations answer to, is refused with `422`. The API never shows a destination's URL back.
+`POST …/destinations/{id}/test` answers `delivered` or a reason code, and
+`GET …/destinations/{id}/deliveries` pages what was sent there. A destination is not deleted
+while the newest revision of a Template, or an active server's Rules, still route to it: the
+`422` lists them. The Python SDK (`ws.destinations`) and MCP (`create_destination`, …) do the
+same.
+
 ## Get the alert with its evidence
 
 Add a webhook under **Settings → Destinations** (type Webhook, your endpoint's URL) and make
