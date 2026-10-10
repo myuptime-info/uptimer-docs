@@ -304,7 +304,8 @@ or `null` where it has a current `ok` or `problem` reading.
 | `reported_no_data` | its newest reading, still fresh, says `no_data` |
 
 A stale `no_data` is `stale`. An event Signal, or a heartbeat with no
-period, is never stale. A Signal that does not apply to the Resource
+period, is never stale. An on-demand Signal nobody has asked to check yet is
+`not_checked`, not missing ([Pushed-data Templates](#pushed-data-templates)). A Signal that does not apply to the Resource
 (`"applicability": "not_applicable"`) is never missing. None of these is
 health: the Rules read them as unknown exactly as before. The cause carries
 no Observation payload; read `…/observations` for that.
@@ -520,6 +521,48 @@ revision they were created from.
   `not_applicable`; `replication_failing` stays unknown on it, and
   `node_down` follows `host` alone. With `"role": "replica"` both Signals
   apply.
+- From the release candidate after `2.0.0-rc8`, a Signal may be
+  `"on_demand": true`: checked only when something asks, not on a schedule,
+  so it takes no `every_seconds` and never goes stale. Until its first
+  Observation is accepted, `GET …/resources/{r}` shows it with
+  `"on_demand": true, "not_checked": true` and `"missing": null`: nobody has
+  asked yet, which is not missing data and not `no_data`, and the
+  `missing=` filters never match it. Its comparisons are unknown, and Rule
+  explanations say `not checked yet`. Once a check reports, it is like any
+  other Signal: a check that came back `no_data` is
+  `"missing": "reported_no_data"`.
+- A comparison may add `"if_unknown": false`: when its Signal has no usable
+  data (never reported, gone quiet, `no_data`, no value, not enough
+  readings, or not checked yet) it is false instead of unknown, so the Rule
+  can decide "not this" instead of holding. Only `false` is accepted, and
+  not on `known`, on a group, or under `not` (where false would read as
+  true); a Signal that does not apply stays unknown. Without it nothing
+  changes.
+
+  ```json
+  {"key": "deep-check", "version": 1,
+   "name": "Service with a deep check", "summary": "A heartbeat, and a deeper check run only when asked.",
+   "fields":  [{"key": "owner", "label": "Owner", "type": "string"}],
+   "signals": [{"key": "beat", "kind": "heartbeat", "every_seconds": 300},
+               {"key": "deep", "kind": "event", "on_demand": true}],
+   "rules":   [{"key": "service_down", "action": "Check the service.",
+                "wait": {"confirm_after": 120, "recover_after": 300},
+                "decision": {"any": [
+                  {"signal": "beat", "field": "status", "operator": "eq", "operand": "problem"},
+                  {"signal": "deep", "field": "status", "operator": "eq", "operand": "problem",
+                   "if_unknown": false}]}}]}
+  ```
+
+  With `deep` not checked yet, `service_down` follows `beat` alone and
+  recovers when `beat` does. Without `if_unknown`, an unchecked `deep` would
+  keep it unknown, and an open Incident would stay open.
+
+  | A Signal… | `not_checked` | `missing` |
+  |---|---|---|
+  | on demand, nobody has asked yet | `true` | `null` |
+  | on demand, its check reported `no_data` | `false` | `reported_no_data` |
+  | on a schedule, never reported | `false` | `never_reported` |
+  | with a current `ok` or `problem` | `false` | `null` |
 - Unknown is three-valued: a Signal that never reported, went quiet, said
   `no_data` (whatever value it also carries), or carried no value cannot
   satisfy its own comparison. `not`
