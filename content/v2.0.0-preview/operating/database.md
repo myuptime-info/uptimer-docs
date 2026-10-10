@@ -40,6 +40,27 @@ On PostgreSQL the schema comes from ordered SQL steps built into the binary. The
 - A 2.0 database made before the ledger existed adopts the baseline only if its tables match it exactly. Any extra or different column, index, constraint, trigger or row security is refused, named, and nothing is recorded. Your own separate tables are fine.
 - PostgreSQL never falls back to building tables from the code's models.
 
+### The Observation index step (after `2.0.0-rc8`)
+
+The release candidate after `2.0.0-rc8` adds step 14: an index on
+`server_resource_observations (signal_id, id)`. The judge reads each
+Resource's unjudged Observations through it, one Signal at a time from its
+cursor. The index and that query change ship together: the index alone barely
+changes the old query's plan, which walks every Observation above the cursor
+across all Resources. The query change is what lets PostgreSQL use it.
+
+Building the index holds writes to the Observations table while it runs. On a
+large table, build it yourself first, without holding writes, under the same
+name, then run `uptimer migrate`; the step sees the index and does nothing:
+
+```sql
+CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_observation_signal_id"
+  ON "server_resource_observations" ("signal_id", "id");
+```
+
+If a concurrent build is interrupted it leaves an invalid index of that name:
+drop it and build again before migrating.
+
 ## How SQLite migrates
 
 SQLite takes its schema from the code's models and keeps no ledger. It handles new installations and added tables or columns. It does not rename or drop columns or backfill data. A release that needs that on SQLite says so in its notes and gives its own path. Use PostgreSQL for an installation you will keep through schema changes.
