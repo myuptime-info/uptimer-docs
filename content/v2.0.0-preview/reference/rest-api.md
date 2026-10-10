@@ -450,6 +450,48 @@ revision they were created from.
   `all` / `any` of the known ones. One Template then covers a Resource with
   one probe and one with several: an absent probe does not block the verdict,
   and with no known probe there is no verdict at all.
+- From the release candidate after `2.0.0-rc8`, a Signal may apply to only
+  some Resources of a Template: `"applies_if": {"field": F, "operator": O,
+  "value": V}` compares one of the Template's fields with a literal. A
+  `boolean`, `string` or `enum` field takes `eq` or `neq`; an `integer`,
+  `number` or `duration_seconds` field also takes `gt`, `gte`, `lt` and
+  `lte`. `value` is written as the field holds an answer (`true`, not
+  `"true"`; an `enum` value is one of its options); anything else is 422.
+  A Resource whose answer makes it false, or that has no answer for the
+  field, still has the Signal, and `GET …/resources/{r}` shows it with
+  `"applicability": "not_applicable"` (every other Signal is
+  `"applicable"`). Editing the answer changes it. A Signal that does not
+  apply is not missing data and not healthy evidence: every comparison on it
+  is unknown, `known` included, and it is never a known input of
+  `all_known` / `any_known`. A Rule whose only inputs do not apply stays
+  unknown and opens nothing; a Rule with other inputs decides on those as
+  usual. Observations sent to it are stored and read by no Rule. The
+  Resource page lists it as **not applicable**, in the neutral style, and
+  does not count it as no data. A copyable Template:
+
+  ```json
+  {"key": "db-node", "version": 1,
+   "name": "Database node", "summary": "A database node; only a replica reports replication.",
+   "fields":  [{"key": "role", "label": "Role", "type": "enum",
+                "options": ["primary", "replica"], "required": true}],
+   "signals": [{"key": "host", "kind": "heartbeat", "every_seconds": 300},
+               {"key": "replication", "kind": "heartbeat", "every_seconds": 300,
+                "applies_if": {"field": "role", "operator": "eq", "value": "replica"}}],
+   "rules":   [{"key": "replication_failing", "action": "Check replication.",
+                "wait": {"confirm_after": 0, "recover_after": 300},
+                "decision": {"signal": "replication", "field": "status",
+                             "operator": "eq", "operand": "problem"}},
+               {"key": "node_down", "action": "Check the node.",
+                "wait": {"confirm_after": 120, "recover_after": 300},
+                "decision": {"any": [
+                  {"signal": "host", "field": "status", "operator": "eq", "operand": "problem"},
+                  {"signal": "replication", "field": "status", "operator": "eq", "operand": "problem"}]}}]}
+  ```
+
+  A Resource with `"meta": {"role": "primary"}` shows `replication` as
+  `not_applicable`; `replication_failing` stays unknown on it, and
+  `node_down` follows `host` alone. With `"role": "replica"` both Signals
+  apply.
 - Unknown is three-valued: a Signal that never reported, went quiet, said
   `no_data` (whatever value it also carries), or carried no value cannot
   satisfy its own comparison. `not`
