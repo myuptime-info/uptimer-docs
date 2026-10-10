@@ -291,6 +291,34 @@ duration, boolean). The value is read as the field's type, so
 422. An Incident filter may match at most 5000 Resources. Every list stays
 inside the Workspace the key reaches, and pages by a stable cursor.
 
+### Missing Signals
+
+From the release candidate after `2.0.0-rc8`, each Signal on
+`GET …/resources/{r}` carries `missing`: why it has no usable reading now,
+or `null` where it has a current `ok` or `problem` reading.
+
+| `missing` | Means |
+|---|---|
+| `never_reported` | no Observation was ever accepted for it |
+| `stale` | a heartbeat whose newest reading is older than three of its periods (`every_seconds`): the silence judging already reads as unknown |
+| `reported_no_data` | its newest reading, still fresh, says `no_data` |
+
+A stale `no_data` is `stale`. An event Signal, or a heartbeat with no
+period, is never stale. A Signal that does not apply to the Resource
+(`"applicability": "not_applicable"`) is never missing. None of these is
+health: the Rules read them as unknown exactly as before. The cause carries
+no Observation payload; read `…/observations` for that.
+
+`GET …/resources?missing=<cause>` lists the Resources with at least one
+Signal missing for that cause, now; several causes, comma separated, match
+any of them. It combines with the other filters and pages the same way. Any
+other value is 422.
+
+```bash
+curl -s -H "$H" "$API/workspaces/$WS/resources?missing=stale"
+curl -s -H "$H" "$API/workspaces/$WS/resources?missing=never_reported,reported_no_data&label.env=prod"
+```
+
 ## Batch Observations
 
 From the release candidate after `2.0.0-rc7`.

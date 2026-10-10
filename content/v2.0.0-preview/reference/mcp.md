@@ -73,9 +73,9 @@ on stderr; logs never go to stdout.
 |---|---|---|
 | `list_workspaces` | read | Workspaces the key reaches, with your role |
 | `create_workspace` | full key | create a Workspace you own, by `name`; answers its id. A scoped key does not have it. From the release candidate after `2.0.0-rc2` |
-| `list_resources` | read | a page of Resources with their open Incident; `template`, `state` (active, archived, all), `meta` field values, `labels` (after `2.0.0-rc7`), `cursor` (1–50) |
+| `list_resources` | read | a page of Resources with their open Incident; `template`, `state` (active, archived, all), `meta` field values, `labels` (after `2.0.0-rc7`), `missing` (after `2.0.0-rc8`: `never_reported`, `stale` or `reported_no_data`), `cursor` (1–50) |
 | `list_templates` | read | the Templates Resources here can be made from, every revision |
-| `get_resource` | read | Signals (after `2.0.0-rc8`, each with `applicability`: `applicable` or `not_applicable`), Rules with their result and explanation, maintenance |
+| `get_resource` | read | Signals (after `2.0.0-rc8`, each with `applicability`: `applicable` or `not_applicable`, and [`missing`](/v2.0.0-preview/reference/rest-api/#missing-signals)), Rules with their result and explanation, maintenance |
 | `list_observations` | read | newest Observations of a Resource (1–50) |
 | `list_incidents` | read | Incidents, newest first; filters including `rule`, `lifecycle`, `acknowledged` (true or false; after `2.0.0-rc2`), `template`, `resource_state`, `meta` and `labels`, and a cursor (1–50) |
 | `get_incident` | read | one Incident and its recorded history, with each transition's input `evidence` |

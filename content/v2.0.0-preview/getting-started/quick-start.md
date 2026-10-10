@@ -95,6 +95,7 @@ From the release candidate after `2.0.0-rc2`, **Incidents** in the sidebar lists
 From the release candidate after `2.0.0-rc3`, the Resource page says **Why {rule} is open** for each open Incident: its problem and the evidence it recorded when it opened, which later readings never change. Below it, **Latest Signals** shows each Signal as it stands now, with a Signal that never reported, went stale or says `no_data` named as such. The Resources list shows how long ago each Resource was created and how long its oldest open Incident has been open, and sorts by either.
 
 From the release candidate after `2.0.0-rc7`, **Find** on the Resources list searches by a Resource's key, name or id; **Clear** shows every Resource again. Choose 25, 50 or 100 per page and move with **Previous** and **Next**: the search and sort stay as you page. Click a Resource's name, key or id, on the list or on its page, to copy it.
+From the release candidate after `2.0.0-rc8`, **Missing data** narrows the list to Resources with a Signal that was never reported, has gone stale, or reported `no_data`; it is kept as you page.
 
 A Resource that no Rule has judged yet reads **not judged yet**, on the list, on its page and for each such Rule: right after you create it, and after its first Observation until judging has run. That is neither healthy (`ok`) nor **no data**, which a Rule decides when its inputs give it nothing to go on. In API v3 such a Rule's `status` is `null`.
 
