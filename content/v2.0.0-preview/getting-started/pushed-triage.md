@@ -100,11 +100,32 @@ push() {
 push srv-0042 problem problem ok ok 0.1     # both probes fail, the host is fine, traffic is gone
 ```
 
-Uptimer judges a burst of pushes for one server together, within about half a minute. Then
-read the result:
+With many servers, send each round in batches instead, from the release candidate after
+`2.0.0-rc7`: up to 500 Observations per request, for any servers, one result per item. Give each
+item an `id` (here: round, server, Signal) so sending the batch again stores nothing twice:
 
 ```bash
-sleep 35
+curl -s -H "$H" -X POST $API/workspaces/$WS/observations -d '{"observations": [
+  {"resource": "srv-0042", "signal": "probe_a", "state": "problem", "id": "r118-srv-0042-probe_a"},
+  {"resource": "srv-0042", "signal": "origin",  "state": "ok",      "id": "r118-srv-0042-origin"},
+  {"resource": "srv-0043", "signal": "probe_a", "state": "ok",      "id": "r118-srv-0043-probe_a"}
+]}' | jq -c '.result | {accepted, rejected, rejected_items: [.results[] | select(.status == "rejected") | {index, error: .error.message}]}'
+```
+
+A rejected item (an unknown server, a state that is not `ok`, `problem` or `no_data`) carries the
+same error a single push would, and the others are stored anyway. The limits and the answer are in
+the [API v3 reference](/v2.0.0-preview/reference/rest-api/#batch-observations); the Python SDK
+sends one with `ws.resources.observe_batch(items)`.
+
+Uptimer judges each push as it arrives; the pushes that land while a server is being judged are
+judged together about three seconds later. From the release candidate after `2.0.0-rc7`, a
+measured burst of up to 300 servers × 5 Signals, pushed back to back, was judged within about
+3 seconds at the median and under 5 seconds for the slowest. At 1,000 servers × 5 Signals the
+median was about 9 seconds and the slowest about 12: a larger burst takes longer, so poll
+rather than wait a fixed time. Then read the result:
+
+```bash
+sleep 5
 curl -s -H "$H" $API/workspaces/$WS/resources/srv-0042/incidents \
   | jq '.result[] | {rule, action, lifecycle, confirmation, explanation}'
 ```
@@ -121,6 +142,11 @@ curl -s -H "$H" $API/workspaces/$WS/resources/srv-0042/incidents \
 
 It is confirmed once the trouble has held for 600 seconds; keep pushing every round. When the
 evidence turns healthy and stays so for 600 seconds, it closes.
+
+In the UI, a server you push to shows **pushed** under **Checked from** on the Resources list,
+and each of its Observations reads **pushed** in the Observation log: it came from your script,
+not from a Location. A Resource a worker runs counts its distinct Locations instead (from the
+release candidate after `2.0.0-rc7`).
 
 ### Say why
 
@@ -149,7 +175,7 @@ for server in srv-0043 srv-0044; do
 done
 push srv-0043 problem problem problem ok 0.1   # service_down: the origin check fails
 push srv-0044 problem ok ok ok 0.9             # probe_issue: traffic is normal
-sleep 35
+sleep 5
 for server in srv-0043 srv-0044; do
   curl -s -H "$H" $API/workspaces/$WS/resources/$server/incidents | jq -c '.result[] | {rule, action}'
 done
@@ -190,12 +216,12 @@ curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources \
   -d '{"template": "service-triage@2", "key": "srv-0050", "name": "srv-0050"}'
 
 push srv-0050 problem problem ok ok 0.1
-sleep 35
+sleep 5
 curl -s -H "$H" $API/workspaces/$WS/resources/srv-0050/incidents | jq '.result | length'
 
 push srv-0050 problem problem ok ok 0.1; sleep 2
 push srv-0050 problem problem ok ok 0.1
-sleep 35
+sleep 5
 curl -s -H "$H" $API/workspaces/$WS/resources/srv-0050/incidents | jq -c '.result[] | {rule, action, confirmation}'
 ```
 
@@ -239,7 +265,7 @@ for round in 1 2 3; do
     -d '{"signal": "peer_load_ratio", "state": "ok", "value": 0.2}'
   sleep 2
 done
-sleep 35
+sleep 5
 curl -s -H "$H" $API/workspaces/$WS/resources/srv-0060/incidents | jq -c '.result[] | {rule, action, confirmation}'
 ```
 
@@ -295,7 +321,7 @@ for signal in origin service_health; do
 done
 curl -s -o /dev/null -H "$H" -X POST $API/workspaces/$WS/resources/srv-0070/observations \
   -d '{"signal": "load", "state": "ok", "value": 40}'
-sleep 35
+sleep 5
 INC=$(curl -s -H "$H" $API/workspaces/$WS/resources/srv-0070/incidents | jq -r '.result[0].id')
 curl -s -H "$H" $API/workspaces/$WS/incidents/$INC \
   | jq -c '.result | {rule, explanation}, (.history[0].evidence.inputs[] | select(.signal == "load") | .baseline)'
@@ -428,6 +454,18 @@ curl -s -H "$H" "$API/workspaces/$WS/resources?template=service-triage&meta.prov
 srv-0042
 ```
 
+From the release candidate after `2.0.0-rc7`, a server can also carry labels of its own, set
+without publishing a new Template revision. They are for finding servers; no Rule reads them and
+no alert carries them:
+
+```bash
+curl -s -H "$H" -X PATCH $API/workspaces/$WS/resources/srv-0042 -d '{"labels": {"env": "prod"}}' | jq -c '.result.labels'
+curl -s -H "$H" "$API/workspaces/$WS/incidents?label.env=prod&lifecycle=open" | jq -r '.result[].resource.key'
+```
+
+`null` removes a label. On the Resources list, a label is a link that shows only the servers
+carrying it.
+
 When a server leaves your inventory, archive it. Archiving is not deleting: the server keeps its
 key and its history, leaves the active list, stops accepting Observations, and its open Incidents
 close as `resource_archived` (not as a recovery). Its key cannot be reused, and there is no
@@ -512,6 +550,13 @@ If host health cannot be read, or the traffic ratio has no confidence, send `no_
 - A Signal not pushed for three rounds (900 seconds here) is unknown too, so a script that
   stops cannot leave a server looking healthy.
 - A `value` that is not a number is refused (`400`).
+
+A Rule's explanation says which of these it is, input by input: `unresolved (no_data)` when
+your script sent `no_data`, `unresolved (nothing has been reported here)` for a Signal that
+never reported, and `unresolved (nothing reported since …)` for one that went quiet. From the
+release candidate after `2.0.0-rc7`, the explanation follows the newest of these even while
+the Rule's result stays unknown, and an Incident page counts a reported `no_data` as without
+data, not as failing.
 
 ## What stays in your database
 

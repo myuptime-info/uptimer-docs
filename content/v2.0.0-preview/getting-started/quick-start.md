@@ -90,9 +90,13 @@ Uptimer gives you a first workspace. To start over with an empty one (a fresh fi
    ```
 4. Open the Resource. Its Rule reads **problem**, and the Resource links to its open Incident. The Incident page shows why it opened: the Observations, the Rule, the Incident and where it was delivered.
 
-From the release candidate after `2.0.0-rc2`, **Incidents** in the sidebar lists the workspace's open Incidents. It opens on **Needs action**: those nobody has acknowledged. **Acknowledged** shows the ones somebody took on, with who and when. Pick a Rule to see only its Incidents. Listing never changes an Incident or what is sent.
+From the release candidate after `2.0.0-rc2`, **Incidents** in the sidebar lists the workspace's open Incidents. From the release candidate after `2.0.0-rc7`, it shows every open Incident: one somebody has acknowledged stays on the list, marked **acknowledged** with who and when, until it closes. **Show** narrows it to **Not acknowledged** (what still needs action) or **Acknowledged**, and **Rule** to one Rule; each keeps the other, and so does **Older**. Listing never changes an Incident or what is sent.
 
 From the release candidate after `2.0.0-rc3`, the Resource page says **Why {rule} is open** for each open Incident: its problem and the evidence it recorded when it opened, which later readings never change. Below it, **Latest Signals** shows each Signal as it stands now, with a Signal that never reported, went stale or says `no_data` named as such. The Resources list shows how long ago each Resource was created and how long its oldest open Incident has been open, and sorts by either.
+
+From the release candidate after `2.0.0-rc7`, **Find** on the Resources list searches by a Resource's key, name or id; **Clear** shows every Resource again. Choose 25, 50 or 100 per page and move with **Previous** and **Next**: the search and sort stay as you page. Click a Resource's name, key or id, on the list or on its page, to copy it.
+
+A Resource that no Rule has judged yet reads **not judged yet**, on the list, on its page and for each such Rule: right after you create it, and after its first Observation until judging has run. That is neither healthy (`ok`) nor **no data**, which a Rule decides when its inputs give it nothing to go on. In API v3 such a Rule's `status` is `null`.
 
 ## 5. Check a worker by hand
 

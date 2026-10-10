@@ -84,17 +84,18 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 | `GET /locations` | `[{id, name}]` |
 | `GET /workspaces/{ws}/templates` | the system Templates, then this Workspace's own, every revision (`id` is `key@version`); each Rule carries its `action`, `destination` and `routes` |
 | `POST /workspaces/{ws}/templates` | publish a pushed-data Template revision (below) → 201; 409 if this key and version exist; editor or owner, full key |
-| `GET /workspaces/{ws}/resources` | page of Resources by id, with `open_incident` and `archived_at`; `state` active (default), archived or all; `template`; `meta.<field>=<value>` (below); `limit` 1–200, `cursor` |
-| `POST /workspaces/{ws}/resources` | create from a Template: `{template, key?, name, meta}` → 201, Resource detail. `template` is a key (its newest revision) or `key@version` |
+| `GET /workspaces/{ws}/resources` | page of Resources by id, with `open_incident` and `archived_at`; `state` active (default), archived or all; `template`; `meta.<field>=<value>` and, after `2.0.0-rc7`, `label.<key>=<value>` ([below](#resource-labels)); `limit` 1–200, `cursor` |
+| `POST /workspaces/{ws}/resources` | create from a Template: `{template, key?, name, meta, labels?}` → 201, Resource detail. `template` is a key (its newest revision) or `key@version` |
 | `GET /workspaces/{ws}/resources/{id or key}` | Resource detail: `signals`, `rules` (each with `status`, `explanation`, `since`, `open_incident`, `action`, `destination`, `routes`), `maintenance` |
-| `PATCH /workspaces/{ws}/resources/{id or key}` | `{name?, meta?}`; unsent answers stay; key and Template never change |
+| `PATCH /workspaces/{ws}/resources/{id or key}` | `{name?, meta?, labels?}`; unsent answers stay; key and Template never change. `labels` alone changes only labels ([below](#resource-labels)); editor or owner, full key |
 | `POST /workspaces/{ws}/resources/{id or key}/archive` | retire it from the inventory → 200, Resource detail with `archived_at`; 409 if already archived; editor or owner, full key |
 | `POST /workspaces/{ws}/resources/{id or key}/rebind` | move an active pushed-data Resource to another published pushed-data revision: `{"template": "key" or "key@version", "meta": {…}}` → 200, Resource detail with the same `id` and `key`, the new `template`, Signals and Rules. Its old Rules' open Incidents close as `rule_removed`; earlier Observations and Incidents stay readable; evidence for a Signal the new revision does not declare is refused. 422 (`field`) for an unknown, worker, or same revision or a refused answer, with nothing changed; 409 if archived; editor or owner, full key. From the release candidate after `2.0.0-rc2` |
 | `POST /workspaces/{ws}/resources/{r}/observations` | `{signal, state, kind?, value?, labels?, body?, at?, id?, reason?}` → 202 `{resource, signal, observation, created_signal}`; `state` is ok, problem or no_data (no evidence this time; never health); the same `id` twice is stored once. `reason` is a short plain-text why: control characters become spaces, blank is none, past 200 characters it is cut to 199 and "…"; a Rule that uses this reading records it in its evidence (`inputs[].reason`) and alert (from the release candidate after `2.0.0-rc2`) |
+| `POST /workspaces/{ws}/observations` | after `2.0.0-rc7`: up to 500 Observations for any Resources: `{"observations": [{resource, signal, state, …}]}` → 200 with one result per item ([below](#batch-observations)) |
 | `GET /workspaces/{ws}/resources/{r}/observations?signal&limit` | newest logged Observations — context, not a decision record |
 | `PUT /workspaces/{ws}/resources/{r}/maintenance` | `{minutes}`: hold notifications; judging and history go on |
 | `DELETE /workspaces/{ws}/resources/{r}/maintenance` | end it |
-| `GET /workspaces/{ws}/incidents` | page of Incidents, newest first; filters `resource`, `rule`, `lifecycle` (open, closed), `confirmation` (confirmed, unconfirmed), `acknowledged` (true, false; with `lifecycle=open`, false is what still needs action; from the release candidate after `2.0.0-rc2`), and the Resources' `template`, `resource_state` (all by default, active, archived) and `meta.<field>` |
+| `GET /workspaces/{ws}/incidents` | page of Incidents, newest first; filters `resource`, `rule`, `lifecycle` (open, closed), `confirmation` (confirmed, unconfirmed), `acknowledged` (true, false; with `lifecycle=open`, false is what still needs action; from the release candidate after `2.0.0-rc2`), and the Resources' `template`, `resource_state` (all by default, active, archived), `meta.<field>` and `label.<key>` |
 | `GET /workspaces/{ws}/resources/{r}/incidents` | the same, for one Resource |
 | `GET /workspaces/{ws}/incidents/{id}` | Incident with `history`, oldest first |
 | `GET /workspaces/{ws}/incidents/{id}/deliveries?limit` | what was sent about it, newest first: `[{at, destination, type, event, status, reason}]`; `status` delivered, failed or held; `reason` a fixed code (below), null when delivered |
@@ -289,6 +290,67 @@ duration, boolean). The value is read as the field's type, so
 `template`, an unknown field, a list field or a value the field cannot hold is
 422. An Incident filter may match at most 5000 Resources. Every list stays
 inside the Workspace the key reaches, and pages by a stable cursor.
+
+## Batch Observations
+
+From the release candidate after `2.0.0-rc7`.
+
+`POST /workspaces/{ws}/observations` reports up to **500** Observations, for
+any Resources of the Workspace, in one request of at most **1 MiB**:
+
+```json
+{"observations": [
+  {"resource": "srv-0042", "signal": "origin", "state": "ok", "id": "round-118-srv-0042-origin"},
+  {"resource": "srv-0043", "signal": "origin", "state": "problem", "reason": "TLS handshake timeout",
+   "id": "round-118-srv-0043-origin"}
+]}
+```
+
+Each item is the single request's body plus `resource` (id or key). It needs
+the same key scope (`observe`) and role as one Observation, and the request is
+audited once.
+
+- **Order:** items are stored in the order given, each exactly as
+  `POST …/resources/{r}/observations` would store it: the same validation,
+  Signal creation, storage and judging. There is no second ingest path.
+- **Answer:** `200` with `{accepted, rejected, results}`, where `results` has
+  one entry per item, in order: `{index, status: "accepted", resource, signal,
+  observation, created_signal}` or `{index, status: "rejected", error}`. The
+  `error` is the one the single request would answer with (`code`,
+  `error_type`, `message`, `details`). One rejected item never stops the
+  others.
+- **Whole-request refusals (nothing stored):** an empty list or more than 500
+  items is `422` (`field: observations`), a body over 1 MiB is `413`, and a
+  body that is not `{"observations": [ … ]}` is `400`. An item with an unknown
+  field is rejected on its own (`400 bad_request`).
+- **Retry:** give every item an `id`. The same `id` is stored once, so sending
+  a batch again after a timeout or a partial failure stores nothing twice and
+  makes no second Incident transition or delivery. Retry the rejected items
+  after fixing them, or the whole batch.
+- **Timing:** a request takes about as long as its items take one at a time,
+  bounded by the 500-item limit. Accepting an item does not mean an Incident:
+  Rules judge the Resource as for any Observation.
+
+## Resource labels
+
+From the release candidate after `2.0.0-rc7`, a Resource carries up to 16 labels of its own,
+shown as `labels` on every Resource read (`{}` for none). A key is 1–63 lower-case letters,
+digits, dots, dashes or underscores, starting with a letter or digit; a value is 1–128
+characters with no padding and no control characters. Anything else is 422 (`field: labels`).
+
+`PATCH …/resources/{id or key}` with `{"labels": {"env": "prod", "team": null}}` sets `env`,
+removes `team`, and keeps every label it does not name. It changes nothing else: not the name,
+the answers, the Template or its revision. An archived Resource takes no labels (409).
+`POST …/resources` may set labels too.
+
+Lists take up to five `label.<key>=<value>` exact matches, with or without `template`; a filter
+value outside the same bounds (padded, say) is 422 rather than matching nothing:
+`GET …/resources?label.env=prod` and `GET …/incidents?label.env=prod`. They page like any other
+filter and stay in the Workspace.
+
+Labels are not Template fields (no revision declares them) and not Observation labels (no
+sender reports them). No Rule reads them, and they are not in Incident evidence or webhook
+payloads.
 
 ## Pushed-data Templates
 

@@ -73,19 +73,21 @@ on stderr; logs never go to stdout.
 |---|---|---|
 | `list_workspaces` | read | Workspaces the key reaches, with your role |
 | `create_workspace` | full key | create a Workspace you own, by `name`; answers its id. A scoped key does not have it. From the release candidate after `2.0.0-rc2` |
-| `list_resources` | read | a page of Resources with their open Incident; `template`, `state` (active, archived, all), `meta` field values, `cursor` (1–50) |
+| `list_resources` | read | a page of Resources with their open Incident; `template`, `state` (active, archived, all), `meta` field values, `labels` (after `2.0.0-rc7`), `cursor` (1–50) |
 | `list_templates` | read | the Templates Resources here can be made from, every revision |
 | `get_resource` | read | Signals, Rules with their result and explanation, maintenance |
 | `list_observations` | read | newest Observations of a Resource (1–50) |
-| `list_incidents` | read | Incidents, newest first; filters including `rule`, `lifecycle`, `acknowledged` (true or false; after `2.0.0-rc2`), `template`, `resource_state` and `meta`, and a cursor (1–50) |
+| `list_incidents` | read | Incidents, newest first; filters including `rule`, `lifecycle`, `acknowledged` (true or false; after `2.0.0-rc2`), `template`, `resource_state`, `meta` and `labels`, and a cursor (1–50) |
 | `get_incident` | read | one Incident and its recorded history, with each transition's input `evidence` |
 | `list_incident_deliveries` | read | what was sent about an Incident: delivered, failed or held, with a reason code |
 | `acknowledge_incident` | `acknowledge` | take an open Incident on |
 | `start_maintenance`, `end_maintenance` | `maintenance` | hold or release a Resource's notifications |
 | `send_test_observation` | `observe` | send one Observation, labelled `source: mcp-test` |
 | `send_observation` | `observe` | push one Observation: `state` ok, problem or no_data, a numeric `value`, optional `at`, `id` and `reason` (a short why, kept with the evidence and alert) |
+| `send_observations` | `observe` | push up to 500 Observations for any Resources in one call, each `send_observation`'s arguments plus `resource`; one result per item, accepted with its id or rejected with the single send's error. After `2.0.0-rc7` |
 | `publish_template` | `templates` | publish a pushed-data Template revision (the API v3 manifest); after `2.0.0-rc3` its Rules may use `known`, `all_known` and `any_known` ([any number of probes](/v2.0.0-preview/getting-started/pushed-triage/)); after `2.0.0-rc4` each Rule may set `routes` ([route by Rule and transition](/v2.0.0-preview/getting-started/pushed-triage/#route-by-rule-and-transition)) |
 | `create_resource`, `archive_resource` | `resources` | create a Resource from a Template by your own key; archive one |
+| `label_resource` | full key | set, change or remove a Resource's own labels (`{"env": "prod", "team": null}`); after `2.0.0-rc7` |
 | `rebind_resource` | full key | move a pushed-data Resource to another published revision (`template`, `meta`), keeping its id and key; after `2.0.0-rc2` |
 | `list_destinations` | full key | the Workspace's destinations: id, name, type, channel, enabled, `send_on_open`, default; never a URL. After `2.0.0-rc5` |
 | `create_destination`, `update_destination` | full key | add a Slack or webhook destination (`name`, `type`, `url`, …), or change one; its URL is never shown back |

@@ -63,6 +63,31 @@ ws.resources.rebind("srv-0042", "service-triage@4", meta={"provider": "alpha"}) 
 `resource.rules[i]` carries `status`, `explanation`, `since` and
 `open_incident` once the Rule has decided.
 
+From the release candidate after `2.0.0-rc7`, a Resource carries labels of its own, set without
+changing its Template; a value sets a label and `None` removes it:
+
+```python
+ws.resources.update("srv-0042", labels={"env": "prod", "team": None})
+ws.resources.list(labels={"env": "prod"})          # also ws.incidents.list(labels={"env": "prod"})
+ws.resources.get("srv-0042").labels                # {"env": "prod"}
+```
+
+### Destinations
+
+From the release candidate after `2.0.0-rc5`, a full API key manages where alerts go. A
+destination's URL is written, never read back.
+
+```python
+oncall = ws.destinations.create("oncall", type="slack", url="https://hooks.slack.com/services/…")
+ws.destinations.list()                             # id, name, type, channel, enabled, send_on_open, default
+ws.destinations.test(oncall.id)                    # DestinationTest(status="delivered", reason=None)
+ws.destinations.update(oncall.id, enabled=False)
+ws.destinations.deliveries(oncall.id)              # one page: event, status, reason code, incident
+```
+
+A Template route may name a destination `{"name": "oncall"}`; `ws.destinations.delete(id)` raises
+`ValidationError` while a live route still uses it.
+
 ### Observations
 
 ```python
@@ -75,6 +100,21 @@ ws.resources.observations("checkout-api", limit=20)   # newest first
 `state` is `ok` or `problem`. The same `observation_id` sent twice is stored
 once. The observation log is investigation context, not a record of what a
 decision read.
+
+From the release candidate after `2.0.0-rc7`, `ws.resources.observe_batch(items)` sends up to 500
+Observations, for any Resources, in one request. Each item is what `observe` sends plus `resource`;
+the answer has one result per item, `accepted` with its `observation` id or rejected with the
+`error` a single send would raise. Give each item an `id` so a retry stores nothing twice.
+
+```python
+items = [{"resource": key, "signal": "origin", "state": "ok", "id": f"round-118-{key}"}
+         for key in fleet_keys]
+for start in range(0, len(items), 500):
+    result = ws.resources.observe_batch(items[start:start + 500])
+    for item in result.results:
+        if not item.accepted:
+            print(items[start + item.index]["resource"], item.error["message"])
+```
 
 ### Incidents
 

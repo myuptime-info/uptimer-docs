@@ -93,6 +93,18 @@ nobody can take out of a load balancer. `UPTIMER__OPS__PORT` moves it and
 `UPTIMER__OPS__ADDR` binds it to one interface. `worker --once` serves none: it
 asks, runs, reports and stops.
 
+### Judging
+
+A process running `judge` judges a Resource as soon as an Observation for it is announced, and
+the reports behind the first in a burst about three seconds later. Once a minute it also judges
+what the clock alone can change, and only that: a Rule whose confirm or recover hold has elapsed,
+a heartbeat that has gone quiet, a reading that has left a counted window, a Rule never judged,
+and any Resource with stored evidence no judge has caught up with (a lost announcement included).
+When it starts it judges every Resource once. A fleet with nothing new and nothing due is not
+judged again, so an idle fleet costs a few queries a minute (from the release candidate after
+`2.0.0-rc7`; before, every Resource was judged every minute). `uptimer_judge_passes_total` shows
+which of these each pass was.
+
 ### Metrics
 
 | Series | Labels |
@@ -101,10 +113,25 @@ asks, runs, reports and stops.
 | `http_request_duration_seconds` | `route`, `method`, `status` |
 | `grpc_request_duration_seconds` | `grpc_method`, `grpc_code` |
 | `uptimer_judge_decisions_total` | `result` (`ok`, `error`) |
+| `uptimer_judge_passes_total` | `trigger`, `result` (`ok`, `error`) |
+| `uptimer_judge_pass_duration_seconds` (histogram) | `trigger` |
+| `uptimer_judge_queue_length` | none |
+| `uptimer_judge_queue_oldest_seconds` | none |
 | `uptimer_worker_checks_total` | `result` (`ok`, `error`) |
 | `uptimer_oidc_sign_ins_total` | `result` (`ok`, `error`) |
 
 `route` is the route pattern, not the path, so one route is one series.
+
+`trigger` is why a judging pass over one Resource ran: `observation` (an
+announced Observation), `timer` (a hold, a quiet heartbeat or a window was
+due), `startup` (the pass over everything when a judge starts), `unannounced`
+(an Observation the judge found that nobody announced) or `retry` (a pass
+that failed or had not caught up). No judge metric carries a Workspace,
+Resource, Rule or Observation. The queue series count announcements waiting
+for a judge, including those handed back to wait a few seconds, and read 0 on
+a process that does not reach the event bus. The `uptimer_judge_passes_total`,
+`uptimer_judge_pass_duration_seconds` and queue series are there from the release
+candidate after `2.0.0-rc7`.
 
 The two totals exist so a quiet service can be told from a stopped one: a judge
 with no work and a judge that has died both report nothing otherwise.
