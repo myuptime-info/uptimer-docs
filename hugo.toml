@@ -20,7 +20,7 @@ latest = "1.8.0"
 # pulls :edge. At final ship set default+latest to the released version, repoint /latest/*
 # and the root redirect, and clear both lines.
 preview = "2.0.0-preview"
-preview_image = "2.0.0-rc9@sha256:68f7ae32e202d109f32eb3d83c554793a3e6651508ebbe5cd45855655e8babdd"
+preview_image = "2.0.0-rc9@sha256:5f97761fc06c65624f888369ac73fa8d7e13b12db259bcdab188b52c1a7e74aa"
 
 # Home also emits index.json — the client-side search index (see layouts/index.json).
 [outputs]

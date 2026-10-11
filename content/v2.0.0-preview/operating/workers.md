@@ -149,7 +149,8 @@ defines.
   parameter is never an option. An undeclared, missing or over-long parameter
   is refused.
 - **A clean environment.** The command sees only `PATH` and `LANG=C`, never the
-  worker's own settings or certificate paths, and runs in the temp directory.
+  worker's own settings or certificate paths. It starts in the worker's own
+  working directory and needs no temporary directory, which the release image does not have.
 - **Bounds.**
   - It runs until the earlier of `timeout_seconds` and the confirmation's
     deadline, never more than 30 seconds. Then its whole process group is
