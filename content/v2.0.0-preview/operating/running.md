@@ -105,6 +105,12 @@ judged again, so an idle fleet costs a few queries a minute (from the release ca
 `2.0.0-rc7`; before, every Resource was judged every minute). `uptimer_judge_passes_total` shows
 which of these each pass was.
 
+From `2.0.0-rc9` the once-a-minute sweep also decides each
+[confirmation](/v2.0.0-preview/reference/rest-api/#confirming-a-problem) whose timeout has
+passed, before it judges anything, and a confirmation a worker answers is judged at once. A
+Workspace has at most 50 confirmations open; past that a `problem` is not confirmed and the
+original reading stands (`unconfirmed`, `limited`).
+
 ### Metrics
 
 | Series | Labels |
@@ -123,6 +129,8 @@ which of these each pass was.
 | `uptimer_oidc_sign_ins_total` | `result` (`ok`, `error`) |
 | `uptimer_ingest_requests_total` | `source`, `result` (`accepted`, `partial`, `rejected`, `failed`) |
 | `uptimer_ingest_observations_total` | `source`, `result` (`accepted`, `rejected`, `failed`) |
+| `uptimer_delivery_failures_total` | `operation` (`render`, `send`, `record`) |
+| `uptimer_announce_failures_total` | `operation` (`announce`, `remind`) |
 
 `route` is the route pattern, not the path, so one route is one series.
 
@@ -145,7 +153,7 @@ ran but the Resource still has a backlog to judge) or `failed` (a pass that
 failed). Muted and failed announcements come back through the bus; everything
 put off is also looked at by the next sweep. A rising `muted` count during a
 burst is normal; a `failed` count that keeps rising is not.
-The ready and deferred series are there from the release candidate after `2.0.0-rc8`.
+The ready and deferred series are there from `2.0.0-rc9`.
 
 `source` is where Observations arrived: `api` (API v3, single or batch, and an
 Observation address) or `worker` (a worker's report). The requests total
@@ -161,7 +169,22 @@ attempts, not unique Observations. Requests refused before they are read (no
 key, or a key without the `observe` scope) are not counted here; they are in
 `http_request_duration_seconds`. No ingest metric carries a Workspace,
 Resource, Signal or Observation, and a scrape reads no database.
-The two ingest series are there from the release candidate after `2.0.0-rc8`.
+The two ingest series are there from `2.0.0-rc9`.
+
+`uptimer_delivery_failures_total` counts a message about an Incident to one
+destination that went wrong, once for each operation that failed on it:
+`render` (its body would not render for the destination, including reading
+its transformation; nothing was sent), `send` (the destination refused it or
+could not be reached) or `record` (its delivery record, sent, failed or held,
+could not be written). A Send test from the destination editor is not
+counted. `uptimer_announce_failures_total` counts a judge's pass that stopped
+on an error: `announce` (telling people what was just decided) or `remind`
+(saying it again about what is still failing). A destination refusing a
+message does not stop the pass, so a refused message counts once, as `send`,
+and never also as `announce`. A held message (maintenance, no route, switched
+off) is not a failure. Both are read on a process running `judge`, carry no
+Workspace, Resource, destination, URL or error text, and appear after their
+first failure; they are there from `2.0.0-rc9`.
 
 The two totals exist so a quiet service can be told from a stopped one: a judge
 with no work and a judge that has died both report nothing otherwise.

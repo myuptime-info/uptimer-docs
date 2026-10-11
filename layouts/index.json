@@ -1,5 +1,7 @@
 {{- /* Client-side search index. One entry per content page, carrying its version
-       segment so search.js can scope results to the version being read. */ -}}
+       segment so search.js can scope results to the version being read. A preview page
+       keeps its whole text, so the docs MCP (/mcp) finds its later sections; every other
+       version is cut at 4000 characters. */ -}}
 {{- $list := slice -}}
 {{- range where site.RegularPages "Kind" "page" -}}
   {{- $seg := index (split (strings.TrimPrefix "/" .RelPermalink) "/") 0 -}}
@@ -9,7 +11,7 @@
       "version" (strings.TrimPrefix "v" $seg)
       "section" .CurrentSection.Title
       "lede"    (.Params.lede | default "")
-      "text"    (.Plain | truncate 4000 "")
+      "text"    (cond (eq (strings.TrimPrefix "v" $seg) site.Params.versions.preview) .Plain (.Plain | truncate 4000 ""))
   ) -}}
 {{- end -}}
 {{- $list | jsonify -}}

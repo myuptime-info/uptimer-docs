@@ -40,9 +40,9 @@ On PostgreSQL the schema comes from ordered SQL steps built into the binary. The
 - A 2.0 database made before the ledger existed adopts the baseline only if its tables match it exactly. Any extra or different column, index, constraint, trigger or row security is refused, named, and nothing is recorded. Your own separate tables are fine.
 - PostgreSQL never falls back to building tables from the code's models.
 
-### The Observation index step (after `2.0.0-rc8`)
+### The Observation index step (from `2.0.0-rc9`)
 
-The release candidate after `2.0.0-rc8` adds step 14: an index on
+`2.0.0-rc9` adds step 14: an index on
 `server_resource_observations (signal_id, id)`. The judge reads each
 Resource's unjudged Observations through it, one Signal at a time from its
 cursor. The index and that query change ship together: the index alone barely
@@ -60,6 +60,18 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS "idx_observation_signal_id"
 
 If a concurrent build is interrupted it leaves an invalid index of that name:
 drop it and build again before migrating.
+
+### The Confirmation and on-demand steps (`2.0.0-rc9`)
+
+`2.0.0-rc9` also adds steps 15–18. None rewrites existing rows; all are quick
+on a large database.
+
+| Step | What it adds |
+|---|---|
+| 15 `signal_on_demand` | an `on_demand` flag on each Signal; every existing Signal is not on demand |
+| 16 `signal_confirmations` | a `confirm` column on each Signal (empty for every existing one), and two new tables for the internal confirmation queue, empty on upgrade |
+| 17 `confirmer_readings` | each confirmer's measured value and reason |
+| 18 `confirmer_settings` | the settings a confirmer runs with |
 
 ## How SQLite migrates
 

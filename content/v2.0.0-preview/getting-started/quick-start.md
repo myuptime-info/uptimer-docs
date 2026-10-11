@@ -4,7 +4,7 @@ weight: 10
 lede: "Run Uptimer 2.0.0-preview and one worker with Docker Compose, then watch a website until it opens an Incident."
 ---
 
-> Preview build. The image `2.0.0-rc2`, pinned to its multiarch index digest `sha256:1dcea73dc2b9906e3e0f1f0d5a95eb585a4ea1f7e89fc1f2cc43bd7d14773557` (linux/amd64 and linux/arm64), is a 2.0 release candidate for the field test, not a final release.
+> Preview build. The image `2.0.0-rc9`, pinned to its multiarch index digest `sha256:68f7ae32e202d109f32eb3d83c554793a3e6651508ebbe5cd45855655e8babdd` (linux/amd64 and linux/arm64), is a 2.0 release candidate for the field test, not a final release.
 
 This guide runs the control plane and one worker on one host. You sign in, add a Location, register the worker, issue its certificate and create a Resource. The worker checks it, and Uptimer opens an Incident when it fails. It takes about ten minutes.
 
@@ -95,7 +95,7 @@ From the release candidate after `2.0.0-rc2`, **Incidents** in the sidebar lists
 From the release candidate after `2.0.0-rc3`, the Resource page says **Why {rule} is open** for each open Incident: its problem and the evidence it recorded when it opened, which later readings never change. Below it, **Latest Signals** shows each Signal as it stands now, with a Signal that never reported, went stale or says `no_data` named as such. The Resources list shows how long ago each Resource was created and how long its oldest open Incident has been open, and sorts by either.
 
 From the release candidate after `2.0.0-rc7`, **Find** on the Resources list searches by a Resource's key, name or id; **Clear** shows every Resource again. Choose 25, 50 or 100 per page and move with **Previous** and **Next**: the search and sort stay as you page. Click a Resource's name, key or id, on the list or on its page, to copy it.
-From the release candidate after `2.0.0-rc8`, **Missing data** narrows the list to Resources with a Signal that was never reported, has gone stale, or reported `no_data`; it is kept as you page.
+From `2.0.0-rc9`, **Missing data** narrows the list to Resources with a Signal that was never reported, has gone stale, or reported `no_data`; it is kept as you page.
 
 A Resource that no Rule has judged yet reads **not judged yet**, on the list, on its page and for each such Rule: right after you create it, and after its first Observation until judging has run. That is neither healthy (`ok`) nor **no data**, which a Rule decides when its inputs give it nothing to go on. In API v3 such a Rule's `status` is `null`.
 

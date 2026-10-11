@@ -116,6 +116,44 @@ for start in range(0, len(items), 500):
             print(items[start + item.index]["resource"], item.error["message"])
 ```
 
+### Confirmations
+
+From `2.0.0-rc9` (SDK from the `field/2.0.0-rc9` local wheel), `ConfirmPolicy`,
+`Confirmer` and `meta` write a Signal's [`confirm` policy](/v2.0.0-preview/reference/rest-api/#confirming-a-problem),
+and `Comparison(..., if_unknown=False)` one comparison of a composite Rule.
+Manifests stay plain dicts; these build their parts.
+
+```python
+from uptimer import Comparison, Confirmer, ConfirmPolicy, meta
+
+policy = ConfirmPolicy(
+    by=[Confirmer(probe="tcp", with_={"host": meta("host"), "port": 5432}),
+        Confirmer(exec="check-replica", with_={"host": meta("host")})],
+    refuted_if="any_ok", timeout=30)
+manifest = {"key": "replica", "version": 1, "name": "Replica", "summary": "A replica.",
+            "fields": [{"key": "host", "label": "Host", "type": "string"}],
+            "signals": [{"key": "port", "kind": "event", "confirm": policy.to_api()},
+                        {"key": "deep", "kind": "event", "on_demand": True}],
+            "rules": [{"key": "down", "action": "Look at the replica.",
+                       "wait": {"confirm_after": 0, "recover_after": 0},
+                       "decision": {"any": [Comparison("port", "status", "eq", "problem").to_api(),
+                                            Comparison("deep", "status", "eq", "problem",
+                                                       if_unknown=False).to_api()]}}]}
+template = ws.templates.publish(manifest)
+template.confirm_policy("port")                      # the same ConfirmPolicy, read back
+
+port = {s.key: s for s in ws.resources.get("db-1").signals}["port"]
+port.confirmation                                    # SignalConfirmation(status, reason, effective, original), or None
+row = ws.resources.observations("db-1", signal="port")[0]
+row.state, row.confirmation                          # the original; ObservationConfirmation with .confirmers
+for one in ws.incidents.get(incident_id).history[0].inputs:
+    one.status, one.confirmation                     # what the Rule read; EvidenceConfirmation(status, reason, original)
+```
+
+`status` is `pending`, `confirmed`, `unconfirmed` or `not_run`; `reason` is
+`refuted`, `problem_confirmed`, `timeout`, `confirmer_no_data`, `limited` or
+`source_no_data`. A server before `2.0.0-rc9` reads `confirmation=None`.
+
 ### Incidents
 
 ```python

@@ -86,13 +86,13 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 | `POST /workspaces/{ws}/templates` | publish a pushed-data Template revision (below) → 201; 409 if this key and version exist; editor or owner, full key |
 | `GET /workspaces/{ws}/resources` | page of Resources by id, with `open_incident` and `archived_at`; `state` active (default), archived or all; `template`; `meta.<field>=<value>` and, after `2.0.0-rc7`, `label.<key>=<value>` ([below](#resource-labels)); `limit` 1–200, `cursor` |
 | `POST /workspaces/{ws}/resources` | create from a Template: `{template, key?, name, meta, labels?}` → 201, Resource detail. `template` is a key (its newest revision) or `key@version` |
-| `GET /workspaces/{ws}/resources/{id or key}` | Resource detail: `signals`, `rules` (each with `status`, `explanation`, `since`, `open_incident`, `action`, `destination`, `routes`), `maintenance` |
+| `GET /workspaces/{ws}/resources/{id or key}` | Resource detail: `signals` (from `2.0.0-rc9` each with a `confirm` policy carries its newest reading's [`confirmation`](#where-the-outcome-shows)), `rules` (each with `status`, `explanation`, `since`, `open_incident`, `action`, `destination`, `routes`), `maintenance` |
 | `PATCH /workspaces/{ws}/resources/{id or key}` | `{name?, meta?, labels?}`; unsent answers stay; key and Template never change. `labels` alone changes only labels ([below](#resource-labels)); editor or owner, full key |
 | `POST /workspaces/{ws}/resources/{id or key}/archive` | retire it from the inventory → 200, Resource detail with `archived_at`; 409 if already archived; editor or owner, full key |
 | `POST /workspaces/{ws}/resources/{id or key}/rebind` | move an active pushed-data Resource to another published pushed-data revision: `{"template": "key" or "key@version", "meta": {…}}` → 200, Resource detail with the same `id` and `key`, the new `template`, Signals and Rules. Its old Rules' open Incidents close as `rule_removed`; earlier Observations and Incidents stay readable; evidence for a Signal the new revision does not declare is refused. 422 (`field`) for an unknown, worker, or same revision or a refused answer, with nothing changed; 409 if archived; editor or owner, full key. From the release candidate after `2.0.0-rc2` |
 | `POST /workspaces/{ws}/resources/{r}/observations` | `{signal, state, kind?, value?, labels?, body?, at?, id?, reason?}` → 202 `{resource, signal, observation, created_signal}`; `state` is ok, problem or no_data (no evidence this time; never health); the same `id` twice is stored once. `reason` is a short plain-text why: control characters become spaces, blank is none, past 200 characters it is cut to 199 and "…"; a Rule that uses this reading records it in its evidence (`inputs[].reason`) and alert (from the release candidate after `2.0.0-rc2`) |
 | `POST /workspaces/{ws}/observations` | after `2.0.0-rc7`: up to 500 Observations for any Resources: `{"observations": [{resource, signal, state, …}]}` → 200 with one result per item ([below](#batch-observations)) |
-| `GET /workspaces/{ws}/resources/{r}/observations?signal&limit` | newest logged Observations — context, not a decision record |
+| `GET /workspaces/{ws}/resources/{r}/observations?signal&limit` | newest logged Observations — context, not a decision record; from `2.0.0-rc9` a reading of a Signal with a `confirm` policy carries its [`confirmation`](#where-the-outcome-shows) |
 | `PUT /workspaces/{ws}/resources/{r}/maintenance` | `{minutes}`: hold notifications; judging and history go on |
 | `DELETE /workspaces/{ws}/resources/{r}/maintenance` | end it |
 | `GET /workspaces/{ws}/incidents` | page of Incidents, newest first; filters `resource`, `rule`, `lifecycle` (open, closed), `confirmation` (confirmed, unconfirmed), `acknowledged` (true, false; with `lifecycle=open`, false is what still needs action; from the release candidate after `2.0.0-rc2`), and the Resources' `template`, `resource_state` (all by default, active, archived), `meta.<field>` and `label.<key>` |
@@ -293,7 +293,7 @@ inside the Workspace the key reaches, and pages by a stable cursor.
 
 ### Missing Signals
 
-From the release candidate after `2.0.0-rc8`, each Signal on
+From `2.0.0-rc9`, each Signal on
 `GET …/resources/{r}` carries `missing`: why it has no usable reading now,
 or `null` where it has a current `ok` or `problem` reading.
 
@@ -479,7 +479,7 @@ revision they were created from.
   `all` / `any` of the known ones. One Template then covers a Resource with
   one probe and one with several: an absent probe does not block the verdict,
   and with no known probe there is no verdict at all.
-- From the release candidate after `2.0.0-rc8`, a Signal may apply to only
+- From `2.0.0-rc9`, a Signal may apply to only
   some Resources of a Template: `"applies_if": {"field": F, "operator": O,
   "value": V}` compares one of the Template's fields with a literal. A
   `boolean`, `string` or `enum` field takes `eq` or `neq`; an `integer`,
@@ -521,7 +521,7 @@ revision they were created from.
   `not_applicable`; `replication_failing` stays unknown on it, and
   `node_down` follows `host` alone. With `"role": "replica"` both Signals
   apply.
-- From the release candidate after `2.0.0-rc8`, a Signal may be
+- From `2.0.0-rc9`, a Signal may be
   `"on_demand": true`: checked only when something asks, not on a schedule,
   so it takes no `every_seconds` and never goes stale. Until its first
   Observation is accepted, `GET …/resources/{r}` shows it with
@@ -563,6 +563,9 @@ revision they were created from.
   | on demand, its check reported `no_data` | `false` | `reported_no_data` |
   | on a schedule, never reported | `false` | `never_reported` |
   | with a current `ok` or `problem` | `false` | `null` |
+- From `2.0.0-rc9` a Signal may add a `confirm` policy: a `problem` is
+  checked again by Uptimer's workers before Rules believe it
+  ([Confirming a problem](#confirming-a-problem)).
 - Unknown is three-valued: a Signal that never reported, went quiet, said
   `no_data` (whatever value it also carries), or carried no value cannot
   satisfy its own comparison. `not`
@@ -571,6 +574,85 @@ revision they were created from.
   an Incident.
 - At most 32 fields, 16 signals, 10 rules. Unknown keys are refused (400);
   an invalid definition is 422 and stores nothing.
+
+## Confirming a problem
+
+From `2.0.0-rc9`, a Template Signal can ask for a second opinion before its
+`problem` is believed. The Signal declares a `confirm` policy. When a
+`problem` reading arrives, Uptimer's own workers check again, and the Rules
+reading that Signal wait for the answer.
+
+```json
+{"key": "port", "kind": "event",
+ "confirm": {"on": "problem",
+             "by": [{"probe": "tcp", "with": {"host": {"meta": "host"}, "port": 5432}},
+                    {"exec": "check-replica", "with": {"host": {"meta": "host"}}}],
+             "refuted_if": "any_ok",
+             "timeout": 30}}
+```
+
+| Key | Rule |
+|---|---|
+| `on` | `problem` only; it may be left out. A `no_data` reading is trusted as it is: nothing is confirmed. |
+| `by` | 1–5 confirmers. Each is one built-in probe or one named command ([workers](/v2.0.0-preview/operating/workers/#confirmations)). |
+| `refuted_if` | `any_ok`: any confirmer answering `ok` refutes the problem. `all_ok`: every confirmer must answer `ok`. |
+| `timeout` | 5–600 seconds to wait for the answers. |
+
+A built-in probe takes only its own settings, and a named command takes at
+most 8 parameters (lowercase names; short text or a number). Any host, URL,
+name or port may be `{"meta": "field"}`: the Resource's own answer to a field
+the Template declares. Anything else is 422. An unknown key is 400.
+
+| Probe | Settings |
+|---|---|
+| `reachability` | `host` (required), `ports` (1–10; default `[443, 80]`): the host answers on any of them |
+| `icmp` | `host` (required): an echo reply |
+| `tcp` | `host`, `port` (both required): the port accepts a connection |
+| `tls` | `host` (required), `port` (default 443), `server_name`, `min_days` (0–365): a verified handshake, and the certificate valid for at least that many more days |
+| `http` | `url` (required), `method` (`GET` or `HEAD`), `expect_status` (1–10 codes; default 200–399) |
+| `dns` | `name` (required), `type` (`A`, `AAAA`, `CNAME`, `MX`, `TXT` or `NS`; default `A`), `expect` (text one answer must contain) |
+
+### What a confirmation decides
+
+A confirmation completes when every confirmer answers `ok` or `problem` before
+the timeout. `refuted_if` then decides it. If any confirmer answers `no_data`
+(it could not give an opinion), or one has not answered when the timeout
+passes, the original `problem` stands.
+
+| `status` | `reason` | The Rule reads |
+|---|---|---|
+| `pending` | `null` | nothing yet: it holds, opening, confirming or closing nothing, until the confirmation is decided or its timeout passes |
+| `confirmed` | `refuted` | `ok` |
+| `confirmed` | `problem_confirmed` | `problem` |
+| `unconfirmed` | `timeout` | the original `problem` |
+| `unconfirmed` | `confirmer_no_data` | the original `problem` |
+| `unconfirmed` | `limited` | the original `problem`: the Workspace already had 50 confirmations open, so none was asked |
+| `not_run` | `source_no_data` | the original `no_data`: nothing was asked |
+
+The Rule is judged as soon as a confirmation is decided, not at the next
+sweep. Signals without a `confirm` policy are judged exactly as before.
+
+### Where the outcome shows
+
+- **Resource detail:** each Signal with a policy carries `confirmation` for
+  its newest reading: `{status, reason, effective, original}`. `effective` is
+  the state Rules read. It is null without a policy.
+- **Observation history** (`GET …/resources/{r}/observations`): a reading of
+  such a Signal carries `confirmation`, with `status`, `reason`, `effective`,
+  `refuted_if`, `deadline`, `decided_at`, and `confirmers`. Each confirmer is
+  `{probe | exec, state, value, reason, at}`, and `state` is null until it
+  answers. The row's own `state` stays the original. No worker is named, and a
+  scoped key reads URL credentials in a confirmer's `reason` redacted.
+- **Incident history:** each transition's `evidence.inputs[].confirmation` is
+  `{status, reason, original}`, beside the `status` the Rule read. The
+  Incident page shows the same as "Confirmation, when this opened: …".
+
+An Incident's own `confirmation` field (`confirmed` once its Rule's
+`confirm_after` has passed) is a different thing from a Signal's
+Confirmation.
+
+There is no public endpoint to pull, lease or complete confirmation work:
+only Uptimer's own workers run it, over the worker API.
 
 ## From a key to an Incident
 
