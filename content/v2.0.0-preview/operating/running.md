@@ -117,8 +117,12 @@ which of these each pass was.
 | `uptimer_judge_pass_duration_seconds` (histogram) | `trigger` |
 | `uptimer_judge_queue_length` | none |
 | `uptimer_judge_queue_oldest_seconds` | none |
+| `uptimer_judge_ready_total` | `trigger` |
+| `uptimer_judge_deferred_total` | `reason` (`muted`, `draining`, `failed`) |
 | `uptimer_worker_checks_total` | `result` (`ok`, `error`) |
 | `uptimer_oidc_sign_ins_total` | `result` (`ok`, `error`) |
+| `uptimer_ingest_requests_total` | `source`, `result` (`accepted`, `partial`, `rejected`, `failed`) |
+| `uptimer_ingest_observations_total` | `source`, `result` (`accepted`, `rejected`, `failed`) |
 
 `route` is the route pattern, not the path, so one route is one series.
 
@@ -132,6 +136,32 @@ for a judge, including those handed back to wait a few seconds, and read 0 on
 a process that does not reach the event bus. The `uptimer_judge_passes_total`,
 `uptimer_judge_pass_duration_seconds` and queue series are there from the release
 candidate after `2.0.0-rc7`.
+
+`uptimer_judge_ready_total` counts judge work on one Resource taken up, by the
+same `trigger` as the passes. `uptimer_judge_deferred_total` counts work put
+off to come back later: `muted` (an announcement for a Resource judged in the
+last couple of seconds, handed back to the bus to wait), `draining` (a pass
+ran but the Resource still has a backlog to judge) or `failed` (a pass that
+failed). Muted and failed announcements come back through the bus; everything
+put off is also looked at by the next sweep. A rising `muted` count during a
+burst is normal; a `failed` count that keeps rising is not.
+The ready and deferred series are there from the release candidate after `2.0.0-rc8`.
+
+`source` is where Observations arrived: `api` (API v3, single or batch, and an
+Observation address) or `worker` (a worker's report). The requests total
+counts each request by how its Observations ended: `accepted` (all stored),
+`partial` (some stored, some not, as in a batch with a bad item), `rejected`
+(none stored, for the sender's reasons, including a batch refused whole) or
+`failed` (none stored, and the server failed at least one). The Observations
+total counts each Observation: `accepted` only once it is stored, `rejected`
+for the sender's reasons (an unknown Resource, a bad field, a check the worker
+is no longer assigned), `failed` when the server could not store it. A resent
+Observation with the same `id` is stored once but counted again: these count
+attempts, not unique Observations. Requests refused before they are read (no
+key, or a key without the `observe` scope) are not counted here; they are in
+`http_request_duration_seconds`. No ingest metric carries a Workspace,
+Resource, Signal or Observation, and a scrape reads no database.
+The two ingest series are there from the release candidate after `2.0.0-rc8`.
 
 The two totals exist so a quiet service can be told from a stopped one: a judge
 with no work and a judge that has died both report nothing otherwise.
