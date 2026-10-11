@@ -137,8 +137,12 @@ original reading stands (`unconfirmed`, `limited`).
 `trigger` is why a judging pass over one Resource ran: `observation` (an
 announced Observation), `timer` (a hold, a quiet heartbeat or a window was
 due), `startup` (the pass over everything when a judge starts), `unannounced`
-(an Observation the judge found that nobody announced) or `retry` (a pass
-that failed or had not caught up). No judge metric carries a Workspace,
+(an Observation that stood unjudged for a whole sweep, about a minute, with no
+announcement answered for it; from `2.0.0-rc10`) or `retry` (a pass that failed
+or had not caught up). A busy round is judged by `observation` passes; a wake
+for a Resource with nothing new since its last pass reads its mark and stops.
+From `2.0.0-rc10`, reminders are sent by the sweep, once a minute, not after
+every pass. No judge metric carries a Workspace,
 Resource, Rule or Observation. The queue series count announcements waiting
 for a judge, including those handed back to wait a few seconds, and read 0 on
 a process that does not reach the event bus. The `uptimer_judge_passes_total`,
