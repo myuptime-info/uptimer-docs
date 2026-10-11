@@ -58,6 +58,7 @@ ws.resources.list()
 ws.resources.get("checkout-api")      # with signals, rules and each rule's latest result
 ws.resources.update("checkout-api", name="Checkout", meta={"confirm_after": 60})
 ws.resources.rebind("srv-0042", "service-triage@4", meta={"provider": "alpha"})  # pushed-data; server after 2.0.0-rc2
+ws.resources.rebind("srv-0042", "service-triage@5", reset_history=["load"])  # SDK field/2.0.0-rc10; server after 2.0.0-rc9
 ```
 
 `resource.rules[i]` carries `status`, `explanation`, `since` and

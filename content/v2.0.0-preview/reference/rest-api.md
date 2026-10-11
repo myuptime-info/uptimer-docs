@@ -89,7 +89,7 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 | `GET /workspaces/{ws}/resources/{id or key}` | Resource detail: `signals` (from `2.0.0-rc9` each with a `confirm` policy carries its newest reading's [`confirmation`](#where-the-outcome-shows)), `rules` (each with `status`, `explanation`, `since`, `open_incident`, `action`, `destination`, `routes`), `maintenance` |
 | `PATCH /workspaces/{ws}/resources/{id or key}` | `{name?, meta?, labels?}`; unsent answers stay; key and Template never change. `labels` alone changes only labels ([below](#resource-labels)); editor or owner, full key |
 | `POST /workspaces/{ws}/resources/{id or key}/archive` | retire it from the inventory → 200, Resource detail with `archived_at`; 409 if already archived; editor or owner, full key |
-| `POST /workspaces/{ws}/resources/{id or key}/rebind` | move an active pushed-data Resource to another published pushed-data revision: `{"template": "key" or "key@version", "meta": {…}}` → 200, Resource detail with the same `id` and `key`, the new `template`, Signals and Rules. Its old Rules' open Incidents close as `rule_removed`; earlier Observations and Incidents stay readable; evidence for a Signal the new revision does not declare is refused. 422 (`field`) for an unknown, worker, or same revision or a refused answer, with nothing changed; 409 if archived; editor or owner, full key. From the release candidate after `2.0.0-rc2` |
+| `POST /workspaces/{ws}/resources/{id or key}/rebind` | move an active pushed-data Resource to another published pushed-data revision: `{"template": "key" or "key@version", "meta": {…}}` → 200, Resource detail with the same `id` and `key`, the new `template`, Signals and Rules. Its old Rules' open Incidents close as `rule_removed`; earlier Observations and Incidents stay readable; evidence for a Signal the new revision does not declare is refused. 422 (`field`) for an unknown, worker, or same revision or a refused answer, with nothing changed; 409 if archived; editor or owner, full key. From the release candidate after `2.0.0-rc2`. From the release candidate after `2.0.0-rc9`, a Signal keeps its [history across the rebind](#rebinding-keeps-signal-history), and `"reset_history": ["signal key", …]` starts named ones fresh |
 | `POST /workspaces/{ws}/resources/{r}/observations` | `{signal, state, kind?, value?, labels?, body?, at?, id?, reason?}` → 202 `{resource, signal, observation, created_signal}`; `state` is ok, problem or no_data (no evidence this time; never health); the same `id` twice is stored once. `reason` is a short plain-text why: control characters become spaces, blank is none, past 200 characters it is cut to 199 and "…"; a Rule that uses this reading records it in its evidence (`inputs[].reason`) and alert (from the release candidate after `2.0.0-rc2`) |
 | `POST /workspaces/{ws}/observations` | after `2.0.0-rc7`: up to 500 Observations for any Resources: `{"observations": [{resource, signal, state, …}]}` → 200 with one result per item ([below](#batch-observations)) |
 | `GET /workspaces/{ws}/resources/{r}/observations?signal&limit` | newest logged Observations — context, not a decision record; from `2.0.0-rc9` a reading of a Signal with a `confirm` policy carries its [`confirmation`](#where-the-outcome-shows) |
@@ -128,6 +128,27 @@ do when it opened, or null). History is
 `confirmed`, `verdict_changed`, `closed`. It is kept after the Rule is edited or
 removed. `evidence` is what that transition recorded from the Rule's inputs
 when it was decided (below), or null: an administrative closure records none.
+
+## Rebinding keeps Signal history
+
+From the release candidate after `2.0.0-rc9`. A Signal's readings belong to the Resource, not to
+the Template revision. When a rebind's new revision has a Signal with the same key and the same
+kind as the old one, that Signal keeps its history: its baseline medians and counted windows still
+read the readings sent before the rebind, so a rebind alone does not empty a baseline or flip a
+decision. The current reading is the new Signal's own: until something is sent after the rebind,
+the Signal has nothing reported yet.
+
+A Signal starts fresh, with no earlier readings in its baselines or windows, when:
+
+- the rebind names it in `reset_history`, because its meaning changed:
+  `{"template": "service-triage@5", "reset_history": ["load"]}`. The keys are the new revision's
+  Signal keys; a key it does not declare is a 422 with `field` `reset_history`, and nothing
+  changes;
+- its kind changed (for example `heartbeat` to `event`);
+- the old revision had no Signal with that key.
+
+Earlier Observations stay readable either way. Rebinds made before the release candidate after
+`2.0.0-rc9` are not linked afterwards.
 
 ## Destinations
 
@@ -469,6 +490,9 @@ revision they were created from.
   counts by when it was observed. A baseline comparison reads the newest
   reading and cannot also take `min_count`. The explanation shows it, e.g.
   `load 40 (7d median 100 of 12 readings)`.
+- From the release candidate after `2.0.0-rc9`, a baseline and a counted window
+  read the Signal's history across rebinds: a rebind does not reset them (see
+  [Rebinding keeps Signal history](#rebinding-keeps-signal-history)).
 - From the release candidate after `2.0.0-rc3`, a composite can ask whether an input has usable data:
   `{"signal": "probe_a", "field": "known"}` (optionally `"within_seconds": S`,
   60–86400) is true for a fresh `ok` or `problem` reading and false for a
