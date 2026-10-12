@@ -41,6 +41,19 @@ client.locations()    # [Location(id, name)]
 ws = client.workspace("<workspace id>")
 ```
 
+From `2.0.0-rc11` (SDK `field/2.0.0-rc11`), a server administrator with a full key
+sets up the fleet without the UI ([API](/v2.0.0-preview/reference/rest-api/#register-workers-by-api)):
+
+```python
+edge = client.create_location("edge-a")   # Location; an existing name returns that Location
+worker = client.register_worker(name="worker-01", uid="3f6c2a90-0d1e-4b7a-9c55-2f1e8d4b7a10",
+                                location=edge.id, tags=["linux"])
+worker.next_step   # "uptimer worker-cert --uid 3f6c2a90-… --out ./3f6c2a90-…", run on the control plane
+client.workers()   # [Worker(id, uid, name, location, tags, active)]
+```
+
+A uid already registered raises `ConflictError`; anyone else, or a scoped key, `ForbiddenError`.
+
 ### Resources
 
 A Resource is addressed by its `id` or by its `key`.
@@ -154,6 +167,19 @@ for one in ws.incidents.get(incident_id).history[0].inputs:
 `status` is `pending`, `confirmed`, `unconfirmed` or `not_run`; `reason` is
 `refuted`, `problem_confirmed`, `timeout`, `confirmer_no_data`, `limited` or
 `source_no_data`. A server before `2.0.0-rc9` reads `confirmation=None`.
+
+From `2.0.0-rc11` (SDK `field/2.0.0-rc11`):
+
+```python
+Comparison("port", "confirmation", "eq", "refuted").to_api()  # "the checker was wrong"
+row.confirmation.shared            # True where this reading joined another's confirmation
+template.valid_seconds("deep")     # an on-demand reading's lifetime; 0 is for ever
+template.reset_signals("server_down")   # the Signals its recovery resets ([] for none)
+port.reset                         # SignalReset(at, rule) while a recovery's reset holds, else None
+```
+
+See [Reset Signals on recovery](/v2.0.0-preview/reference/rest-api/#reset-signals-on-recovery) and
+[Compare a confirmation](/v2.0.0-preview/reference/rest-api/#compare-a-confirmation).
 
 ### Incidents
 
