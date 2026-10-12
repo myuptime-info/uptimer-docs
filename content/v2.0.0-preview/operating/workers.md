@@ -27,6 +27,8 @@ A worker runs the checks for one Location and reports what it saw. In 2.0 a work
 | `worker-key.pem` | the worker's private key | secret: only on the worker host |
 | `worker-ca.pem` | the authority that signed the control plane, so the worker knows it is talking to your installation | public |
 
+From `2.0.0-rc11`, `POST /api/v3/locations` and `POST /api/v3/workers` script step 1 with a server admin's full key; the answer's `next_step` is the `worker-cert` command for step 2 ([Register workers by API](/v2.0.0-preview/reference/rest-api/#register-workers-by-api)).
+
 The private key is written to disk and never printed. `--show` prints the certificate.
 
 In the container image the binary is `/app/uptimer`:
@@ -118,6 +120,7 @@ data directory:
 | `params` | each parameter the command takes, with a pattern its value must match **in full**; every `{name}` in `args` must be one of these |
 | `output` | `json` or `nagios` |
 | `timeout_seconds` | 1 to 30 |
+| `env` | optional, from `2.0.0-rc11`: variable **names** the command gets from the worker's own environment, such as `["HOME", "REPLICA_PASSWORD"]` (below) |
 
 Unknown keys are refused. A file that is not there means no commands. A file
 that is there but wrong stops the worker at start, so a mistake shows up
@@ -148,8 +151,9 @@ defines.
   value starting with `-` is always refused, whatever the pattern allows: a
   parameter is never an option. An undeclared, missing or over-long parameter
   is refused.
-- **A clean environment.** The command sees only `PATH` and `LANG=C`, never the
-  worker's own settings or certificate paths. It starts in the worker's own
+- **A clean environment.** The command sees only `PATH`, `LANG=C` and the
+  `env` names its own entry lists, never the worker's other settings or
+  certificate paths. It starts in the worker's own
   working directory and needs no temporary directory, which the release image does not have.
 - **Bounds.**
   - It runs until the earlier of `timeout_seconds` and the confirmation's
@@ -159,6 +163,30 @@ defines.
   - A worker runs at most 4 confirmations at once, probes and commands
     together.
   - The reason kept in history is at most 200 characters.
+
+### Passing variables (`env`)
+
+From `2.0.0-rc11` a command entry may list `env`: the names of variables to
+pass from the worker's own environment, for example a password the check needs.
+
+```json
+"check-replica": {
+  "path": "/usr/local/lib/uptimer/check_replica",
+  "args": ["--host", "{host}"],
+  "params": {"host": "[a-z0-9.-]{1,253}"},
+  "output": "nagios",
+  "timeout_seconds": 10,
+  "env": ["HOME", "REPLICA_PASSWORD"]
+}
+```
+
+- Names only. Each value comes from the worker's environment when the command
+  runs; a name the worker does not have is left out.
+- At most 16 names, uppercase (`[A-Z_][A-Z0-9_]*`, up to 64 characters), each
+  once.
+- `PATH`, `LANG`, `IFS`, `BASH_ENV`, `ENV`, `SHELLOPTS`, `BASHOPTS`, `PS4`, any
+  `LD_*` and any `DYLD_*` are refused: the worker will not start.
+- A Template or the API never names or fills a variable.
 
 ### What a command answers
 

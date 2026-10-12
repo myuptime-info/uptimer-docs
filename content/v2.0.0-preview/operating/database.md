@@ -73,6 +73,18 @@ on a large database.
 | 17 `confirmer_readings` | each confirmer's measured value and reason |
 | 18 `confirmer_settings` | the settings a confirmer runs with |
 
+### The Signal history, reset and expiry steps (`2.0.0-rc10`, `2.0.0-rc11`)
+
+These steps add columns with defaults and one index on the confirmations
+table. None rewrites existing rows; all are quick on a large database.
+
+| Step | What it adds |
+|---|---|
+| 19 `signal_history_since` (`2.0.0-rc10`) | where a Signal's history starts across rebinds; every existing Signal starts in its own revision |
+| 20 `signal_reset` (`2.0.0-rc11`) | when a Rule's recovery reset a Signal, and which Rule (`reset_at`, `reset_by`); no existing Signal is reset |
+| 21 `signal_valid_seconds` (`2.0.0-rc11`) | an on-demand Signal's `valid_seconds`; every existing Signal keeps its reading for ever (0) |
+| 22 `confirmation_joined` (`2.0.0-rc11`) | which confirmation a reading joined (`joined_id`, indexed); no existing reading has joined one |
+
 ## How SQLite migrates
 
 SQLite takes its schema from the code's models and keeps no ledger. It handles new installations and added tables or columns. It does not rename or drop columns or backfill data. A release that needs that on SQLite says so in its notes and gives its own path. Use PostgreSQL for an installation you will keep through schema changes.

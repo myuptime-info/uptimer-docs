@@ -82,11 +82,14 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 | `POST /workspaces` | create a Workspace you own: `{"name": "…"}` (1–60 characters, trimmed) → 201 `{id, name, role: "owner"}`; 422 `field: name` for a blank or longer name; 403 `scope: full` for a scoped key. Full key only. From the release candidate after `2.0.0-rc2` |
 | `GET /templates` | the system Templates with `fields`, `signals`, `rules` |
 | `GET /locations` | `[{id, name}]` |
-| `GET /workspaces/{ws}/templates` | the system Templates, then this Workspace's own, every revision (`id` is `key@version`); each Rule carries its `action`, `destination` and `routes` |
+| `POST /locations` | add a Location, as Server → Locations does: `{"name": "…"}` (trimmed) → 201 `{id, name}`; a name that already exists answers that Location with 200; 422 `field: name` if blank. Server admin, full key. From `2.0.0-rc11` ([below](#register-workers-by-api)) |
+| `GET /workers` | the registered Workers: `[{id, uid, name, location: {id, name}, tags, active}]`. Server admin, full key. From `2.0.0-rc11` |
+| `POST /workers` | register a Worker, as Server → Workers does: `{name, uid, location, tags?}` (`uid` is the worker's identity, a UUID, 36+ characters; `location` an id from `GET /locations`) → 201, the Worker plus `next_step`: the `uptimer worker-cert --uid <uid> --out ./<uid>` command to run on the control plane before it can connect. No secret is returned. 422 (`field` name, uid or location); 409 `field: uid` if that identity exists. Server admin, full key. From `2.0.0-rc11` |
+| `GET /workspaces/{ws}/templates` | the system Templates, then this Workspace's own, every revision (`id` is `key@version`); each Rule carries its `action`, `destination` and `routes`, and from `2.0.0-rc11` its [`on_recovery`](#reset-signals-on-recovery) |
 | `POST /workspaces/{ws}/templates` | publish a pushed-data Template revision (below) → 201; 409 if this key and version exist; editor or owner, full key |
 | `GET /workspaces/{ws}/resources` | page of Resources by id, with `open_incident` and `archived_at`; `state` active (default), archived or all; `template`; `meta.<field>=<value>` and, after `2.0.0-rc7`, `label.<key>=<value>` ([below](#resource-labels)); `limit` 1–200, `cursor` |
 | `POST /workspaces/{ws}/resources` | create from a Template: `{template, key?, name, meta, labels?}` → 201, Resource detail. `template` is a key (its newest revision) or `key@version` |
-| `GET /workspaces/{ws}/resources/{id or key}` | Resource detail: `signals` (from `2.0.0-rc9` each with a `confirm` policy carries its newest reading's [`confirmation`](#where-the-outcome-shows)), `rules` (each with `status`, `explanation`, `since`, `open_incident`, `action`, `destination`, `routes`), `maintenance` |
+| `GET /workspaces/{ws}/resources/{id or key}` | Resource detail: `signals` (from `2.0.0-rc9` each with a `confirm` policy carries its newest reading's [`confirmation`](#where-the-outcome-shows); from `2.0.0-rc11` each carries [`reset`](#reset-signals-on-recovery), `{at, rule}` or null), `rules` (each with `status`, `explanation`, `since`, `open_incident`, `action`, `destination`, `routes`), `maintenance` |
 | `PATCH /workspaces/{ws}/resources/{id or key}` | `{name?, meta?, labels?}`; unsent answers stay; key and Template never change. `labels` alone changes only labels ([below](#resource-labels)); editor or owner, full key |
 | `POST /workspaces/{ws}/resources/{id or key}/archive` | retire it from the inventory → 200, Resource detail with `archived_at`; 409 if already archived; editor or owner, full key |
 | `POST /workspaces/{ws}/resources/{id or key}/rebind` | move an active pushed-data Resource to another published pushed-data revision: `{"template": "key" or "key@version", "meta": {…}}` → 200, Resource detail with the same `id` and `key`, the new `template`, Signals and Rules. Its old Rules' open Incidents close as `rule_removed`; earlier Observations and Incidents stay readable; evidence for a Signal the new revision does not declare is refused. 422 (`field`) for an unknown, worker, or same revision or a refused answer, with nothing changed; 409 if archived; editor or owner, full key. From the release candidate after `2.0.0-rc2`. From `2.0.0-rc10`, a Signal keeps its [history across the rebind](#rebinding-keeps-signal-history), and `"reset_history": ["signal key", …]` starts named ones fresh |
@@ -325,7 +328,8 @@ or `null` where it has a current `ok` or `problem` reading.
 | `reported_no_data` | its newest reading, still fresh, says `no_data` |
 
 A stale `no_data` is `stale`. An event Signal, or a heartbeat with no
-period, is never stale. An on-demand Signal nobody has asked to check yet is
+period, is never stale. An on-demand Signal nobody has asked to check yet, or
+(from `2.0.0-rc11`) whose reading is older than its `valid_seconds`, is
 `not_checked`, not missing ([Pushed-data Templates](#pushed-data-templates)). A Signal that does not apply to the Resource
 (`"applicability": "not_applicable"`) is never missing. None of these is
 health: the Rules read them as unknown exactly as before. The cause carries
@@ -555,6 +559,15 @@ revision they were created from.
   explanations say `not checked yet`. Once a check reports, it is like any
   other Signal: a check that came back `no_data` is
   `"missing": "reported_no_data"`.
+- From `2.0.0-rc11`, an on-demand Signal may add `"valid_seconds": 600`
+  (10–604800): how long a reading stays current. A reading older than that
+  makes the Signal `not_checked` again (`"not_checked": true`,
+  `"missing": null`): not `stale`, and not missing data. Its comparisons are
+  unknown again, and its Rules are judged when the reading expires. Only an
+  on-demand Signal takes it (422 otherwise); without it a reading stays
+  current for ever. Because an expired reading is unknown, an open Incident
+  that rests on it would stay open: **pair it with `"if_unknown": false`**
+  when a Rule should recover once an old problem expires.
 - A comparison may add `"if_unknown": false`: when its Signal has no usable
   data (never reported, gone quiet, `no_data`, no value, not enough
   readings, or not checked yet) it is false instead of unknown, so the Rule
@@ -584,12 +597,18 @@ revision they were created from.
   | A Signal… | `not_checked` | `missing` |
   |---|---|---|
   | on demand, nobody has asked yet | `true` | `null` |
+  | on demand, its reading older than `valid_seconds` (from `2.0.0-rc11`) | `true` | `null` |
   | on demand, its check reported `no_data` | `false` | `reported_no_data` |
   | on a schedule, never reported | `false` | `never_reported` |
   | with a current `ok` or `problem` | `false` | `null` |
 - From `2.0.0-rc9` a Signal may add a `confirm` policy: a `problem` is
   checked again by Uptimer's workers before Rules believe it
-  ([Confirming a problem](#confirming-a-problem)).
+  ([Confirming a problem](#confirming-a-problem)). From `2.0.0-rc11` a Rule
+  can [compare the outcome](#compare-a-confirmation) itself.
+- From `2.0.0-rc11`, a Rule may add
+  `"on_recovery": {"reset_signals": ["region_a", "load"]}`: when its Incident
+  recovers, the named Signals' readings stop counting as current
+  ([Reset Signals on recovery](#reset-signals-on-recovery)).
 - Unknown is three-valued: a Signal that never reported, went quiet, said
   `no_data` (whatever value it also carries), or carried no value cannot
   satisfy its own comparison. `not`
@@ -598,6 +617,59 @@ revision they were created from.
   an Incident.
 - At most 32 fields, 16 signals, 10 rules. Unknown keys are refused (400);
   an invalid definition is 422 and stores nothing.
+
+## Reset Signals on recovery
+
+From `2.0.0-rc11`. A Rule may add
+`"on_recovery": {"reset_signals": [...]}`, naming 1 to 32 of its Template's own
+Signal keys, each once. An empty list, more than 32, a key twice or one the
+Template does not declare is 422 and stores nothing. Template reads
+return `on_recovery` on each Rule that has it.
+
+When the Rule's Incident closes as recovered at time T:
+
+- each named Signal's readings measured at or before T stop counting as
+  current. Comparisons on it are unknown (`known` is false), explained as
+  `reset when <rule> recovered at T`, until a reading measured after T
+  arrives;
+- counted windows (`min_count`) skip the reset readings. Baselines still read
+  them: they stay history, and nothing is deleted;
+- the resetting Rule is judged first in a pass, so the Resource's other Rules
+  never decide on a reset reading;
+- only the latest reset of a Signal is kept.
+
+Unknown neither opens nor closes an Incident, so a reset does not close an
+Incident another Rule already has open; `"if_unknown": false` on a comparison
+reads the reset as false, as for any missing data.
+
+Resource detail (`GET …/resources/{r}`) shows each Signal's `reset`:
+`{"at": "<T>", "rule": "<rule key>"}` while its newest reading is still one the
+reset covers, and `null` otherwise.
+
+**Outage, then a false ban.** While a host is down, its regional checks fail
+too. After it recovers, those failures must not read as the region blocking the
+host:
+
+```json
+"signals": [{"key": "host", "kind": "event"},
+            {"key": "region_a", "kind": "event"},
+            {"key": "region_b", "kind": "event"}],
+"rules": [
+  {"key": "banned", "action": "Check the region block.",
+   "wait": {"confirm_after": 0, "recover_after": 0},
+   "decision": {"all": [
+     {"signal": "host", "field": "status", "operator": "eq", "operand": "ok"},
+     {"signal": "region_a", "field": "status", "operator": "eq", "operand": "problem"},
+     {"signal": "region_b", "field": "status", "operator": "eq", "operand": "problem"}]}},
+  {"key": "server_down", "action": "Restart the host.",
+   "wait": {"confirm_after": 0, "recover_after": 0},
+   "decision": {"signal": "host", "field": "status", "operator": "eq", "operand": "problem"},
+   "on_recovery": {"reset_signals": ["region_a", "region_b"]}}]
+```
+
+When `host` comes back `ok`, `server_down` recovers and resets both regions.
+`banned` stays unknown, so it opens nothing, until each region reports again
+after the recovery; a region still failing then is a real ban.
 
 ## Confirming a problem
 
@@ -655,6 +727,35 @@ passes, the original `problem` stands.
 
 The Rule is judged as soon as a confirmation is decided, not at the next
 sweep. Signals without a `confirm` policy are judged exactly as before.
+
+**One confirmation per Signal at a time** (from `2.0.0-rc11`). A newer
+`problem` reading of a Signal joins its pending confirmation, or reuses one its
+confirmers or its timeout decided in the last 30 seconds. A joined reading
+asks no worker again and takes no place under the Workspace's 50; Rules and
+history read it as the confirmation it joined, and its `confirmation` in the
+Observation history says `"shared": true` (`false` otherwise). A confirmation
+the cap left unasked (`limited`) is never reused, and every `no_data` reading
+keeps its own `not_run` record.
+
+### Compare a confirmation
+
+From `2.0.0-rc11`, a Rule's comparison may read a Signal's confirmation
+outcome, `"field": "confirmation"`, for example to act when the checker was
+wrong:
+
+```json
+{"signal": "edge_probe", "field": "confirmation", "operator": "eq", "operand": "refuted"}
+```
+
+- Only on a Signal with a `confirm` policy, with `eq` or `neq`.
+- The operand is a status (`confirmed`, `unconfirmed`, `not_run`), a reason
+  (`problem_confirmed`, `refuted`, `timeout`, `confirmer_no_data`,
+  `source_no_data`, `limited`), or `none` for a reading nothing was asked
+  about. It matches the newest reading's confirmation by status or by reason.
+- It is unknown while the confirmation is `pending`, and without a usable
+  reading. A trusted `no_data` reading is not unknown here: it is `not_run` /
+  `source_no_data`.
+- It takes no `min_count`, `within_seconds` or `baseline`.
 
 ### Where the outcome shows
 
@@ -732,3 +833,40 @@ A sender without a person's key can bring a fleet into being from the
 Observation address instead: its first report names the Template
 (`template_id` and `meta`) and creates the Resource. See the Observation
 address in Settings → Observation endpoints.
+
+## Register workers by API
+
+From `2.0.0-rc11`, a script can do what **Server → Locations** and
+**Server → Workers** do: add a Location (`POST /locations`), register a Worker
+(`POST /workers`) and list Workers (`GET /workers`). These routes are
+server-wide, at `/api/v3/locations` and `/api/v3/workers` with no Workspace in
+the path. They need a server admin's **full** key: a scoped key gets `403`
+with `details.scope: full`, and a key of a person who is not a server admin gets
+`403` with no detail. An accepted write is audited, against no Workspace.
+
+```bash
+API=http://127.0.0.1:8080/api/v3
+H="Authorization: Bearer $UPTIMER_TOKEN"   # a server admin's full key
+
+# 201 when created; 200 with the existing Location if the name is taken.
+LOC=$(curl -s -H "$H" -X POST $API/locations -d '{"name": "region_a"}' | jq -r '.result.id')
+
+for n in 01 02; do
+  curl -s -H "$H" -X POST $API/workers -d @- <<EOF | jq -r '.result.next_step'
+{"name": "worker-$n", "uid": "$(uuidgen)", "location": "$LOC", "tags": ["edge-a"]}
+EOF
+done
+curl -s -H "$H" $API/workers | jq -r '.result[] | "\(.uid)  \(.name)  \(.location.name)"'
+```
+
+```text
+uptimer worker-cert --uid 6f1d2c3a-0000-4000-8000-000000000001 --out ./6f1d2c3a-0000-4000-8000-000000000001
+uptimer worker-cert --uid 6f1d2c3a-0000-4000-8000-000000000002 --out ./6f1d2c3a-0000-4000-8000-000000000002
+```
+
+Registering returns no secret. `next_step` is the command to run on the
+control plane to issue the worker's certificate
+([Workers and certificates](/v2.0.0-preview/operating/workers/#register-and-issue));
+the worker connects only after that. An existing `uid` is `409`
+(`field: uid`); a blank name, a short `uid` or an unknown Location is `422`
+with `field` `name`, `uid` or `location`.
