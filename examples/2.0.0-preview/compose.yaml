@@ -2,7 +2,7 @@
 # For a trial. Production: see https://uptimer.myuptime.info/v2.0.0-preview/operating/running/
 services:
   uptimer:
-    image: ghcr.io/myuptime-info/uptimer:2.0.0-rc10@sha256:8ee3c3f2d8e8b09815b06f28aaaa36ac0f28d9a7bd13d80df97fc546b0dae6fe   # preview build
+    image: ghcr.io/myuptime-info/uptimer:2.0.0-rc11@sha256:1bde9f33080ab78d4c333ddbe8d3988cdc65e161f91a5fd6eb772ec7ee0e7c9e   # preview build
     ports:
       - "8080:8080"   # the UI and the API
       - "9090:9090"   # /metrics, /livez, /readyz
@@ -14,7 +14,7 @@ services:
       - uptimer-data:/data
 
   worker:
-    image: ghcr.io/myuptime-info/uptimer:2.0.0-rc10@sha256:8ee3c3f2d8e8b09815b06f28aaaa36ac0f28d9a7bd13d80df97fc546b0dae6fe   # preview build
+    image: ghcr.io/myuptime-info/uptimer:2.0.0-rc11@sha256:1bde9f33080ab78d4c333ddbe8d3988cdc65e161f91a5fd6eb772ec7ee0e7c9e   # preview build
     command: ["worker"]
     restart: on-failure                                # waits until its certificate exists
     environment:

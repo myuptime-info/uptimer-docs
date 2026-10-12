@@ -4,7 +4,7 @@ weight: 10
 lede: "Run Uptimer 2.0.0-preview and one worker with Docker Compose, then watch a website until it opens an Incident."
 ---
 
-> Preview build. The image `2.0.0-rc10`, pinned to its multiarch index digest `sha256:8ee3c3f2d8e8b09815b06f28aaaa36ac0f28d9a7bd13d80df97fc546b0dae6fe` (linux/amd64 and linux/arm64), is a 2.0 release candidate for the field test, not a final release.
+> Preview build. The image `2.0.0-rc11`, pinned to its multiarch index digest `sha256:1bde9f33080ab78d4c333ddbe8d3988cdc65e161f91a5fd6eb772ec7ee0e7c9e` (linux/amd64 and linux/arm64), is a 2.0 release candidate for the field test, not a final release.
 
 This guide runs the control plane and one worker on one host. You sign in, add a Location, register the worker, issue its certificate and create a Resource. The worker checks it, and Uptimer opens an Incident when it fails. It takes about ten minutes.
 
