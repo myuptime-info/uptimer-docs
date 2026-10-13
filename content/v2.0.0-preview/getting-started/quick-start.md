@@ -88,7 +88,7 @@ Uptimer gives you a first workspace. To start over with an empty one (a fresh fi
    docker compose logs worker | grep 'check ran'
    # … msg="check ran" assignment=… state=problem
    ```
-4. Open the Resource. Its Rule reads **problem**, and the Resource links to its open Incident. The Incident page shows why it opened: the Observations, the Rule, the Incident and where it was delivered.
+4. Open the Resource. Its Rule reads **problem**, and the Resource links to its open Incident. The Incident page shows why it opened and why it is still a problem (see [Read a problem](#read-a-problem)).
 
 From the release candidate after `2.0.0-rc2`, **Incidents** in the sidebar lists the workspace's open Incidents. From the release candidate after `2.0.0-rc7`, it shows every open Incident: one somebody has acknowledged stays on the list, marked **acknowledged** with who and when, until it closes. **Show** narrows it to **Not acknowledged** (what still needs action) or **Acknowledged**, and **Rule** to one Rule; each keeps the other, and so does **Older**. Listing never changes an Incident or what is sent.
 
@@ -96,6 +96,39 @@ From the release candidate after `2.0.0-rc3`, the Resource page says **Why {rule
 
 From the release candidate after `2.0.0-rc7`, **Find** on the Resources list searches by a Resource's key, name or id; **Clear** shows every Resource again. Choose 25, 50 or 100 per page and move with **Previous** and **Next**: the search and sort stay as you page. Click a Resource's name, key or id, on the list or on its page, to copy it.
 From `2.0.0-rc9`, **Missing data** narrows the list to Resources with a Signal that was never reported, has gone stale, or reported `no_data`; it is kept as you page.
+
+### Read a problem
+
+From `2.0.0-rc12`, the path from "something is wrong" to the evidence reads like this:
+
+- **Resources list.** Each row shows the Template revision and up to three filled Template
+  values (for example **Server country nl · Provider hoster-b**), apart from the Resource's
+  labels. Click a label to narrow the list to it; the active label shows as a chip with **×**
+  that removes only the label and keeps your search, sort and page size.
+- **Resource page.** The heading reads the Resource's filled Template options, so you do not
+  need **Edit** to tell which Resource this is. Every change sits in one **Actions** menu:
+  **Edit**, **Change settings**, **Rebind** (pushed-data Resources) and **Archive…**. Delivery,
+  Reminders and Maintenance are said once, in the heading. With an Incident open, **Acknowledge**
+  sits next to **See why it opened**. A Rule in a problem state shows its condition checked
+  again now, line by line.
+- **Timeline.** The Resource page shows the latest changes; **See the whole timeline** opens every
+  change, newest first, paged, narrowed by **Day**, **Rule**, **Became** and **Only with an
+  Incident**. Every row names the Incident the change was recorded with, open or ended, or says
+  **No Incident**. Nothing is linked by time alone.
+- **Incident page.** It names the Rule and marks where the Incident is on **pending → problem →
+  closing → closed**, from its own stored times; a step it never reached has no time.
+  **Incident condition** is what the Rule last decided. **Checked again now** works the Rule's
+  condition out again from current readings, clause by clause for a composite Rule: each line
+  **holds**, **does not hold**, **cannot tell**, or, for an input an "any one with data" group did
+  not count, **not counted: no usable data**. A location-quorum Rule shows its verdict without
+  clauses. Under it, each input says what it reads now and links to **Its readings** in the
+  Observation log. **Why it opened** stays exactly as it was recorded; if the Rule was removed or
+  replaced by a rebind, the page says there is no current condition to work out.
+- **Observation log.** A failed report shows **Rules it affected**: each Rule change recorded
+  against that report, with links to the decision and its Incident. A failed report with none
+  says **No recorded state change**, and beside it which Rules read that Signal now, marked
+  **current configuration**: Uptimer does not record Rules that read a report without changing,
+  so it never claims one did.
 
 A Resource that no Rule has judged yet reads **not judged yet**, on the list, on its page and for each such Rule: right after you create it, and after its first Observation until judging has run. That is neither healthy (`ok`) nor **no data**, which a Rule decides when its inputs give it nothing to go on. In API v3 such a Rule's `status` is `null`.
 
@@ -110,7 +143,7 @@ docker compose run --rm worker worker --once
 ## 6. Archive a Resource you no longer need
 
 From the release candidate after `2.0.0-rc2`, an editor or owner archives a Resource from the
-UI: **Archive** on its row in **Resources**, or on its page. The next page names it and says
+UI: **Archive** on its row in **Resources**, or **Actions → Archive…** on its page. The next page names it and says
 what archiving does; **Cancel, keep it active** changes nothing.
 
 Archiving cannot be undone. The Resource leaves the Resource list, its checks stop,

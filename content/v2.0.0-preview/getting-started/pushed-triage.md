@@ -496,7 +496,7 @@ With the Python SDK: `ws.resources.list(template="service-triage", meta={"provid
 ## Move a server to a new revision
 
 From the release candidate after `2.0.0-rc2`, a server can follow another published revision
-without changing its key: from its page (**Rebind**), or with the API.
+without changing its key: from its page (**Actions → Rebind**), or with the API.
 
 ```bash
 curl -s -H "$H" -X POST $API/workspaces/$WS/resources/srv-0042/rebind \
