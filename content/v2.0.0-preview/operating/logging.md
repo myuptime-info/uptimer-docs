@@ -50,6 +50,12 @@ Check lines name the check, its Resource and its state, never what the target
 answered or what the check asks for. Events carry no request body, headers,
 path or user.
 
+From `2.0.0-rc14`, a judging pass that fails writes one `error` line, `a judging pass failed`.
+It names the trigger, the operation, the internal Resource id, the Rule id when one Rule failed,
+and a cause from a fixed list. It never includes the error text. One kind of failure is written
+at most once a minute, with `suppressed` counting the ones left out. See
+[Judging](/v2.0.0-preview/operating/running/#metrics).
+
 Reporting never holds the product up. Events are sent in the background. If
 Sentry is unreachable, the event is dropped and the log line is still
 written. On shutdown a process waits at most 2 seconds for events still on

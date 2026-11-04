@@ -117,6 +117,33 @@ same error a single push would, and the others are stored anyway. The limits and
 the [API v3 reference](/v2.0.0-preview/reference/rest-api/#batch-observations); the Python SDK
 sends one with `ws.resources.observe_batch(items)`.
 
+An `id` is at most 64 characters, counted as characters, not bytes (from `2.0.0-rc14`). Leading
+and trailing spaces are dropped first. A longer one is never cut or replaced: a single push answers
+`422` with `error_type` `validation` and `details.field` `id`, and nothing is created for it, not
+even a new server or Signal. In a batch, the request still answers `200`. Only that item is
+`rejected`, with the same error, and the other items are stored:
+
+```json
+{"index": 1, "status": "rejected",
+ "error": {"code": 1422, "error_type": "validation", "message": "An Observation id is at most 64 characters.", "details": {"field": "id"}}}
+```
+
+Before `2.0.0-rc14`, PostgreSQL refused a longer `id` with a server error (`500`).
+
+Sending an `id` that is already stored again stores nothing and counts as no new reading, even
+though it is accepted. Do not give the same check a new `id` each round just to look fresh: each new
+`id` is a new reading, and it counts in windows and baselines.
+
+### What an accepted push proves
+
+`202`, or `accepted` for a batch item, means the Observation is stored. It does not mean the Rules
+have judged it yet, and a batch has no receipt for when all its items are judged. Read the result
+from the Resource or its Incidents, as below. The judge's own metrics are about the whole
+installation: `uptimer_judge_queue_length` at 0 or a quiet error counter is not a receipt for your
+batch. See [Judging](/v2.0.0-preview/operating/running/#judging) for what each series counts: from
+`2.0.0-rc14`, a pass that is still working through a backlog counts as `draining`, not `error`,
+and a failed pass logs one bounded line.
+
 Uptimer judges each push as it arrives; the pushes that land while a server is being judged are
 judged together about three seconds later. From the release candidate after `2.0.0-rc7`, a
 measured burst of up to 300 servers × 5 Signals, pushed back to back, was judged within about
@@ -513,6 +540,23 @@ with the Observations they used. Evidence for a Signal the new revision does not
 refused. Nothing changes if the revision or an answer is refused, and an archived server cannot
 be rebound. Publishing a new revision never moves a server on its own.
 
+There is no rollout across servers. Publishing only makes a revision available, and each server
+moves when you rebind it, one at a time. Servers you have not rebound keep their revision and its
+Rules.
+
+What carries across a rebind, from `2.0.0-rc10`:
+
+- **History.** A Signal with the same key and kind in both revisions keeps its earlier readings,
+  so baselines and counted windows go on reading them. A Signal named in `reset_history`, a
+  Signal whose kind changed, or one the old revision did not have starts with no history
+  ([details](/v2.0.0-preview/reference/rest-api/#rebinding-keeps-signal-history)). Rebinds made
+  before `2.0.0-rc10` are not linked.
+- **The current reading.** It is the new binding's own: until you push after the rebind, the
+  Signal reads as never reported.
+- **Incidents.** None carry over. An open Incident of the old revision closes as `rule_removed`.
+  If the trouble is still there, the new Rule opens its own Incident from readings pushed after
+  the rebind.
+
 ## Any number of probes
 
 From the release candidate after `2.0.0-rc3`, one Template can serve a server with one probe and
@@ -548,7 +592,10 @@ If host health cannot be read, or the traffic ratio has no confidence, send `no_
 - An unknown result changes nothing: it never opens or confirms access loss, and an open Incident
   does not close while its result is unknown.
 - A Signal not pushed for three rounds (900 seconds here) is unknown too, so a script that
-  stops cannot leave a server looking healthy.
+  stops cannot leave a server looking healthy. That is three of the Signal's own `every_seconds`
+  periods; there is no separate stale threshold to set. An event Signal, or one with no period,
+  never goes stale this way. An on-demand Signal is current for its `valid_seconds` instead, and
+  past that it is `not_checked`, not stale.
 - A `value` that is not a number is refused (`400`).
 
 A Rule's explanation says which of these it is, input by input: `unresolved (no_data)` when
@@ -558,12 +605,60 @@ release candidate after `2.0.0-rc7`, the explanation follows the newest of these
 the Rule's result stays unknown, and an Incident page counts a reported `no_data` as without
 data, not as failing.
 
+To find servers whose scripts went quiet, list them by cause:
+`GET …/resources?missing=stale` (or `never_reported`, `reported_no_data`;
+[Missing Signals](/v2.0.0-preview/reference/rest-api/#missing-signals)). That is a filter you
+poll, not an alert: no Rule or notification fires because a whole source stopped sending.
+
+## When a check is confirmed again
+
+A Signal with a `confirm` policy asks Uptimer's workers to check a `problem` again before its
+Rules believe it ([Confirming a problem](/v2.0.0-preview/reference/rest-api/#confirming-a-problem)).
+With pushed checks that report every round:
+
+- A `problem` that arrives while the same Signal's confirmation is still pending joins it. It
+  asks no worker again and takes none of the Workspace's 50 open confirmations.
+- A `problem` that arrives within 30 seconds after that confirmation was decided reuses the
+  decision. Both values are fixed. A `problem` sent later asks again, even if nothing changed:
+  an unchanged problem pushed every 300 seconds is checked again each round, once the last
+  check was decided more than 30 seconds earlier.
+- A Workspace has at most 50 confirmations open. Past that, a `problem` is not checked again:
+  it reads `unconfirmed` / `limited`, the original `problem` stands, and it is never reused.
+- A confirmer that has not answered by the timeout leaves the original `problem` standing
+  (`timeout`). An answer that arrives after that is refused, not counted.
+- Each `no_data` reading keeps its own `not_run` record. That record means nothing was asked,
+  not that a probe ran.
+
+## When a problem flaps
+
+A check that goes back and forth opens and closes Incidents in turn. The Rule's waits are the
+setting for this: `confirm_after` keeps an Incident unconfirmed, with no `problem` alert, until
+the trouble has lasted, and `recover_after` keeps it open until health has lasted. A longer `recover_after`
+merges short dips into one Incident, but a real recovery then also closes that much later. A
+closed Incident is never reopened: trouble after it closes opens a new one.
+
 ## What stays in your database
 
 Peer medians and peer sets stay where they are today: push only the derived peer ratio.
 From the release candidate after `2.0.0-rc2`, a service's own usual load can instead be
 computed by Uptimer from the raw readings you push ([Compare load with its own past](#compare-load-with-its-own-past)).
-Uptimer keeps what it needs to decide: the latest
-readings a counted comparison asks for ([Require several traffic readings](#require-several-traffic-readings)),
-each server's fields for filtering, and its history after you archive it
-([Find servers by field, and retire one](#find-servers-by-field-and-retire-one)).
+
+Uptimer's own database keeps every Observation it accepts, not just what a Rule reads. It keeps
+them for archived servers and across rebinds as well. There is no retention or compaction
+setting, and nothing deletes old Observations. Storage grows with servers × Signals × rounds for
+as long as you push. Plan disk for that growth, watch it, and size your backups for it
+([Database and migrations](/v2.0.0-preview/operating/database/)). This preview has no tested
+procedure for removing old Observations.
+
+### How far back you can read
+
+| Where | Reads | Older than that |
+|---|---|---|
+| API `GET …/resources/{r}/observations?signal&limit` | the newest, `limit` 1–200, default 50 | no cursor: it reads only the newest |
+| Python SDK `ws.resources.observations(r, signal=…, limit=50)` | the same API read, default 50 | the same |
+| MCP `list_observations` | the newest, `limit` 1–50, default 20 | the same |
+| UI: the Resource's **Observation log** | one UTC day at a time, optionally one Signal, paged with **Older** and **Newer** | pick an earlier day |
+
+The API, SDK and MCP reads are for recent context. To look at an earlier day, use the Observation
+log in the UI ([Read a problem](/v2.0.0-preview/getting-started/quick-start/#read-a-problem)).
+An Incident's history keeps the evidence each transition read, however old.

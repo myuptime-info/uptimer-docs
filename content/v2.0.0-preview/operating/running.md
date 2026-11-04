@@ -119,7 +119,7 @@ original reading stands (`unconfirmed`, `limited`).
 | `http_request_duration_seconds` | `route`, `method`, `status` |
 | `grpc_request_duration_seconds` | `grpc_method`, `grpc_code` |
 | `uptimer_judge_decisions_total` | `result` (`ok`, `error`) |
-| `uptimer_judge_passes_total` | `trigger`, `result` (`ok`, `error`) |
+| `uptimer_judge_passes_total` | `trigger`, `result` (`ok`, `error`, `draining`) |
 | `uptimer_judge_pass_duration_seconds` (histogram) | `trigger` |
 | `uptimer_judge_queue_length` | none |
 | `uptimer_judge_queue_oldest_seconds` | none |
@@ -158,6 +158,23 @@ failed). Muted and failed announcements come back through the bus; everything
 put off is also looked at by the next sweep. A rising `muted` count during a
 burst is normal; a `failed` count that keeps rising is not.
 The ready and deferred series are there from `2.0.0-rc9`.
+
+From `2.0.0-rc14`, a pass that ran without an error but left a backlog is counted in
+`uptimer_judge_passes_total` as `result="draining"` (before, it was counted as `error`), and in
+`uptimer_judge_deferred_total` as `draining`. It is neither a failure nor a completed pass:
+`ok` counts only passes that caught up, and `error` only passes that failed. A Resource whose
+backlog keeps it draining shows a steady `draining` count, not an error rate.
+
+A pass that fails logs one line at `ERROR`, `a judging pass failed`, with `trigger`,
+`operation` (`read_pending`, `judge_evidence`, `judge_due`, `check_caught_up`, `clear_pending`,
+`read_rules` or `judge_rule`), the internal `resource` id, the internal `rule` id when the
+failure was inside one Rule (never guessed for a Resource-level failure), and `cause`: one of
+`timeout`, `canceled`, `not_found`, `connection`, `transaction_done`, `database <SQLSTATE>` or
+`other`. The error text itself is not logged, because a database error can quote stored data.
+One trigger and operation is logged at most once a minute; the next line for it carries
+`suppressed`, the number of failures it left out. Every failed pass is still counted in
+`uptimer_judge_passes_total{result="error"}` and `uptimer_judge_deferred_total{reason="failed"}`,
+logged or not.
 
 `source` is where Observations arrived: `api` (API v3, single or batch, and an
 Observation address) or `worker` (a worker's report). The requests total

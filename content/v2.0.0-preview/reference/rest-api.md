@@ -93,9 +93,9 @@ page). Pass it back as `cursor`. `limit` is 1–200, default 50.
 | `PATCH /workspaces/{ws}/resources/{id or key}` | `{name?, meta?, labels?}`; unsent answers stay; key and Template never change. `labels` alone changes only labels ([below](#resource-labels)); editor or owner, full key |
 | `POST /workspaces/{ws}/resources/{id or key}/archive` | retire it from the inventory → 200, Resource detail with `archived_at`; 409 if already archived; editor or owner, full key |
 | `POST /workspaces/{ws}/resources/{id or key}/rebind` | move an active pushed-data Resource to another published pushed-data revision: `{"template": "key" or "key@version", "meta": {…}}` → 200, Resource detail with the same `id` and `key`, the new `template`, Signals and Rules. Its old Rules' open Incidents close as `rule_removed`; earlier Observations and Incidents stay readable; evidence for a Signal the new revision does not declare is refused. 422 (`field`) for an unknown, worker, or same revision or a refused answer, with nothing changed; 409 if archived; editor or owner, full key. From the release candidate after `2.0.0-rc2`. From `2.0.0-rc10`, a Signal keeps its [history across the rebind](#rebinding-keeps-signal-history), and `"reset_history": ["signal key", …]` starts named ones fresh |
-| `POST /workspaces/{ws}/resources/{r}/observations` | `{signal, state, kind?, value?, labels?, body?, at?, id?, reason?}` → 202 `{resource, signal, observation, created_signal}`; `state` is ok, problem or no_data (no evidence this time; never health); the same `id` twice is stored once. `reason` is a short plain-text why: control characters become spaces, blank is none, past 200 characters it is cut to 199 and "…"; a Rule that uses this reading records it in its evidence (`inputs[].reason`) and alert (from the release candidate after `2.0.0-rc2`) |
+| `POST /workspaces/{ws}/resources/{r}/observations` | `{signal, state, kind?, value?, labels?, body?, at?, id?, reason?}` → 202 `{resource, signal, observation, created_signal}`; `state` is ok, problem or no_data (no evidence this time; never health); the same `id` twice is stored once. From `2.0.0-rc14` an `id` is at most 64 characters after trimming (characters, not bytes); a longer one is 422 `validation` with `details.field` `id`, and nothing is stored or created. `reason` is a short plain-text why: control characters become spaces, blank is none, past 200 characters it is cut to 199 and "…"; a Rule that uses this reading records it in its evidence (`inputs[].reason`) and alert (from the release candidate after `2.0.0-rc2`) |
 | `POST /workspaces/{ws}/observations` | after `2.0.0-rc7`: up to 500 Observations for any Resources: `{"observations": [{resource, signal, state, …}]}` → 200 with one result per item ([below](#batch-observations)) |
-| `GET /workspaces/{ws}/resources/{r}/observations?signal&limit` | newest logged Observations — context, not a decision record; from `2.0.0-rc9` a reading of a Signal with a `confirm` policy carries its [`confirmation`](#where-the-outcome-shows) |
+| `GET /workspaces/{ws}/resources/{r}/observations?signal&limit` | newest logged Observations, `limit` 1–200, default 50, with no cursor to older ones (the UI's Observation log pages by day) — context, not a decision record; from `2.0.0-rc9` a reading of a Signal with a `confirm` policy carries its [`confirmation`](#where-the-outcome-shows) |
 | `PUT /workspaces/{ws}/resources/{r}/maintenance` | `{minutes}`: hold notifications; judging and history go on |
 | `DELETE /workspaces/{ws}/resources/{r}/maintenance` | end it |
 | `GET /workspaces/{ws}/incidents` | page of Incidents, newest first; filters `resource`, `rule`, `lifecycle` (open, closed), `confirmation` (confirmed, unconfirmed), `acknowledged` (true, false; with `lifecycle=open`, false is what still needs action; from the release candidate after `2.0.0-rc2`), and the Resources' `template`, `resource_state` (all by default, active, archived), `meta.<field>` and `label.<key>` |
@@ -372,7 +372,8 @@ audited once.
   observation, created_signal}` or `{index, status: "rejected", error}`. The
   `error` is the one the single request would answer with (`code`,
   `error_type`, `message`, `details`). One rejected item never stops the
-  others.
+  others. For example, an `id` over 64 characters rejects only its item, with
+  `details.field` `id` (from `2.0.0-rc14`).
 - **Whole-request refusals (nothing stored):** an empty list or more than 500
   items is `422` (`field: observations`), a body over 1 MiB is `413`, and a
   body that is not `{"observations": [ … ]}` is `400`. An item with an unknown
@@ -382,8 +383,10 @@ audited once.
   makes no second Incident transition or delivery. Retry the rejected items
   after fixing them, or the whole batch.
 - **Timing:** a request takes about as long as its items take one at a time,
-  bounded by the 500-item limit. Accepting an item does not mean an Incident:
-  Rules judge the Resource as for any Observation.
+  bounded by the 500-item limit. Accepting an item means it is stored, not
+  that it is judged: Rules judge the Resource as for any Observation, and no
+  answer or metric says when a batch has been judged. Read the Resource or its
+  Incidents for that.
 
 ## Resource labels
 

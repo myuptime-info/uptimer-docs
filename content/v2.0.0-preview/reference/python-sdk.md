@@ -112,8 +112,12 @@ ws.resources.observations("checkout-api", limit=20)   # newest first
 ```
 
 `state` is `ok` or `problem`. The same `observation_id` sent twice is stored
-once. The observation log is investigation context, not a record of what a
-decision read.
+once. An `observation_id` over 64 characters raises `ValidationError` with
+`field == "id"` (from `2.0.0-rc14`); in `observe_batch` only that item is
+rejected, with `error["details"]["field"] == "id"`. `observations()` reads the
+newest, `limit` 1–200 (default 50), with no way to page older: the UI's
+Observation log reads earlier days. It is investigation context, not a record
+of what a decision read.
 
 From the release candidate after `2.0.0-rc7`, `ws.resources.observe_batch(items)` sends up to 500
 Observations, for any Resources, in one request. Each item is what `observe` sends plus `resource`;
