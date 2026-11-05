@@ -61,6 +61,10 @@ A revision never changes. To change the Template, publish it again with `"versio
 Servers you already created keep revision 1, and so do their Incidents. Publishing the same
 key and version twice answers `409`. A definition Uptimer cannot judge answers `422` and stores
 nothing. The format is in the [API v3 reference](/v2.0.0-preview/reference/rest-api/#pushed-data-templates).
+Each Rule has at most 16 comparisons (two on the same Signal count as two) and at most 4 levels,
+counting the `decision` as level 1 and the final comparison as a level, and an `action` of 1–200
+characters with no leading or trailing spaces. [Rule limits](/v2.0.0-preview/reference/rest-api/#rule-limits)
+shows a 4-level tree that is accepted and a 5-level one that is refused.
 
 ## 2. Create a server by its own key
 
@@ -590,7 +594,10 @@ If host health cannot be read, or the traffic ratio has no confidence, send `no_
 - Other known inputs still decide. A failing origin check is `service_down` whatever the ratio says;
   one external probe saying ok rules out `access_loss`.
 - An unknown result changes nothing: it never opens or confirms access loss, and an open Incident
-  does not close while its result is unknown.
+  does not close while its result is unknown. A recovery that was running stops; once the inputs
+  report again, the whole `recover_after` counts from the next healthy result, not from before the
+  gap. From `2.0.0-rc15`, such an Incident reads as held, not `recovering`: its page says so and
+  shows no countdown, and the Rule's `status` is `no_data`.
 - A Signal not pushed for three rounds (900 seconds here) is unknown too, so a script that
   stops cannot leave a server looking healthy. That is three of the Signal's own `every_seconds`
   periods; there is no separate stale threshold to set. An event Signal, or one with no period,

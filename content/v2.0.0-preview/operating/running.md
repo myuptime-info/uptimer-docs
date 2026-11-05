@@ -131,6 +131,7 @@ original reading stands (`unconfirmed`, `limited`).
 | `uptimer_ingest_observations_total` | `source`, `result` (`accepted`, `rejected`, `failed`) |
 | `uptimer_delivery_failures_total` | `operation` (`render`, `send`, `record`) |
 | `uptimer_announce_failures_total` | `operation` (`announce`, `remind`) |
+| `uptimer_confirmations_limited_total` | none |
 
 `route` is the route pattern, not the path, so one route is one series.
 
@@ -206,6 +207,16 @@ and never also as `announce`. A held message (maintenance, no route, switched
 off) is not a failure. Both are read on a process running `judge`, carry no
 Workspace, Resource, destination, URL or error text, and appear after their
 first failure; they are there from `2.0.0-rc9`.
+
+From `2.0.0-rc15`, `uptimer_confirmations_limited_total` counts problem readings recorded
+`unconfirmed` with reason `limited`: the Workspace already had 50 confirmations pending, so
+nothing was asked and the original problem stands. Each such reading counts once, when the
+judge's pass that recorded it commits. Judging the same reading again, a reading that joins or
+reuses another confirmation (it takes no place), and a pass that rolled back do not count. The
+counter does not change the cap or ask again. It has no labels, is read only on a process
+running `judge`, and starts at 0 when that process starts, so read it with `increase()`: for
+example, `increase(uptimer_confirmations_limited_total[1h]) > 0` says some problems in the last
+hour went unconfirmed for lack of room.
 
 The two totals exist so a quiet service can be told from a stopped one: a judge
 with no work and a judge that has died both report nothing otherwise.

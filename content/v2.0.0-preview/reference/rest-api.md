@@ -1,7 +1,7 @@
 ---
 title: "API v3"
 weight: 10
-lede: "The public API of Uptimer 2.0: Resources, Templates, Observations, Incidents, maintenance and acknowledgement."
+lede: "The public API of Uptimer 2.0: Resources, Templates and Rule limits, Observations, Incidents, maintenance and acknowledgement."
 ---
 
 The public API of Uptimer 2.0: Resources, Templates, Observations, Incidents,
@@ -437,9 +437,10 @@ revision they were created from.
 - Rules are composite: `decision` is one node — `all`
   (2+), `any` (2+), `not`, or a comparison on one of this Resource's Signals:
   `status` with `eq`/`neq` and `ok` or `problem`, or `value` with `eq`, `neq`,
-  `gt`, `gte`, `lt`, `lte` and a number or `{"meta": field}`. At most 4 deep
-  and 16 comparisons. `wait` holds are seconds or `{"meta": field}`. `action`
-  (1–200 characters) is written on the Rule's Incidents and alerts.
+  `gt`, `gte`, `lt`, `lte` and a number or `{"meta": field}`. At most 4 levels
+  and 16 comparisons ([Rule limits](#rule-limits)). `wait` holds are seconds or
+  `{"meta": field}`. `action` (1–200 characters) is written on the Rule's
+  Incidents and alerts.
 - From the release candidate after `2.0.0-rc2`, a Rule may add
   `"destination": "<id>"`, the id of one of this Workspace's destinations
   (shown on its page under Settings → Destinations). Its Incidents' problem,
@@ -617,9 +618,67 @@ revision they were created from.
   satisfy its own comparison. `not`
   unknown is unknown; `all` is false once anything is false; `any` is true
   once anything is true. An unknown result neither opens, confirms nor closes
-  an Incident.
+  an Incident, and it stops a recovery that was running: once the inputs
+  report again, the whole `recover_after` counts from the next healthy result.
+  From `2.0.0-rc15`, an open Incident held this way no longer reads
+  `recovering`: the Rule's `status` and the Resource's `open_incident.standing`
+  are `no_data` (`pending` if it was never confirmed), and the Incident and Resource pages
+  say it is held, with no countdown. The Incident's `condition` and `verdict`
+  stay what the Rule last decided.
 - At most 32 fields, 16 signals, 10 rules. Unknown keys are refused (400);
   an invalid definition is 422 and stores nothing.
+
+### Rule limits
+
+Each Rule is checked when its Template is published. Three limits apply, and
+a Rule over any of them is refused with `422`, `error_type` `validation`, and
+nothing is stored. Nothing is cut or adjusted to fit.
+
+- **At most 16 comparisons.** Every comparison counts, wherever it is:
+  under `all`, `any` or `not`, inside `all_known` / `any_known`, and a
+  `known` comparison too. Two comparisons on the same Signal count as two.
+  An `any` of 16 comparisons on one Signal is accepted; add a 17th and the
+  Template is refused (`a composite rule compares at most 16 times`).
+- **At most 4 levels.** The `decision` itself is level 1. Each `all`, `any`,
+  `not`, `all_known` or `any_known` puts what it holds one level lower, and
+  the comparison at the end counts as a level. `all` and `any` need at least
+  two entries; `all_known` and `any_known` hold 2–16 comparisons (not
+  `known`), never a group.
+
+  Accepted: `all` → `any` → `not` → comparison is 4 levels.
+
+  ```json
+  {"all": [
+    {"signal": "probe_a", "field": "status", "operator": "eq", "operand": "problem"},
+    {"any": [
+      {"signal": "probe_b", "field": "status", "operator": "eq", "operand": "problem"},
+      {"not": {"signal": "probe_c", "field": "status", "operator": "eq", "operand": "ok"}}]}]}
+  ```
+
+  Refused: `all` → `any` → `all` → `not` → comparison is 5 levels
+  (`a composite rule nests deeper than 4`).
+
+  ```json
+  {"all": [
+    {"signal": "probe_a", "field": "status", "operator": "eq", "operand": "problem"},
+    {"any": [
+      {"signal": "probe_b", "field": "status", "operator": "eq", "operand": "problem"},
+      {"all": [
+        {"signal": "probe_c", "field": "status", "operator": "eq", "operand": "problem"},
+        {"not": {"signal": "probe_d", "field": "status", "operator": "eq", "operand": "ok"}}]}]}]}
+  ```
+
+  A tree that is too deep can usually be flattened: `not` of an `eq` is the
+  same comparison with `neq`.
+- **An `action` of 1–200 characters.** It is the instruction a person reads
+  on the Incident and in its alerts. It may not be blank and may not start or
+  end with spaces. Characters are counted, not bytes, so 200 `é` fit and 201
+  do not (`needs an action of 1 to 200 characters, with no padding`).
+
+The tree limits keep how much work one judgement does, and how much a person
+has to read to follow a Rule, small. They are not a speed promise. A Rule
+that needs more is usually two Rules. The fields a comparison may read,
+including a [confirmation](#compare-a-confirmation), are described above.
 
 ## Reset Signals on recovery
 

@@ -75,7 +75,9 @@ ws.resources.rebind("srv-0042", "service-triage@5", reset_history=["load"])  # S
 ```
 
 `resource.rules[i]` carries `status`, `explanation`, `since` and
-`open_incident` once the Rule has decided.
+`open_incident` once the Rule has decided. From `2.0.0-rc15`, a Rule's `status` and the
+Resource's `open_incident.standing` are `recovering` only while a recovery wait runs: an Incident
+held because its composite Rule cannot tell reads `no_data` (`pending` if never confirmed).
 
 From the release candidate after `2.0.0-rc7`, a Resource carries labels of its own, set without
 changing its Template; a value sets a label and `None` removes it:
@@ -139,7 +141,9 @@ for start in range(0, len(items), 500):
 From `2.0.0-rc9` (SDK from the `field/2.0.0-rc9` local wheel), `ConfirmPolicy`,
 `Confirmer` and `meta` write a Signal's [`confirm` policy](/v2.0.0-preview/reference/rest-api/#confirming-a-problem),
 and `Comparison(..., if_unknown=False)` one comparison of a composite Rule.
-Manifests stay plain dicts; these build their parts.
+Manifests stay plain dicts; these build their parts. `publish` raises `ValidationError` for a
+Rule over the [Rule limits](/v2.0.0-preview/reference/rest-api/#rule-limits): more than 16
+comparisons, more than 4 levels, or an `action` that is blank, padded or over 200 characters.
 
 ```python
 from uptimer import Comparison, Confirmer, ConfirmPolicy, meta
