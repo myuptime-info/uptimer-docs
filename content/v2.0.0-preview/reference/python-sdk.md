@@ -76,8 +76,10 @@ ws.resources.rebind("srv-0042", "service-triage@5", reset_history=["load"])  # S
 
 `resource.rules[i]` carries `status`, `explanation`, `since` and
 `open_incident` once the Rule has decided. From `2.0.0-rc15`, a Rule's `status` and the
-Resource's `open_incident.standing` are `recovering` only while a recovery wait runs: an Incident
-held because its composite Rule cannot tell reads `no_data` (`pending` if never confirmed).
+Resource's `open_incident.standing` are `recovering` only while a recovery wait runs. An Incident
+held because its composite Rule cannot tell keeps its last decision: `problem` if it was a
+confirmed problem, `no_data` if the hold stopped its recovery, `pending` if never confirmed. A hold
+is not readable from `status` alone; the Incident page says it.
 
 From the release candidate after `2.0.0-rc7`, a Resource carries labels of its own, set without
 changing its Template; a value sets a label and `None` removes it:

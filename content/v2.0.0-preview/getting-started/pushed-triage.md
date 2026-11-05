@@ -596,8 +596,10 @@ If host health cannot be read, or the traffic ratio has no confidence, send `no_
 - An unknown result changes nothing: it never opens or confirms access loss, and an open Incident
   does not close while its result is unknown. A recovery that was running stops; once the inputs
   report again, the whole `recover_after` counts from the next healthy result, not from before the
-  gap. From `2.0.0-rc15`, such an Incident reads as held, not `recovering`: its page says so and
-  shows no countdown, and the Rule's `status` is `no_data`.
+  gap. From `2.0.0-rc15`, such an Incident never reads `recovering`: its page says it is held and
+  shows no countdown. The Rule's `status` keeps the decision it last recorded: `problem` for a
+  confirmed problem, `no_data` where the hold stopped a recovery, `pending` if never confirmed
+  ([details](/v2.0.0-preview/reference/rest-api/#pushed-data-templates)).
 - A Signal not pushed for three rounds (900 seconds here) is unknown too, so a script that
   stops cannot leave a server looking healthy. That is three of the Signal's own `every_seconds`
   periods; there is no separate stale threshold to set. An event Signal, or one with no period,

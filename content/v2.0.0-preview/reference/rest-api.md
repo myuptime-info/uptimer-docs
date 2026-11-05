@@ -620,11 +620,21 @@ revision they were created from.
   once anything is true. An unknown result neither opens, confirms nor closes
   an Incident, and it stops a recovery that was running: once the inputs
   report again, the whole `recover_after` counts from the next healthy result.
-  From `2.0.0-rc15`, an open Incident held this way no longer reads
-  `recovering`: the Rule's `status` and the Resource's `open_incident.standing`
-  are `no_data` (`pending` if it was never confirmed), and the Incident and Resource pages
-  say it is held, with no countdown. The Incident's `condition` and `verdict`
-  stay what the Rule last decided.
+  A held Incident keeps the decision it last recorded (its `condition` and
+  `verdict`), and from `2.0.0-rc15` the Rule's `status` and the Resource's
+  `open_incident.standing` follow that decision, never `recovering`:
+
+  | Before the hold | `status` / `standing` while held |
+  |---|---|
+  | confirmed, and still a problem | `problem` |
+  | confirmed, and recovering (its wait was running) | `no_data`: the hold stopped the recovery |
+  | not confirmed yet | `pending` |
+
+  So `status` alone does not say a Rule is held, and `no_data` does not
+  always mean one. What says it is the current check: the Incident page
+  works the condition out again now, shows "cannot tell yet", says the
+  Incident is held, and shows no recovery countdown. The Resource page does
+  the same for a held Rule that reads `problem` or `no_data`.
 - At most 32 fields, 16 signals, 10 rules. Unknown keys are refused (400);
   an invalid definition is 422 and stores nothing.
 
